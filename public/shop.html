@@ -270,6 +270,9 @@
   .rts-card.visible { opacity: 1; transform: translateY(0); }
 
   .rts-card.sold-out { cursor: default; }
+  .rts-card.in-bag { cursor: pointer; }
+  .rts-card.in-bag .rts-img-inner { opacity: 0.8; }
+  .rts-card.in-bag .rts-name { color: var(--driftwood); }
 
   .rts-image {
     aspect-ratio: 3/4;
@@ -317,6 +320,18 @@
   .badge-soldout {
     background: rgba(26,20,16,0.7);
     color: rgba(255,255,255,0.8);
+  }
+
+  .badge-inbag {
+    background: var(--seafoam);
+    color: var(--ink);
+  }
+
+  .rts-inbag-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ocean);
   }
 
   .badge-new {
@@ -1649,29 +1664,39 @@ let cartCount = 0;
 
 function renderRTS() {
   const grid = document.getElementById('rtsGrid');
-  const available = rtsProducts.filter(p => p.available).length;
+  const cart = JSON.parse(localStorage.getItem('mai_cart') || '[]');
+  const inCartIds = new Set(cart.filter(i => !i.isMTO).map(i => i.id));
+
+  const available = rtsProducts.filter(p => p.available && !inCartIds.has(p.id)).length;
   document.getElementById('availableCount').textContent = `${available} pieces`;
 
-  grid.innerHTML = rtsProducts.map((p, i) => `
-    <div class="rts-card ${p.available ? '' : 'sold-out'}"
-         style="transition-delay:${i*55}ms; cursor:${p.available ? 'pointer' : 'default'}"
-         onclick="${p.available ? `window.location='/shop1.html'` : ''}">
+  grid.innerHTML = rtsProducts.map((p, i) => {
+    const inCart = inCartIds.has(p.id);
+    const soldOut = !p.available;
+    const cardClass = soldOut ? 'sold-out' : inCart ? 'in-bag' : '';
+    const badgeClass = soldOut ? 'badge-soldout' : inCart ? 'badge-inbag' : p.new ? 'badge-new' : 'badge-available';
+    const badgeText = soldOut ? 'Sold Out' : inCart ? 'In Your Bag' : p.new ? 'New' : '1 Left';
+    const bottomRight = soldOut
+      ? `<span class="rts-sold-label">Sold out</span>`
+      : inCart
+        ? `<span class="rts-inbag-label">In Bag ✓</span>`
+        : `<button class="rts-wish" onclick="event.stopPropagation();toggleWish(this)">♡</button>`;
+
+    return `
+    <div class="rts-card ${cardClass}"
+         style="transition-delay:${i*55}ms"
+         onclick="window.location='/shop1.html?id=${p.id}'">
       <div class="rts-image">
         <div class="rts-img-inner ${p.grad}"></div>
-        <span class="rts-badge ${p.available ? (p.new ? 'badge-new' : 'badge-available') : 'badge-soldout'}">
-          ${p.available ? (p.new ? 'New' : '1 Left') : 'Sold Out'}
-        </span>
+        <span class="rts-badge ${badgeClass}">${badgeText}</span>
       </div>
       <p class="rts-name">${p.name}</p>
       <div class="rts-bottom">
         <span class="rts-price">$${p.price} · ${p.metal}</span>
-        ${p.available
-          ? `<button class="rts-wish" onclick="event.stopPropagation();toggleWish(this)">♡</button>`
-          : `<span class="rts-sold-label">Sold out</span>`
-        }
+        ${bottomRight}
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 
   // Stagger reveal
   requestAnimationFrame(() => {
@@ -1681,30 +1706,6 @@ function renderRTS() {
   });
 }
 
-function quickBuy(id) {
-  const product = rtsProducts.find(p => p.id === id);
-  if (!product) return;
-
-  // Save to localStorage cart
-  try {
-    const cart = JSON.parse(localStorage.getItem('mai_cart') || '[]');
-    const existing = cart.find(i => i.id === id);
-    if (existing) {
-      existing.qty = Math.min(10, existing.qty + 1);
-    } else {
-      cart.push({ id: product.id, name: product.name, type: product.type, price: product.price, metal: product.metal, colour: product.colour, grad: product.grad, qty: 1 });
-    }
-    localStorage.setItem('mai_cart', JSON.stringify(cart));
-    cartCount = cart.reduce((sum, i) => sum + i.qty, 0);
-  } catch {
-    cartCount++;
-  }
-
-  const el = document.getElementById('cartBubble');
-  el.textContent = cartCount;
-  el.classList.add('bump');
-  setTimeout(() => el.classList.remove('bump'), 250);
-}
 
 function toggleWish(btn) {
   btn.classList.toggle('liked');

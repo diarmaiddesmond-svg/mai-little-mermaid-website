@@ -1158,7 +1158,71 @@
 </footer>
 
 <script>
-  // Image switcher
+  // ── PRODUCT CATALOG (single source of truth) ──
+  const PRODUCTS = [
+    { id:1, name:'Seafoam Glass Bracelet', type:'Bracelet',    price:55,  metal:'Sterling Silver', colour:'Seafoam',     grad:'g1', available:true  },
+    { id:2, name:'Cobalt Drop Earrings',   type:'Earrings',    price:72,  metal:'Gold Fill',       colour:'Cobalt Blue', grad:'g2', available:true  },
+    { id:3, name:'Amber Charm Necklace',   type:'Necklace',    price:130, metal:'Gold Fill',       colour:'Amber',       grad:'g3', available:true  },
+    { id:4, name:'Multi Stone Necklace',   type:'Necklace',    price:92,  metal:'Sterling Silver', colour:'Mixed',       grad:'g4', available:false },
+    { id:5, name:'Forest Green Studs',     type:'Earrings',    price:47,  metal:'Sterling Silver', colour:'Green',       grad:'g5', available:true  },
+    { id:6, name:'Lavender Sea Pendant',   type:'Necklace',    price:130, metal:'Gold Fill',       colour:'Lavender',    grad:'g6', available:true  },
+    { id:7, name:'Clear Glass Bracelet',   type:'Bracelet',    price:55,  metal:'Sterling Silver', colour:'Clear',       grad:'g7', available:false },
+    { id:8, name:'Coral Stone Earrings',   type:'Earrings',    price:72,  metal:'Gold Fill',       colour:'Coral Pink',  grad:'g8', available:true  },
+  ];
+
+  // Gradient map
+  const GRADS = {
+    g1:'linear-gradient(145deg,#c9b99a,#8b7355)', g2:'linear-gradient(145deg,#cdd8d6,#9ab5b0)',
+    g3:'linear-gradient(145deg,#ddd0c0,#bfa98e)', g4:'linear-gradient(145deg,#c8d4cc,#8eaaa4)',
+    g5:'linear-gradient(145deg,#e4d8c4,#c2a87c)', g6:'linear-gradient(145deg,#d0dbd8,#94b4ae)',
+    g7:'linear-gradient(145deg,#e8dcc8,#c49a6a)', g8:'linear-gradient(145deg,#cfd9d5,#7aaa9e)',
+  };
+
+  // ── LOAD PRODUCT FROM URL ──
+  const params = new URLSearchParams(window.location.search);
+  const product = PRODUCTS.find(p => p.id === parseInt(params.get('id')));
+  if (!product) { window.location = '/shop.html'; }
+
+  // ── RENDER PRODUCT DATA INTO PAGE ──
+  document.querySelector('.product-category').textContent = product.type + 's';
+  document.querySelector('.product-title').innerHTML = product.name;
+  document.querySelector('.price-main').textContent = '$' + product.price;
+  document.querySelector('.breadcrumb .current').textContent = product.name;
+  document.querySelector('.breadcrumb a:last-of-type').textContent = product.type + 's';
+  document.getElementById('mainImg').style.background = GRADS[product.grad];
+
+  // Update all gallery thumbs to show the same product gradient (tinted variations)
+  const thumbInners = document.querySelectorAll('.thumb-inner');
+  if (thumbInners[0]) thumbInners[0].style.background = GRADS[product.grad];
+  if (thumbInners[1]) thumbInners[1].style.background = GRADS[product.grad].replace('145deg', '160deg');
+  if (thumbInners[2]) thumbInners[2].style.background = GRADS[product.grad].replace('145deg', '130deg');
+  if (thumbInners[3]) thumbInners[3].style.background = GRADS[product.grad].replace('145deg', '120deg');
+
+  // Update thumb onclicks
+  document.querySelectorAll('.thumb').forEach((thumb, i) => {
+    const angles = ['145deg','160deg','130deg','120deg'];
+    const g = GRADS[product.grad].replace('145deg', angles[i] || '145deg');
+    thumb.setAttribute('onclick', `switchImage(this, '${g}')`);
+  });
+
+  document.title = product.name + ' — Mai Little Mermaid';
+
+  // Hide chain length for non-necklace products
+  if (product.type !== 'Necklace') {
+    const lengthGroup = document.querySelector('.option-group');
+    if (lengthGroup) lengthGroup.style.display = 'none';
+  }
+
+  // Show sold-out state if needed
+  if (!product.available) {
+    const btn = document.getElementById('atcBtn');
+    btn.textContent = 'Sold Out';
+    btn.disabled = true;
+    btn.style.opacity = '0.4';
+    btn.style.cursor = 'default';
+  }
+
+  // ── IMAGE SWITCHER ──
   function switchImage(thumb, gradient) {
     document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
     thumb.classList.add('active');
@@ -1171,68 +1235,76 @@
     }, 150);
   }
 
-  // Length selector
+  // ── LENGTH SELECTOR ──
   function selectLength(btn, val) {
     document.querySelectorAll('.length-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('selectedLength').innerHTML = val;
   }
 
-  // Quantity
+  // ── QUANTITY ──
   let qty = 1;
   function changeQty(delta) {
     qty = Math.max(1, Math.min(10, qty + delta));
     document.getElementById('qtyInput').value = qty;
   }
 
-  // Add to cart
+  // ── CART ──
   let cartCount = 0;
 
-  // Init cart count from localStorage
-  try {
-    const existing = JSON.parse(localStorage.getItem('mai_cart') || '[]');
-    cartCount = existing.reduce((s, i) => s + i.qty, 0);
-    if (cartCount > 0) {
-      const countEl = document.getElementById('cartCount');
-      countEl.textContent = cartCount;
-      countEl.classList.add('visible');
-    }
-  } catch {}
+  function loadCart() {
+    try { return JSON.parse(localStorage.getItem('mai_cart') || '[]'); } catch { return []; }
+  }
+
+  // Init cart count + check if already in cart
+  const initCart = loadCart();
+  cartCount = initCart.reduce((s, i) => s + i.qty, 0);
+  if (cartCount > 0) {
+    const countEl = document.getElementById('cartCount');
+    countEl.textContent = cartCount;
+    countEl.classList.add('visible');
+  }
+  if (product && product.available && initCart.some(i => i.id === product.id)) {
+    const btn = document.getElementById('atcBtn');
+    btn.textContent = 'In Your Bag ✓';
+    btn.disabled = true;
+    btn.style.opacity = '0.6';
+  }
 
   function addToCart() {
-    const length = document.getElementById('selectedLength').textContent;
+    if (!product || !product.available) return;
+
+    // Prevent double-add — each piece is one of a kind
+    const cart = loadCart();
+    if (cart.some(i => i.id === product.id)) return;
+
     const item = {
-      id: 'sgcn-1',
-      name: 'Sea Glass Charm Necklace',
-      type: 'Necklace',
-      price: 75,
-      metal: 'Gold Fill',
-      colour: `Chain ${length}`,
-      grad: 'g3',
+      id: product.id,
+      name: product.name,
+      type: product.type,
+      price: product.price,
+      metal: product.metal,
+      colour: product.colour,
+      grad: product.grad,
       qty: qty,
       isRTS: true
     };
 
-    try {
-      const cart = JSON.parse(localStorage.getItem('mai_cart') || '[]');
-      const existing = cart.find(i => i.id === item.id && i.colour === item.colour);
-      if (existing) {
-        existing.qty = Math.min(10, existing.qty + qty);
-      } else {
-        cart.push(item);
-      }
-      localStorage.setItem('mai_cart', JSON.stringify(cart));
-      cartCount = cart.reduce((s, i) => s + i.qty, 0);
-    } catch {
-      cartCount += qty;
-    }
+    cart.push(item);
+    localStorage.setItem('mai_cart', JSON.stringify(cart));
+    cartCount = cart.reduce((s, i) => s + i.qty, 0);
 
     const btn = document.getElementById('atcBtn');
     btn.classList.add('added');
     const countEl = document.getElementById('cartCount');
     countEl.textContent = cartCount;
     countEl.classList.add('visible');
-    setTimeout(() => btn.classList.remove('added'), 1800);
+    setTimeout(() => {
+      btn.classList.remove('added');
+      btn.textContent = 'In Your Bag ✓';
+      btn.disabled = true;
+      btn.style.opacity = '0.6';
+    }, 1800);
   }
 
   // Wishlist
