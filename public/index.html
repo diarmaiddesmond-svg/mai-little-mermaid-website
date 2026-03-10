@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mai Little Mermaid — Beach Treasures Turned Into Art</title>
+<meta name="description" content="Handmade jewellery crafted from reclaimed sea glass, shells, and driftwood found on Newport, Rhode Island beaches. Each piece is one of a kind.">
+<meta property="og:title" content="Mai Little Mermaid — Beach Treasures Turned Into Art">
+<meta property="og:description" content="Handmade jewellery crafted from reclaimed sea glass, shells, and driftwood found on Newport, Rhode Island beaches. Each piece is one of a kind.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="/og-image.jpg">
+<link rel="canonical" href="https://mailittlemermaid.com/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sand: #f0e8d8;
+    --sand-dark: #d9cdb8;
+    --driftwood: #8b7355;
+    --ocean: #4a7c8e;
+    --ocean-deep: #2d5a6b;
+    --seafoam: #a8c5bc;
+    --coral: #c4715a;
+    --cream: #faf6f0;
+    --ink: #1a1410;
+    --gold: #b8943f;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.2rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(250, 246, 240, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(139,115,85,0.15);
+  }
+
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--driftwood);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .nav-links a:hover { color: var(--ocean); }
+
+  .nav-cart {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding-top: 70px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 6rem 4rem 6rem 5rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ocean);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.5rem, 6vw, 5.5rem);
+    font-weight: 300;
+    line-height: 1.05;
+    color: var(--ink);
+    margin-bottom: 1.8rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--ocean);
+  }
+
+  .hero-sub {
+    font-size: 0.9rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--driftwood);
+    max-width: 380px;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+  }
+
+  .btn-primary {
+    background: var(--ocean-deep);
+    color: #fff;
+    padding: 0.9rem 2.2rem;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.3s, transform 0.2s;
+  }
+
+  .btn-primary:hover {
+    background: var(--ocean);
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--driftwood);
+    text-decoration: none;
+    border-bottom: 1px solid var(--sand-dark);
+    padding-bottom: 2px;
+    transition: color 0.3s, border-color 0.3s;
+  }
+
+  .btn-secondary:hover {
+    color: var(--ocean);
+    border-color: var(--ocean);
+  }
+
+  .hero-right {
+    position: relative;
+    overflow: hidden;
+    background: var(--sand);
+  }
+
+  .hero-image-grid {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 3px;
+  }
+
+  .hero-img-block {
+    background: var(--sand-dark);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .hero-img-block::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(74,124,142,0.1), transparent);
+  }
+
+  /* Decorative wave SVG */
+  .hero-wave {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    z-index: 3;
+  }
+
+  /* Floating badge */
+  .hero-badge {
+    position: absolute;
+    bottom: 3rem;
+    left: -1.5rem;
+    background: var(--cream);
+    border: 1px solid var(--sand-dark);
+    padding: 1rem 1.3rem;
+    z-index: 5;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 1s forwards;
+  }
+
+  .hero-badge-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--driftwood);
+    display: block;
+    line-height: 1.4;
+  }
+
+  .hero-badge-sub {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ocean);
+    margin-top: 0.3rem;
+    display: block;
+  }
+
+  /* ── MARQUEE ── */
+  .marquee-bar {
+    background: var(--ocean-deep);
+    color: #fff;
+    padding: 0.75rem 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .marquee-track {
+    display: inline-flex;
+    animation: marquee 20s linear infinite;
+  }
+
+  .marquee-item {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0 3rem;
+    opacity: 0.9;
+  }
+
+  .marquee-dot {
+    opacity: 0.4;
+    margin: 0 -1.5rem;
+  }
+
+  /* ── COLLECTION ── */
+  .section {
+    padding: 6rem 5rem;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 3rem;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--ink);
+  }
+
+  .section-title em { font-style: italic; color: var(--ocean); }
+
+  .section-link {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--driftwood);
+    text-decoration: none;
+    border-bottom: 1px solid var(--sand-dark);
+    padding-bottom: 2px;
+    white-space: nowrap;
+    transition: color 0.3s;
+  }
+
+  .section-link:hover { color: var(--ocean); }
+
+  /* Product grid */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.2rem;
+  }
+
+  .product-card {
+    cursor: pointer;
+    group: true;
+  }
+
+  .product-image {
+    aspect-ratio: 3/4;
+    background: var(--sand);
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 1rem;
+  }
+
+  .product-image-inner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.6s ease;
+  }
+
+  .product-card:hover .product-image-inner {
+    transform: scale(1.04);
+  }
+
+  /* Product placeholder visuals */
+  .product-placeholder {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .p1 { background: linear-gradient(145deg, #e8dcc8 0%, #c9b99a 100%); }
+  .p2 { background: linear-gradient(145deg, #cdd8d6 0%, #9ab5b0 100%); }
+  .p3 { background: linear-gradient(145deg, #ddd0c0 0%, #bfa98e 100%); }
+  .p4 { background: linear-gradient(145deg, #c8d4cc 0%, #8eaaa4 100%); }
+  .p5 { background: linear-gradient(145deg, #e4d8c4 0%, #c2a87c 100%); }
+  .p6 { background: linear-gradient(145deg, #d0dbd8 0%, #94b4ae 100%); }
+
+  .product-placeholder::after {
+    content: '✦';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    font-size: 2rem;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .product-tag {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: var(--cream);
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ocean);
+    padding: 0.3rem 0.6rem;
+  }
+
+  .product-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 0.3rem;
+  }
+
+  .product-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .product-material {
+    font-size: 0.72rem;
+    font-weight: 300;
+    color: var(--driftwood);
+    letter-spacing: 0.05em;
+    margin-top: 0.2rem;
+  }
+
+  /* Shop CTA banner */
+  .shop-cta {
+    margin-top: 2.5rem;
+    background: var(--ocean-deep);
+    color: #fff;
+    padding: 2.5rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .shop-cta-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.3;
+    opacity: 0.95;
+  }
+
+  .shop-cta-sub {
+    font-size: 0.78rem;
+    font-weight: 300;
+    opacity: 0.6;
+    margin-top: 0.4rem;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-shop-cta {
+    white-space: nowrap;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.35);
+    color: #fff;
+    padding: 0.9rem 2rem;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.3s;
+  }
+
+  .btn-shop-cta:hover { background: rgba(255,255,255,0.2); }
+
+  /* ── ABOUT STRIP ── */
+  .about-strip {
+    background: var(--sand);
+    padding: 5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
+
+  .about-visual {
+    aspect-ratio: 4/5;
+    background: var(--sand-dark);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .about-visual-inner {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(160deg, #c9b99a, #8b7355 60%, #6b5a42);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .about-visual-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 4rem;
+    color: rgba(255,255,255,0.2);
+    font-style: italic;
+  }
+
+  .about-badge-corner {
+    position: absolute;
+    bottom: 2rem;
+    right: -1.5rem;
+    background: var(--ocean-deep);
+    color: #fff;
+    padding: 1.2rem 1.5rem;
+    text-align: center;
+  }
+
+  .about-badge-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    display: block;
+    line-height: 1;
+  }
+
+  .about-badge-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  .about-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ocean);
+    margin-bottom: 1.2rem;
+  }
+
+  .about-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 3vw, 2.8rem);
+    font-weight: 300;
+    line-height: 1.15;
+    color: var(--ink);
+    margin-bottom: 1.5rem;
+  }
+
+  .about-title em { font-style: italic; color: var(--ocean); }
+
+  .about-body {
+    font-size: 0.9rem;
+    font-weight: 300;
+    line-height: 1.9;
+    color: var(--driftwood);
+    margin-bottom: 2rem;
+  }
+
+  /* ── PROCESS STRIP ── */
+  .process {
+    padding: 5rem;
+    border-top: 1px solid var(--sand-dark);
+  }
+
+  .process-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--driftwood);
+    text-align: center;
+    margin-bottom: 3rem;
+    letter-spacing: 0.05em;
+  }
+
+  .process-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+  }
+
+  .process-step {
+    padding: 2rem 2.5rem;
+    border-left: 1px solid var(--sand-dark);
+    position: relative;
+  }
+
+  .process-step:first-child { border-left: none; }
+
+  .step-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
+    font-weight: 300;
+    color: var(--sand-dark);
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+
+  .step-title {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin-bottom: 0.6rem;
+  }
+
+  .step-desc {
+    font-size: 0.82rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--driftwood);
+  }
+
+  /* ── INSTAGRAM STRIP ── */
+  .instagram-strip {
+    padding: 4rem 5rem;
+    background: var(--ink);
+    color: #fff;
+  }
+
+  .ig-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .ig-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 300;
+    font-style: italic;
+  }
+
+  .ig-handle {
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--seafoam);
+    text-decoration: none;
+  }
+
+  .ig-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+  }
+
+  .ig-tile {
+    aspect-ratio: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .ig-tile-inner {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.4s;
+  }
+
+  .ig-tile:hover .ig-tile-inner { transform: scale(1.06); }
+
+  .ig1 { background: linear-gradient(135deg, #8b7355, #5c4a2e); }
+  .ig2 { background: linear-gradient(135deg, #4a7c8e, #2d5a6b); }
+  .ig3 { background: linear-gradient(135deg, #c4715a, #8b3f2c); }
+  .ig4 { background: linear-gradient(135deg, #a8c5bc, #6b9e94); }
+  .ig5 { background: linear-gradient(135deg, #b8943f, #8b6a1a); }
+
+  .ig-tile-inner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0);
+    transition: background 0.3s;
+  }
+
+  .ig-tile:hover .ig-tile-inner::after {
+    background: rgba(0,0,0,0.2);
+  }
+
+  /* ── CONTACT ── */
+  .contact {
+    padding: 6rem 5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: start;
+  }
+
+  .contact-left h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 3vw, 2.8rem);
+    font-weight: 300;
+    line-height: 1.15;
+    color: var(--ink);
+    margin-bottom: 1rem;
+  }
+
+  .contact-left h2 em { font-style: italic; color: var(--ocean); }
+
+  .contact-left p {
+    font-size: 0.88rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--driftwood);
+    margin-bottom: 1.5rem;
+  }
+
+  .contact-detail {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ocean);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+  }
+
+  .contact-detail + .contact-detail { margin-top: 0.5rem; }
+
+  .form-group {
+    margin-bottom: 1.2rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--driftwood);
+    margin-bottom: 0.5rem;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--sand-dark);
+    padding: 0.6rem 0;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.3s;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    border-color: var(--ocean);
+  }
+
+  .form-group textarea {
+    resize: none;
+    height: 80px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    color: rgba(255,255,255,0.6);
+    padding: 3rem 5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #fff;
+  }
+
+  .footer-tagline {
+    font-size: 0.72rem;
+    font-style: italic;
+    color: var(--seafoam);
+    margin-top: 0.3rem;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .footer-links a {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .footer-links a:hover { color: var(--seafoam); }
+
+  .footer-copy {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.3);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* ── MOBILE NAV ── */
+  .nav-hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    margin-left: 1rem;
+  }
+
+  .nav-hamburger span {
+    display: block;
+    width: 22px;
+    height: 1.5px;
+    background: var(--ink);
+    transition: transform 0.3s, opacity 0.3s;
+  }
+
+  .nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+  .nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  .mobile-nav {
+    position: fixed;
+    top: 57px;
+    left: 0; right: 0;
+    background: var(--cream);
+    border-bottom: 1px solid var(--sand-dark);
+    z-index: 99;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+  }
+
+  .mobile-nav.open { max-height: 260px; }
+
+  .mobile-nav ul {
+    list-style: none;
+    padding: 0.5rem 1.5rem 1rem;
+  }
+
+  .mobile-nav li a {
+    display: block;
+    padding: 0.85rem 0;
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--driftwood);
+    text-decoration: none;
+    border-bottom: 1px solid var(--sand-dark);
+    transition: color 0.3s;
+  }
+
+  .mobile-nav li:last-child a { border-bottom: none; }
+  .mobile-nav li a:hover { color: var(--ocean); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .nav-hamburger { display: flex; }
+    .hero { grid-template-columns: 1fr; min-height: auto; }
+    .hero-left { padding: 4rem 2rem 3rem; }
+    .hero-right { height: 60vw; }
+    .hero-badge { left: 1rem; bottom: 1.5rem; }
+    .section, .about-strip, .process, .contact { padding: 3rem 1.5rem; }
+    .instagram-strip { padding: 3rem 1.5rem; }
+    .product-grid { grid-template-columns: repeat(2, 1fr); }
+    .shop-cta { flex-direction: column; text-align: center; padding: 2rem 1.5rem; }
+    .about-strip { grid-template-columns: 1fr; gap: 2rem; }
+    .about-badge-corner { right: 0; }
+    .process-steps { grid-template-columns: 1fr 1fr; }
+    .contact { grid-template-columns: 1fr; gap: 3rem; }
+    .ig-grid { grid-template-columns: repeat(3, 1fr); }
+    footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2rem; }
+  }
+
+  @media (max-width: 480px) {
+    .hero-left { padding: 3rem 1.2rem 2rem; }
+    .hero-title { font-size: clamp(2.4rem, 9vw, 3rem); }
+    .hero-sub { font-size: 0.85rem; }
+    .hero-right { height: 55vw; }
+    .hero-cta { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .btn-primary, .btn-secondary { font-size: 0.7rem; }
+    .marquee-item { font-size: 0.62rem; padding: 0 1.5rem; }
+    .product-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .shop-cta { padding: 1.5rem 1.2rem; }
+    .shop-cta-text { font-size: 1.25rem; }
+    .process-steps { grid-template-columns: 1fr; }
+    .ig-grid { grid-template-columns: repeat(2, 1fr); }
+    .ig-tile:last-child { display: none; }
+    .section-header { flex-direction: column; align-items: flex-start; gap: 0.8rem; }
+    .contact { padding: 2.5rem 1.2rem; }
+    footer { padding: 2rem 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/index.html" class="nav-logo">Mai Little Mermaid</a>
+  <ul class="nav-links">
+    <li><a href="/shop.html">Shop</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-cart">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+    Bag (0)
+  </div>
+  <button class="nav-hamburger" id="navToggle" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+  <ul>
+    <li><a href="/shop.html">Shop</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">Handmade · Newport, Rhode Island</p>
+    <h1 class="hero-title">Beach treasures<br>turned into <em>art</em></h1>
+    <p class="hero-sub">Each piece begins with a walk along the shore — sea glass, driftwood, shells — reclaimed by the tide and reimagined into jewellery you'll wear forever.</p>
+    <div class="hero-cta">
+      <a href="/shop.html" class="btn-primary">Shop Collection</a>
+      <a href="#about" class="btn-secondary">Our Story</a>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="hero-image-grid">
+      <div class="hero-img-block" style="background: linear-gradient(145deg,#c9b99a,#8b7355);"></div>
+      <div class="hero-img-block" style="background: linear-gradient(145deg,#a8c5bc,#4a7c8e); grid-row: span 2;"></div>
+      <div class="hero-img-block" style="background: linear-gradient(145deg,#d9cdb8,#b8943f);"></div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-bar">
+  <div class="marquee-track">
+    <span class="marquee-item">Handmade with Love</span>
+    <span class="marquee-item marquee-dot">✦</span>
+    <span class="marquee-item">Reclaimed Sea Glass</span>
+    <span class="marquee-item marquee-dot">✦</span>
+    <span class="marquee-item">Beach Treasures</span>
+    <span class="marquee-item marquee-dot">✦</span>
+    <span class="marquee-item">Wood Burnings</span>
+    <span class="marquee-item marquee-dot">✦</span>
+    <span class="marquee-item">Charm Necklaces</span>
+    <span class="marquee-item marquee-dot">✦</span>
+    <span class="marquee-item">One of a Kind</span>
+    <span class="marquee-item marquee-dot">✦</span>
+    <!-- repeat for seamless loop -->
+    <span class="marquee-item">Handmade with Love</span>
+    <span class="marquee-item marquee-dot">✦</span>
+    <span class="marquee-item">Reclaimed Sea Glass</span>
+    <span class="marquee-item marquee-dot">✦</span>
+    <span class="marquee-item">Beach Treasures</span>
+    <span class="marquee-item marquee-dot">✦</span>
+    <span class="marquee-item">Wood Burnings</span>
+    <span class="marquee-item marquee-dot">✦</span>
+    <span class="marquee-item">Charm Necklaces</span>
+    <span class="marquee-item marquee-dot">✦</span>
+    <span class="marquee-item">One of a Kind</span>
+    <span class="marquee-item marquee-dot">✦</span>
+  </div>
+</div>
+
+<!-- SHOP -->
+<section class="section" id="shop">
+  <div class="section-header reveal">
+    <h2 class="section-title">The <em>Work</em></h2>
+    <span class="section-link" style="cursor:default; border-bottom:none;">Past pieces — a glimpse of what Maile makes</span>
+  </div>
+  <div class="product-grid">
+    <div class="product-card reveal">
+      <div class="product-image">
+        <div class="product-image-inner">
+          <div class="product-placeholder p3"></div>
+        </div>
+        <span class="product-tag">Bracelets</span>
+      </div>
+      <p class="product-name">Beaded Stone Bracelet</p>
+      <p class="product-material">River stones · sterling silver wire</p>
+    </div>
+
+    <div class="product-card reveal" style="transition-delay:0.08s">
+      <div class="product-image">
+        <div class="product-image-inner">
+          <div class="product-placeholder p1"></div>
+        </div>
+        <span class="product-tag">Necklaces</span>
+      </div>
+      <p class="product-name">Sea Glass Charm Necklace</p>
+      <p class="product-material">Newport sea glass · 14k gold-fill chain</p>
+    </div>
+
+    <div class="product-card reveal" style="transition-delay:0.16s">
+      <div class="product-image">
+        <div class="product-image-inner">
+          <div class="product-placeholder p2"></div>
+        </div>
+        <span class="product-tag">Earrings</span>
+      </div>
+      <p class="product-name">Shell Drop Earrings</p>
+      <p class="product-material">Collected shells · gold-fill ear wires</p>
+    </div>
+
+    <div class="product-card reveal" style="transition-delay:0.24s">
+      <div class="product-image">
+        <div class="product-image-inner">
+          <div class="product-placeholder p4"></div>
+        </div>
+        <span class="product-tag">Wood Burnings</span>
+      </div>
+      <p class="product-name">Driftwood Wall Art</p>
+      <p class="product-material">Found driftwood · pyrography</p>
+    </div>
+  </div>
+
+  <div class="shop-cta reveal">
+    <div>
+      <p class="shop-cta-text">Every piece here has already found its home.</p>
+      <p class="shop-cta-sub">New work is always in progress — see what's available now.</p>
+    </div>
+    <a href="/shop.html" class="btn-shop-cta">Browse the Shop →</a>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<div class="about-strip" id="about">
+  <div class="about-visual reveal">
+    <div class="about-visual-inner">
+      <span class="about-visual-text">Mai</span>
+    </div>
+    <div class="about-badge-corner">
+      <span class="about-badge-num">43</span>
+      <span class="about-badge-label">pieces crafted</span>
+    </div>
+  </div>
+
+  <div class="reveal" style="transition-delay:0.2s">
+    <p class="about-eyebrow">The Story</p>
+    <h2 class="about-title">Started with a <em>vision</em><br>and a walk on the beach</h2>
+    <p class="about-body">Maile started this business from scratch — jobless, hopeful, and armed with a love of the ocean and a belief that the sea's discarded treasures deserved a second life. Every piece in the collection is handcrafted from materials found along local shores: sea glass worn smooth by the tide, driftwood shaped by storms, shells and stones with histories we'll never fully know.</p>
+    <p class="about-body">Custom orders are always welcome — DM on Instagram or use the contact form below.</p>
+    <a href="#contact" class="btn-primary">Get in Touch</a>
+  </div>
+</div>
+
+<!-- PROCESS -->
+<section class="process">
+  <p class="process-title">From shore to you — how each piece is made</p>
+  <div class="process-steps">
+    <div class="process-step reveal">
+      <div class="step-num">01</div>
+      <p class="step-title">Beach Walk</p>
+      <p class="step-desc">Every piece starts with Maile combing local beaches for sea glass, shells, driftwood and other treasures.</p>
+    </div>
+    <div class="process-step reveal" style="transition-delay:0.1s">
+      <div class="step-num">02</div>
+      <p class="step-title">Selection</p>
+      <p class="step-desc">Only the most beautiful, unusual pieces make it into the collection — colour, texture, and character all matter.</p>
+    </div>
+    <div class="process-step reveal" style="transition-delay:0.2s">
+      <div class="step-num">03</div>
+      <p class="step-title">Handcrafting</p>
+      <p class="step-desc">Each piece is hand-set, wired, or assembled with care. No two are exactly alike.</p>
+    </div>
+    <div class="process-step reveal" style="transition-delay:0.3s">
+      <div class="step-num">04</div>
+      <p class="step-title">To You</p>
+      <p class="step-desc">Packaged with love and shipped directly — or available as a custom personal order.</p>
+    </div>
+  </div>
+</section>
+
+<!-- INSTAGRAM -->
+<div class="instagram-strip">
+  <div class="ig-header">
+    <p class="ig-title">Follow the journey</p>
+    <a href="https://www.instagram.com/mai.little.mermaid" target="_blank" class="ig-handle">@mai.little.mermaid ↗</a>
+  </div>
+  <div class="ig-grid">
+    <div class="ig-tile"><div class="ig-tile-inner ig1"></div></div>
+    <div class="ig-tile"><div class="ig-tile-inner ig2"></div></div>
+    <div class="ig-tile"><div class="ig-tile-inner ig3"></div></div>
+    <div class="ig-tile"><div class="ig-tile-inner ig4"></div></div>
+    <div class="ig-tile"><div class="ig-tile-inner ig5"></div></div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="contact-left reveal">
+    <h2>Custom orders &<br><em>enquiries</em></h2>
+    <p>Want something made just for you? A gift, a specific colour sea glass, a custom size? Get in touch and Maile will get back to you personally.</p>
+    <a href="https://www.instagram.com/mai.little.mermaid" class="contact-detail" target="_blank">↗ @mai.little.mermaid</a>
+  </div>
+
+  <div class="reveal" style="transition-delay:0.2s">
+    <div class="form-group">
+      <label>Your Name</label>
+      <input type="text" placeholder="Maile">
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" placeholder="hello@email.com">
+    </div>
+    <div class="form-group">
+      <label>I'm interested in</label>
+      <select>
+        <option>A custom necklace</option>
+        <option>A custom bracelet</option>
+        <option>Earrings</option>
+        <option>Wood burning art</option>
+        <option>Other / just saying hi</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Message</label>
+      <textarea placeholder="Tell me what you have in mind..."></textarea>
+    </div>
+    <button class="btn-primary" style="width:100%; padding: 1rem; margin-top:0.5rem;">Send Message</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">Mai Little Mermaid</div>
+    <div class="footer-tagline">Locally found beach treasures turned into art</div>
+  </div>
+  <ul class="footer-links">
+    <li><a href="/shop.html">Shop</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="https://www.instagram.com/mai.little.mermaid" target="_blank">Instagram</a></li>
+  </ul>
+  <div class="footer-copy">© 2025 Mai Little Mermaid</div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => observer.observe(r));
+
+  // Hamburger nav
+  const navToggle = document.getElementById('navToggle');
+  const mobileNav = document.getElementById('mobileNav');
+  navToggle.addEventListener('click', () => {
+    navToggle.classList.toggle('open');
+    mobileNav.classList.toggle('open');
+  });
+  mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    navToggle.classList.remove('open');
+    mobileNav.classList.remove('open');
+  }));
+
+  // Nav shadow on scroll
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    nav.style.boxShadow = window.scrollY > 50 ? '0 2px 20px rgba(0,0,0,0.08)' : 'none';
+  });
+</script>
+</body>
+</html>

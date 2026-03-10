@@ -1,0 +1,1847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop — Mai Little Mermaid</title>
+<meta name="description" content="Shop handmade sea glass jewellery, shell earrings, driftwood art, and more by Mai Little Mermaid. Ready to ship and made-to-order pieces from Newport, Rhode Island.">
+<meta property="og:title" content="Shop — Mai Little Mermaid">
+<meta property="og:description" content="Handmade sea glass jewellery, shell earrings, and driftwood art from Newport, Rhode Island. Ready to ship and made to order.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="/og-image.jpg">
+<link rel="canonical" href="https://mailittlemermaid.com/shop.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sand: #f0e8d8;
+    --sand-dark: #d9cdb8;
+    --driftwood: #8b7355;
+    --ocean: #4a7c8e;
+    --ocean-deep: #2d5a6b;
+    --seafoam: #a8c5bc;
+    --coral: #c4715a;
+    --cream: #faf6f0;
+    --ink: #1a1410;
+    --gold: #b8943f;
+    --silver: #8e9aaa;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.2rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(250,246,240,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(139,115,85,0.15);
+    transition: box-shadow 0.3s;
+  }
+
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--driftwood);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .nav-links a.active, .nav-links a:hover { color: var(--ocean); }
+
+  .nav-cart {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .cart-bubble {
+    background: var(--ocean);
+    color: #fff;
+    font-size: 0.6rem;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.25s;
+  }
+
+  .cart-bubble.bump { transform: scale(1.4); }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    padding: 7.5rem 5rem 0;
+  }
+
+  .page-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ocean);
+    margin-bottom: 0.6rem;
+  }
+
+  .page-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3rem, 5vw, 4.5rem);
+    font-weight: 300;
+    line-height: 1.0;
+    color: var(--ink);
+    margin-bottom: 1.5rem;
+  }
+
+  .page-title em { font-style: italic; color: var(--ocean); }
+
+  /* ── TIER NAV (sticky) ── */
+  .tier-nav {
+    position: sticky;
+    top: 64px;
+    z-index: 80;
+    background: rgba(250,246,240,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--sand-dark);
+    padding: 0 5rem;
+    display: flex;
+    gap: 0;
+  }
+
+  .tier-tab {
+    padding: 1rem 2rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--driftwood);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.25s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font-family: 'Jost', sans-serif;
+    white-space: nowrap;
+  }
+
+  .tier-tab:hover { color: var(--ocean); }
+
+  .tier-tab.active {
+    color: var(--ocean-deep);
+    border-bottom-color: var(--ocean-deep);
+  }
+
+  .tier-tab .tab-num {
+    font-size: 0.6rem;
+    background: var(--sand-dark);
+    color: var(--driftwood);
+    padding: 0.1rem 0.4rem;
+    border-radius: 8px;
+    margin-left: 0.5rem;
+    transition: all 0.25s;
+  }
+
+  .tier-tab.active .tab-num {
+    background: var(--ocean-deep);
+    color: #fff;
+  }
+
+  /* ── SECTIONS ── */
+  .shop-section {
+    padding: 4rem 5rem 5rem;
+    display: none;
+  }
+
+  .shop-section.active { display: block; }
+
+  /* ── SECTION INTROS ── */
+  .section-intro {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--sand-dark);
+    gap: 2rem;
+  }
+
+  .section-intro h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--ink);
+  }
+
+  .section-intro h2 em { font-style: italic; color: var(--ocean); }
+
+  .section-intro p {
+    font-size: 0.82rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--driftwood);
+    margin-top: 0.5rem;
+    max-width: 520px;
+  }
+
+  .section-meta {
+    text-align: right;
+  }
+
+  .section-meta-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--driftwood);
+    display: block;
+  }
+
+  .section-meta-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: var(--ocean-deep);
+    display: block;
+    margin-top: 0.1rem;
+  }
+
+  /* ── READY TO SHIP GRID ── */
+  .rts-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem 1.2rem;
+  }
+
+  .rts-card {
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+  }
+
+  .rts-card.visible { opacity: 1; transform: translateY(0); }
+
+  .rts-card.sold-out { cursor: default; }
+
+  .rts-image {
+    aspect-ratio: 3/4;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 0.85rem;
+  }
+
+  .rts-img-inner {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.55s ease;
+  }
+
+  .rts-card:not(.sold-out):hover .rts-img-inner { transform: scale(1.05); }
+
+  .rts-card.sold-out .rts-img-inner { filter: grayscale(0.6); opacity: 0.65; }
+
+  /* placeholder gradients */
+  .g1  { background: linear-gradient(145deg,#c9b99a,#8b7355); }
+  .g2  { background: linear-gradient(145deg,#cdd8d6,#9ab5b0); }
+  .g3  { background: linear-gradient(145deg,#ddd0c0,#bfa98e); }
+  .g4  { background: linear-gradient(145deg,#c8d4cc,#8eaaa4); }
+  .g5  { background: linear-gradient(145deg,#e4d8c4,#c2a87c); }
+  .g6  { background: linear-gradient(145deg,#d0dbd8,#94b4ae); }
+  .g7  { background: linear-gradient(145deg,#e8dcc8,#c49a6a); }
+  .g8  { background: linear-gradient(145deg,#cfd9d5,#7aaa9e); }
+
+  .rts-badge {
+    position: absolute;
+    top: 0.8rem;
+    left: 0.8rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+  }
+
+  .badge-available {
+    background: var(--cream);
+    color: var(--ocean);
+    border: 1px solid rgba(74,124,142,0.3);
+  }
+
+  .badge-soldout {
+    background: rgba(26,20,16,0.7);
+    color: rgba(255,255,255,0.8);
+  }
+
+  .badge-new {
+    background: var(--ocean-deep);
+    color: #fff;
+  }
+
+  .rts-quick-add {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(45,90,107,0.93);
+    color: #fff;
+    text-align: center;
+    padding: 0.75rem;
+    font-size: 0.63rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+
+  .rts-card:not(.sold-out):hover .rts-quick-add { transform: translateY(0); }
+
+  .rts-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    color: var(--ink);
+    margin-bottom: 0.25rem;
+  }
+
+  .rts-card.sold-out .rts-name { color: var(--driftwood); }
+
+  .rts-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .rts-price {
+    font-size: 0.8rem;
+    font-weight: 300;
+    color: var(--driftwood);
+  }
+
+  .rts-card.sold-out .rts-price {
+    text-decoration: line-through;
+    opacity: 0.5;
+  }
+
+  .rts-sold-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--driftwood);
+    opacity: 0.6;
+  }
+
+  .rts-wish {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--sand-dark);
+    font-size: 1rem;
+    line-height: 1;
+    transition: color 0.2s;
+    padding: 0;
+  }
+
+  .rts-wish:hover, .rts-wish.liked { color: var(--coral); }
+
+  /* ── MADE TO ORDER CONFIGURATOR ── */
+  .mto-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  /* Step system */
+  .mto-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .mto-step {
+    opacity: 0.4;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+
+  .mto-step.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .mto-step.done {
+    opacity: 0.7;
+    pointer-events: all;
+  }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .step-circle {
+    width: 32px;
+    height: 32px;
+    border: 1.5px solid var(--sand-dark);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.9rem;
+    color: var(--driftwood);
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+
+  .mto-step.active .step-circle {
+    border-color: var(--ocean);
+    color: var(--ocean);
+    background: rgba(74,124,142,0.08);
+  }
+
+  .mto-step.done .step-circle {
+    background: var(--ocean-deep);
+    border-color: var(--ocean-deep);
+    color: #fff;
+    font-size: 0.7rem;
+  }
+
+  .step-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .step-sublabel {
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--driftwood);
+    margin-top: 0.1rem;
+  }
+
+  /* Piece type grid */
+  .piece-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+  }
+
+  .piece-option {
+    border: 1.5px solid var(--sand-dark);
+    padding: 1.2rem 1rem;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    background: none;
+    text-align: left;
+    font-family: 'Jost', sans-serif;
+  }
+
+  .piece-option:hover {
+    border-color: var(--ocean);
+    background: rgba(74,124,142,0.04);
+  }
+
+  .piece-option.selected {
+    border-color: var(--ocean-deep);
+    background: rgba(45,90,107,0.06);
+  }
+
+  .piece-option-name {
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: var(--ink);
+  }
+
+  .piece-option-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: var(--ocean);
+  }
+
+  .piece-option-note {
+    font-size: 0.65rem;
+    color: var(--driftwood);
+    letter-spacing: 0.05em;
+  }
+
+  /* Metal options */
+  .metal-options {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .metal-btn {
+    flex: 1;
+    padding: 1rem;
+    border: 1.5px solid var(--sand-dark);
+    background: none;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.25s;
+    font-family: 'Jost', sans-serif;
+  }
+
+  .metal-btn:hover { border-color: var(--ocean); }
+
+  .metal-btn.selected {
+    border-color: var(--ocean-deep);
+    background: rgba(45,90,107,0.06);
+  }
+
+  .metal-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin: 0 auto 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+
+  .metal-silver .metal-icon { background: linear-gradient(135deg,#d4dde6,#8e9aaa); color: #fff; }
+  .metal-gold .metal-icon   { background: linear-gradient(135deg,#e8c97a,#b8943f); color: #fff; }
+
+  .metal-name {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--ink);
+    display: block;
+  }
+
+  .metal-upcharge {
+    font-size: 0.65rem;
+    color: var(--driftwood);
+    margin-top: 0.2rem;
+    display: block;
+  }
+
+  /* Glass colour picker */
+  .glass-colours {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+  }
+
+  .glass-swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+  }
+
+  .glass-dot {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    outline: 2px solid transparent;
+    outline-offset: 3px;
+    transition: all 0.2s;
+  }
+
+  .glass-swatch:hover .glass-dot { transform: scale(1.1); }
+  .glass-swatch.selected .glass-dot { outline-color: var(--ocean); }
+
+  .glass-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--driftwood);
+    text-align: center;
+  }
+
+  .glass-swatch.selected .glass-label { color: var(--ocean); }
+
+  /* Next step btn */
+  .step-next {
+    margin-top: 1.2rem;
+    padding: 0.7rem 1.8rem;
+    background: var(--ocean-deep);
+    color: #fff;
+    border: none;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .step-next.enabled {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .step-next.enabled:hover {
+    background: var(--ocean);
+    transform: translateY(-1px);
+  }
+
+  /* ── MTO SUMMARY PANEL ── */
+  .mto-summary {
+    position: sticky;
+    top: 130px;
+    border: 1px solid var(--sand-dark);
+    background: var(--sand);
+    padding: 2rem;
+  }
+
+  .summary-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--ink);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--sand-dark);
+  }
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid rgba(217,205,184,0.5);
+  }
+
+  .summary-row:last-of-type { border-bottom: none; }
+
+  .summary-key {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--driftwood);
+  }
+
+  .summary-val {
+    font-size: 0.82rem;
+    color: var(--ink);
+    font-weight: 400;
+    text-align: right;
+  }
+
+  .summary-val.empty { color: var(--sand-dark); font-style: italic; font-size: 0.75rem; }
+
+  .summary-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-top: 1.2rem;
+    padding-top: 1.2rem;
+    border-top: 1.5px solid var(--sand-dark);
+  }
+
+  .total-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--driftwood);
+  }
+
+  .total-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--ink);
+  }
+
+  .summary-lead {
+    font-size: 0.68rem;
+    color: var(--driftwood);
+    margin-top: 0.5rem;
+    text-align: right;
+    font-style: italic;
+  }
+
+  .btn-mto-checkout {
+    width: 100%;
+    padding: 1rem;
+    background: var(--ocean-deep);
+    color: #fff;
+    border: none;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 1.2rem;
+    transition: background 0.3s, transform 0.2s;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  .btn-mto-checkout.enabled {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .btn-mto-checkout.enabled:hover {
+    background: var(--ocean);
+    transform: translateY(-2px);
+  }
+
+  .summary-stripe {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.8rem;
+    font-size: 0.62rem;
+    color: var(--driftwood);
+  }
+
+  .stripe-badge {
+    background: #635bff;
+    color: #fff;
+    font-size: 0.58rem;
+    padding: 0.15rem 0.45rem;
+    border-radius: 2px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── FULL CUSTOM FORM ── */
+  .custom-layout {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 5rem;
+    align-items: start;
+  }
+
+  .custom-intro {
+    margin-bottom: 2.5rem;
+  }
+
+  .custom-intro p {
+    font-size: 0.88rem;
+    font-weight: 300;
+    line-height: 1.9;
+    color: var(--driftwood);
+    margin-bottom: 1rem;
+  }
+
+  .custom-steps-list {
+    list-style: none;
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .custom-steps-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    font-size: 0.82rem;
+    font-weight: 300;
+    color: var(--driftwood);
+    line-height: 1.5;
+  }
+
+  .custom-step-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 300;
+    color: var(--seafoam);
+    line-height: 1;
+    flex-shrink: 0;
+    width: 20px;
+  }
+
+  /* Form fields */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem 1.5rem;
+  }
+
+  .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+  .form-group.full { grid-column: 1 / -1; }
+
+  .form-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--driftwood);
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--sand-dark);
+    padding: 0.55rem 0;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 300;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.3s;
+    width: 100%;
+  }
+
+  .form-input:focus,
+  .form-select:focus,
+  .form-textarea:focus { border-color: var(--ocean); }
+
+  .form-textarea { resize: none; height: 90px; }
+
+  /* Upload zone */
+  .upload-zone {
+    grid-column: 1 / -1;
+    border: 1.5px dashed var(--sand-dark);
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.3s, background 0.3s;
+    position: relative;
+  }
+
+  .upload-zone:hover {
+    border-color: var(--ocean);
+    background: rgba(74,124,142,0.04);
+  }
+
+  .upload-zone input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .upload-icon { font-size: 1.5rem; margin-bottom: 0.5rem; opacity: 0.4; }
+
+  .upload-text {
+    font-size: 0.78rem;
+    font-weight: 300;
+    color: var(--driftwood);
+  }
+
+  .upload-sub {
+    font-size: 0.65rem;
+    color: var(--sand-dark);
+    margin-top: 0.3rem;
+    letter-spacing: 0.08em;
+  }
+
+  .upload-preview {
+    font-size: 0.72rem;
+    color: var(--ocean);
+    margin-top: 0.5rem;
+  }
+
+  /* Metal preference */
+  .metal-check-row {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .metal-check {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--sand-dark);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.78rem;
+    font-weight: 300;
+    color: var(--driftwood);
+    user-select: none;
+  }
+
+  .metal-check input { display: none; }
+
+  .metal-check.checked {
+    border-color: var(--ocean);
+    color: var(--ocean);
+    background: rgba(74,124,142,0.06);
+  }
+
+  .metal-check-dot {
+    width: 12px;
+    height: 12px;
+    border: 1.5px solid var(--sand-dark);
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .metal-check.checked .metal-check-dot {
+    background: var(--ocean);
+    border-color: var(--ocean);
+  }
+
+  .btn-submit {
+    grid-column: 1 / -1;
+    padding: 1rem;
+    background: var(--ocean-deep);
+    color: #fff;
+    border: none;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    margin-top: 0.5rem;
+  }
+
+  .btn-submit:hover { background: var(--ocean); transform: translateY(-2px); }
+
+  /* Custom sidebar info */
+  .custom-info {
+    position: sticky;
+    top: 130px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .info-card {
+    background: var(--sand);
+    border: 1px solid var(--sand-dark);
+    padding: 1.5rem;
+  }
+
+  .info-card-title {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ocean);
+    margin-bottom: 0.8rem;
+  }
+
+  .info-card p {
+    font-size: 0.8rem;
+    font-weight: 300;
+    line-height: 1.75;
+    color: var(--driftwood);
+  }
+
+  .info-card ul {
+    list-style: none;
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .info-card li {
+    font-size: 0.78rem;
+    font-weight: 300;
+    color: var(--driftwood);
+    padding-left: 1rem;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .info-card li::before {
+    content: '✦';
+    position: absolute;
+    left: 0;
+    font-size: 0.5rem;
+    color: var(--seafoam);
+    top: 3px;
+  }
+
+  .ig-cta-card {
+    background: var(--ocean-deep);
+    color: #fff;
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .ig-cta-card p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-style: italic;
+    margin-bottom: 0.8rem;
+    opacity: 0.9;
+  }
+
+  .ig-cta-card a {
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--seafoam);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(168,197,188,0.4);
+    padding-bottom: 2px;
+  }
+
+  /* ── SUCCESS STATE ── */
+  .submit-success {
+    display: none;
+    text-align: center;
+    padding: 3rem;
+    background: var(--sand);
+    border: 1px solid var(--sand-dark);
+  }
+
+  .submit-success.visible { display: block; }
+
+  .success-icon { font-size: 2rem; margin-bottom: 1rem; }
+
+  .success-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--ink);
+    margin-bottom: 0.8rem;
+  }
+
+  .success-sub {
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: var(--driftwood);
+    line-height: 1.7;
+  }
+
+  /* ── FOOTER ── */
+  .marquee-bar {
+    background: var(--ocean-deep);
+    color: #fff;
+    padding: 0.7rem 0;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-top: 2rem;
+  }
+
+  .marquee-track {
+    display: inline-flex;
+    animation: marquee 22s linear infinite;
+  }
+
+  .marquee-item {
+    font-size: 0.65rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 0 2.5rem;
+    opacity: 0.85;
+  }
+
+  footer {
+    background: var(--ink);
+    color: rgba(255,255,255,0.6);
+    padding: 3rem 5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #fff;
+    font-weight: 300;
+  }
+
+  .footer-tagline {
+    font-size: 0.72rem;
+    font-style: italic;
+    color: var(--seafoam);
+    margin-top: 0.3rem;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .footer-links a {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .footer-links a:hover { color: var(--seafoam); }
+  .footer-copy { font-size: 0.7rem; color: rgba(255,255,255,0.3); }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── MOBILE NAV ── */
+  .nav-hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    margin-left: 1rem;
+  }
+
+  .nav-hamburger span {
+    display: block;
+    width: 22px;
+    height: 1.5px;
+    background: var(--ink);
+    transition: transform 0.3s, opacity 0.3s;
+  }
+
+  .nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+  .nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  .mobile-nav {
+    position: fixed;
+    top: 57px;
+    left: 0; right: 0;
+    background: var(--cream);
+    border-bottom: 1px solid var(--sand-dark);
+    z-index: 99;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+  }
+
+  .mobile-nav.open { max-height: 260px; }
+
+  .mobile-nav ul {
+    list-style: none;
+    padding: 0.5rem 1.5rem 1rem;
+  }
+
+  .mobile-nav li a {
+    display: block;
+    padding: 0.85rem 0;
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--driftwood);
+    text-decoration: none;
+    border-bottom: 1px solid var(--sand-dark);
+    transition: color 0.3s;
+  }
+
+  .mobile-nav li:last-child a { border-bottom: none; }
+  .mobile-nav li a:hover { color: var(--ocean); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1100px) {
+    .rts-grid { grid-template-columns: repeat(3, 1fr); }
+    .mto-layout, .custom-layout { grid-template-columns: 1fr; gap: 2.5rem; }
+    .mto-summary, .custom-info { position: static; }
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .nav-hamburger { display: flex; }
+    .page-header { padding: 6.5rem 1.5rem 0; }
+    .tier-nav { padding: 0 1.5rem; overflow-x: auto; }
+    .shop-section { padding: 2.5rem 1.5rem 4rem; }
+    .rts-grid { grid-template-columns: repeat(2, 1fr); }
+    .section-intro { grid-template-columns: 1fr; }
+    .section-meta { text-align: left; }
+    .piece-grid { grid-template-columns: 1fr 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group.full { grid-column: 1; }
+    .btn-submit { grid-column: 1; }
+    .upload-zone { grid-column: 1; }
+    footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2rem; }
+  }
+
+  @media (max-width: 480px) {
+    .page-header { padding: 6rem 1.2rem 0; }
+    .shop-section { padding: 2rem 1.2rem 3rem; }
+    .tier-nav { padding: 0 1.2rem; gap: 0; }
+    .tier-tab { font-size: 0.68rem; padding: 0.8rem; }
+    .rts-grid { grid-template-columns: 1fr; }
+    .piece-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="/index.html" class="nav-logo">Mai Little Mermaid</a>
+  <ul class="nav-links">
+    <li><a href="/shop.html" class="active">Shop</a></li>
+    <li><a href="/index.html#about">About</a></li>
+    <li><a href="/index.html#contact">Contact</a></li>
+  </ul>
+  <div class="nav-cart">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+    Bag
+    <span class="cart-bubble" id="cartBubble">0</span>
+  </div>
+  <button class="nav-hamburger" id="navToggle" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+  <ul>
+    <li><a href="/shop.html">Shop</a></li>
+    <li><a href="/index.html#about">About</a></li>
+    <li><a href="/index.html#contact">Contact</a></li>
+  </ul>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <p class="page-eyebrow">Handmade · Newport, Rhode Island</p>
+  <h1 class="page-title">Shop <em>Mai Little<br>Mermaid</em></h1>
+</div>
+
+<!-- TIER NAV -->
+<div class="tier-nav">
+  <button class="tier-tab active" onclick="switchTab(this,'rts')">
+    Ready to Ship <span class="tab-num" id="rtsCount">8</span>
+  </button>
+  <button class="tier-tab" onclick="switchTab(this,'mto')">
+    Made to Order <span class="tab-num">∞</span>
+  </button>
+  <button class="tier-tab" onclick="switchTab(this,'custom')">
+    Full Custom <span class="tab-num">✦</span>
+  </button>
+</div>
+
+<!-- ════════════════════════════════════════
+     SECTION 1 · READY TO SHIP
+════════════════════════════════════════ -->
+<section class="shop-section active" id="section-rts">
+  <div class="section-intro">
+    <div>
+      <h2>Ready to <em>Ship</em></h2>
+      <p>One-of-a-kind pieces already made and waiting for you. Each is unique — the sea glass, the shape, the colour. Once it's gone, it's gone. Ships within 2–3 days.</p>
+    </div>
+    <div class="section-meta">
+      <span class="section-meta-label">Available now</span>
+      <span class="section-meta-value" id="availableCount">6 pieces</span>
+    </div>
+  </div>
+
+  <div class="rts-grid" id="rtsGrid">
+    <!-- Injected by JS -->
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     SECTION 2 · MADE TO ORDER
+════════════════════════════════════════ -->
+<section class="shop-section" id="section-mto">
+  <div class="section-intro">
+    <div>
+      <h2>Made to <em>Order</em></h2>
+      <p>Choose your piece, your metal, your glass colour. Maile makes it fresh for you. Every combination is unique. Ready in approximately 1 week.</p>
+    </div>
+    <div class="section-meta">
+      <span class="section-meta-label">Lead time</span>
+      <span class="section-meta-value">~1 week</span>
+    </div>
+  </div>
+
+  <div class="mto-layout">
+    <div class="mto-steps">
+
+      <!-- STEP 1: Piece Type -->
+      <div class="mto-step active" id="step1">
+        <div class="step-header">
+          <div class="step-circle" id="sc1">1</div>
+          <div>
+            <div class="step-label">Choose your piece</div>
+            <div class="step-sublabel" id="sl1">Select from the options below</div>
+          </div>
+        </div>
+        <div class="piece-grid">
+          <button class="piece-option" onclick="selectPiece(this,'Bracelet',55,92)">
+            <span class="piece-option-name">Bracelet</span>
+            <span class="piece-option-price" id="pp-bracelet">from $55</span>
+            <span class="piece-option-note">Single sea glass charm</span>
+          </button>
+          <button class="piece-option" onclick="selectPiece(this,'Earrings',47,72)">
+            <span class="piece-option-name">Earrings</span>
+            <span class="piece-option-price" id="pp-earrings">from $47</span>
+            <span class="piece-option-note">Matched pair</span>
+          </button>
+          <button class="piece-option" onclick="selectPiece(this,'Necklace',75,130)">
+            <span class="piece-option-name">Necklace</span>
+            <span class="piece-option-price" id="pp-necklace">from $75</span>
+            <span class="piece-option-note">Single charm, choice of length</span>
+          </button>
+          <button class="piece-option" onclick="selectPiece(this,'Multi Stone Necklace',92,158)">
+            <span class="piece-option-name">Multi Stone Necklace</span>
+            <span class="piece-option-price" id="pp-multi">from $92</span>
+            <span class="piece-option-note">3–5 stones on chain</span>
+          </button>
+        </div>
+        <button class="step-next" id="next1" onclick="advanceStep(2)">Continue →</button>
+      </div>
+
+      <!-- STEP 2: Metal -->
+      <div class="mto-step" id="step2">
+        <div class="step-header">
+          <div class="step-circle" id="sc2">2</div>
+          <div>
+            <div class="step-label">Choose your metal</div>
+            <div class="step-sublabel" id="sl2">Sterling silver or gold fill</div>
+          </div>
+        </div>
+        <div class="metal-options">
+          <button class="metal-btn metal-silver" onclick="selectMetal(this,'Sterling Silver',8)">
+            <div class="metal-icon">Ag</div>
+            <span class="metal-name">Sterling Silver</span>
+            <span class="metal-upcharge">included</span>
+          </button>
+          <button class="metal-btn metal-gold" onclick="selectMetal(this,'Gold Fill',18)">
+            <div class="metal-icon">Au</div>
+            <span class="metal-name">Gold Fill</span>
+            <span class="metal-upcharge">gold fill pricing</span>
+          </button>
+        </div>
+        <button class="step-next" id="next2" onclick="advanceStep(3)">Continue →</button>
+      </div>
+
+      <!-- STEP 3: Glass Colour -->
+      <div class="mto-step" id="step3">
+        <div class="step-header">
+          <div class="step-circle" id="sc3">3</div>
+          <div>
+            <div class="step-label">Choose your glass colour</div>
+            <div class="step-sublabel" id="sl3">Subject to availability — Maile will confirm</div>
+          </div>
+        </div>
+        <div class="glass-colours">
+          <div class="glass-swatch" onclick="selectGlass(this,'Seafoam')">
+            <div class="glass-dot" style="background:#a8c5bc"></div>
+            <span class="glass-label">Seafoam</span>
+          </div>
+          <div class="glass-swatch" onclick="selectGlass(this,'Cobalt Blue')">
+            <div class="glass-dot" style="background:#4a6fa5"></div>
+            <span class="glass-label">Cobalt</span>
+          </div>
+          <div class="glass-swatch" onclick="selectGlass(this,'Amber')">
+            <div class="glass-dot" style="background:#c4883a"></div>
+            <span class="glass-label">Amber</span>
+          </div>
+          <div class="glass-swatch" onclick="selectGlass(this,'Sea Clear')">
+            <div class="glass-dot" style="background:linear-gradient(135deg,#e8e8e8,#f0f0f0);border:1px solid #ccc"></div>
+            <span class="glass-label">Clear</span>
+          </div>
+          <div class="glass-swatch" onclick="selectGlass(this,'Forest Green')">
+            <div class="glass-dot" style="background:#6aaa7a"></div>
+            <span class="glass-label">Green</span>
+          </div>
+          <div class="glass-swatch" onclick="selectGlass(this,'Lavender')">
+            <div class="glass-dot" style="background:#b09cc0"></div>
+            <span class="glass-label">Lavender</span>
+          </div>
+          <div class="glass-swatch" onclick="selectGlass(this,'Coral Pink')">
+            <div class="glass-dot" style="background:#d4857a"></div>
+            <span class="glass-label">Coral Pink</span>
+          </div>
+          <div class="glass-swatch" onclick="selectGlass(this,'Surprise Me')">
+            <div class="glass-dot" style="background:conic-gradient(#a8c5bc,#4a6fa5,#c4883a,#6aaa7a,#b09cc0,#a8c5bc)"></div>
+            <span class="glass-label">Surprise Me</span>
+          </div>
+        </div>
+        <button class="step-next enabled" id="next3" onclick="advanceStep(4)">Review Order →</button>
+      </div>
+
+    </div>
+
+    <!-- SUMMARY PANEL -->
+    <div class="mto-summary">
+      <div class="summary-title">Your Order</div>
+
+      <div class="summary-row">
+        <span class="summary-key">Piece</span>
+        <span class="summary-val empty" id="sum-piece">Not selected</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-key">Metal</span>
+        <span class="summary-val empty" id="sum-metal">Not selected</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-key">Glass Colour</span>
+        <span class="summary-val empty" id="sum-colour">Not selected</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-key">Lead Time</span>
+        <span class="summary-val">~1 week</span>
+      </div>
+
+      <div class="summary-total">
+        <span class="total-label">Total</span>
+        <span class="total-price" id="sum-total">$—</span>
+      </div>
+      <p class="summary-lead">Price includes metal & handcrafting</p>
+
+      <button class="btn-mto-checkout" id="mtoCheckout">Proceed to Checkout</button>
+
+      <div class="summary-stripe">
+        <span class="stripe-badge">stripe</span>
+        Secure · Card · Apple Pay · Google Pay
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     SECTION 3 · FULL CUSTOM
+════════════════════════════════════════ -->
+<section class="shop-section" id="section-custom">
+  <div class="section-intro">
+    <div>
+      <h2>Full <em>Custom</em></h2>
+      <p>Send in your own sea glass, shells, stones, or any treasures you've collected. Maile will wrap and set them for you. She'll quote you personally after reviewing your request.</p>
+    </div>
+    <div class="section-meta">
+      <span class="section-meta-label">Process</span>
+      <span class="section-meta-value">You send, she creates</span>
+    </div>
+  </div>
+
+  <div class="custom-layout">
+    <div>
+      <div class="custom-intro">
+        <p>Have a piece of sea glass you found on a special holiday? A shell from a beach that means something to you? Maile can turn it into something you'll wear forever.</p>
+        <ul class="custom-steps-list">
+          <li><span class="custom-step-num">01</span> Fill out the form below with details about what you'd like made</li>
+          <li><span class="custom-step-num">02</span> Maile reviews your request and gets back to you personally within 48 hours</li>
+          <li><span class="custom-step-num">03</span> You send your materials to her (shipping guide provided)</li>
+          <li><span class="custom-step-num">04</span> She creates your piece and sends you photos before shipping</li>
+          <li><span class="custom-step-num">05</span> Payment via secure Stripe link once you approve the design</li>
+        </ul>
+      </div>
+
+      <!-- FORM -->
+      <div id="customForm">
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label class="form-label">First Name</label>
+            <input class="form-input" type="text" placeholder="Your name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-input" type="email" placeholder="your@email.com">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Piece Type</label>
+            <select class="form-select">
+              <option value="">Select a piece...</option>
+              <option>Bracelet</option>
+              <option>Earrings</option>
+              <option>Necklace</option>
+              <option>Multi Stone Necklace</option>
+              <option>Not sure yet</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Preferred Metal</label>
+            <div class="metal-check-row" style="margin-top:0.4rem">
+              <label class="metal-check" onclick="toggleMetalCheck(this)">
+                <input type="checkbox">
+                <span class="metal-check-dot"></span>
+                Sterling Silver
+              </label>
+              <label class="metal-check" onclick="toggleMetalCheck(this)">
+                <input type="checkbox">
+                <span class="metal-check-dot"></span>
+                Gold Fill
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group full">
+            <label class="form-label">What are you sending in?</label>
+            <input class="form-input" type="text" placeholder="e.g. sea glass from Gorey Beach, a shell from Hawaii, mix of stones...">
+          </div>
+
+          <div class="form-group full">
+            <label class="form-label">Tell Maile about it</label>
+            <textarea class="form-textarea" placeholder="Any story behind the materials? Occasion? Inspiration? The more you share the better..."></textarea>
+          </div>
+
+          <div class="upload-zone full">
+            <input type="file" accept="image/*" multiple onchange="handleUpload(this)">
+            <div class="upload-icon">📷</div>
+            <p class="upload-text">Upload a photo of your materials</p>
+            <p class="upload-sub">JPG, PNG · Up to 10MB</p>
+            <p class="upload-preview" id="uploadPreview"></p>
+          </div>
+
+          <button class="btn-submit full" onclick="submitCustomForm()">Send Request to Maile →</button>
+        </div>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="submit-success" id="submitSuccess">
+        <div class="success-icon">🐚</div>
+        <div class="success-title">Request sent!</div>
+        <p class="success-sub">Maile will review your request and get back to you personally within 48 hours. Keep an eye on your inbox — and your Instagram DMs too.</p>
+      </div>
+    </div>
+
+    <!-- SIDEBAR INFO -->
+    <div class="custom-info">
+      <div class="info-card">
+        <p class="info-card-title">What to send</p>
+        <ul>
+          <li>Sea glass (any colour, any size)</li>
+          <li>Shells, pebbles, coral fragments</li>
+          <li>Stones or crystals</li>
+          <li>Any small meaningful objects</li>
+          <li>Mixed combinations welcome</li>
+        </ul>
+      </div>
+
+      <div class="info-card">
+        <p class="info-card-title">How it works</p>
+        <p>No payment upfront. Maile quotes you after seeing your materials. You only pay once you've approved the finished piece via photo. Stripe payment link sent directly to your email.</p>
+      </div>
+
+      <div class="info-card">
+        <p class="info-card-title">Typical pricing</p>
+        <ul>
+          <li>Bracelet — from $55 (silver) / $92 (gold fill)</li>
+          <li>Earrings — from $47 / $72</li>
+          <li>Necklace — from $75 / $130</li>
+          <li>Multi Stone — from $92 / $158</li>
+          <li>Complexity may affect final price</li>
+        </ul>
+      </div>
+
+      <div class="ig-cta-card">
+        <p>Prefer to chat first?</p>
+        <a href="https://www.instagram.com/mai.little.mermaid" target="_blank">DM @mai.little.mermaid ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-bar">
+  <div class="marquee-track">
+    <span class="marquee-item">Ready to Ship</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">Made to Order</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">Full Custom</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">Sterling Silver & Gold Fill</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">Handmade in Newport RI</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">Ready to Ship</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">Made to Order</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">Full Custom</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">Sterling Silver & Gold Fill</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">Handmade in Newport RI</span>
+    <span class="marquee-item">✦</span>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">Mai Little Mermaid</div>
+    <div class="footer-tagline">Locally found beach treasures turned into art</div>
+  </div>
+  <ul class="footer-links">
+    <li><a href="/shop.html">Shop</a></li>
+    <li><a href="/index.html#about">About</a></li>
+    <li><a href="/index.html#contact">Contact</a></li>
+    <li><a href="https://www.instagram.com/mai.little.mermaid" target="_blank">Instagram</a></li>
+  </ul>
+  <div class="footer-copy">© 2025 Mai Little Mermaid</div>
+</footer>
+
+<script>
+// ── PRODUCT DATA — reads from localStorage (managed via admin.html) ──
+const DEFAULT_RTS = [
+  { id:1, name:'Seafoam Glass Bracelet', type:'Bracelet',    price:55,  metal:'Sterling Silver', colour:'Seafoam',     grad:'g1', available:true,  new:true  },
+  { id:2, name:'Cobalt Drop Earrings',   type:'Earrings',    price:72,  metal:'Gold Fill',       colour:'Cobalt Blue', grad:'g2', available:true,  new:true  },
+  { id:3, name:'Amber Charm Necklace',   type:'Necklace',    price:130, metal:'Gold Fill',       colour:'Amber',       grad:'g3', available:true,  new:false },
+  { id:4, name:'Multi Stone Necklace',   type:'Multi Stone', price:92,  metal:'Sterling Silver', colour:'Mixed',       grad:'g4', available:false, new:false },
+  { id:5, name:'Forest Green Studs',     type:'Earrings',    price:47,  metal:'Sterling Silver', colour:'Green',       grad:'g5', available:true,  new:false },
+  { id:6, name:'Lavender Sea Pendant',   type:'Necklace',    price:130, metal:'Gold Fill',       colour:'Lavender',    grad:'g6', available:true,  new:true  },
+  { id:7, name:'Clear Glass Bracelet',   type:'Bracelet',    price:55,  metal:'Sterling Silver', colour:'Clear',       grad:'g7', available:false, new:false },
+  { id:8, name:'Coral Stone Earrings',   type:'Earrings',    price:72,  metal:'Gold Fill',       colour:'Coral Pink',  grad:'g8', available:true,  new:false },
+];
+
+function loadProducts() {
+  try {
+    const stored = localStorage.getItem('mai_products');
+    return stored ? JSON.parse(stored) : DEFAULT_RTS;
+  } catch { return DEFAULT_RTS; }
+}
+
+const rtsProducts = loadProducts();
+
+let cartCount = 0;
+
+function renderRTS() {
+  const grid = document.getElementById('rtsGrid');
+  const available = rtsProducts.filter(p => p.available).length;
+  document.getElementById('availableCount').textContent = `${available} pieces`;
+
+  grid.innerHTML = rtsProducts.map((p, i) => `
+    <div class="rts-card ${p.available ? '' : 'sold-out'}"
+         style="transition-delay:${i*55}ms"
+         onclick="${p.available ? `quickBuy(${p.id})` : ''}">
+      <div class="rts-image">
+        <div class="rts-img-inner ${p.grad}"></div>
+        <span class="rts-badge ${p.available ? (p.new ? 'badge-new' : 'badge-available') : 'badge-soldout'}">
+          ${p.available ? (p.new ? 'New' : '1 Left') : 'Sold Out'}
+        </span>
+        ${p.available ? `<div class="rts-quick-add">+ Add to Bag</div>` : ''}
+      </div>
+      <p class="rts-name">${p.name}</p>
+      <div class="rts-bottom">
+        <span class="rts-price">$${p.price} · ${p.metal}</span>
+        ${p.available
+          ? `<button class="rts-wish" onclick="event.stopPropagation();toggleWish(this)">♡</button>`
+          : `<span class="rts-sold-label">Sold out</span>`
+        }
+      </div>
+    </div>
+  `).join('');
+
+  // Stagger reveal
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.rts-card').forEach((c,i) => {
+      setTimeout(() => c.classList.add('visible'), i * 55);
+    });
+  });
+}
+
+function quickBuy(id) {
+  cartCount++;
+  const el = document.getElementById('cartBubble');
+  el.textContent = cartCount;
+  el.classList.add('bump');
+  setTimeout(() => el.classList.remove('bump'), 250);
+}
+
+function toggleWish(btn) {
+  btn.classList.toggle('liked');
+  btn.textContent = btn.classList.contains('liked') ? '♥' : '♡';
+}
+
+// ── TABS ──
+function switchTab(btn, section) {
+  document.querySelectorAll('.tier-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.shop-section').forEach(s => s.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('section-' + section).classList.add('active');
+  window.scrollTo({ top: document.querySelector('.tier-nav').offsetTop - 70, behavior: 'smooth' });
+}
+
+// ── MTO CONFIGURATOR ──
+let mtoState = { piece: null, basePriceSilver: 0, basePriceGold: 0, metal: null, metalUpcharge: 0, colour: null };
+
+const metalUpcharges = { 'Sterling Silver': 0, 'Gold Fill': 0 };
+
+function selectPiece(btn, name, baseSilver, baseGold) {
+  document.querySelectorAll('.piece-option').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  mtoState.piece = name;
+  mtoState.basePriceSilver = baseSilver;
+  mtoState.basePriceGold = baseGold;
+  document.getElementById('sl1').textContent = name + ' selected';
+  document.getElementById('next1').classList.add('enabled');
+  updateSummary();
+}
+
+function selectMetal(btn, name, upcharge) {
+  document.querySelectorAll('.metal-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  mtoState.metal = name;
+  mtoState.metalUpcharge = upcharge;
+  document.getElementById('sl2').textContent = name + ' selected';
+  document.getElementById('next2').classList.add('enabled');
+  updateSummary();
+}
+
+function selectGlass(swatch, name) {
+  document.querySelectorAll('.glass-swatch').forEach(s => s.classList.remove('selected'));
+  swatch.classList.add('selected');
+  mtoState.colour = name;
+  document.getElementById('sl3').textContent = name + ' selected';
+  updateSummary();
+  checkMTOComplete();
+}
+
+function advanceStep(num) {
+  // Mark previous step done
+  const prev = document.getElementById('step' + (num - 1));
+  prev.classList.remove('active');
+  prev.classList.add('done');
+  const sc = document.getElementById('sc' + (num - 1));
+  sc.textContent = '✓';
+
+  // Activate next step
+  const next = document.getElementById('step' + num);
+  if (next) {
+    next.classList.add('active');
+    next.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+function updateSummary() {
+  const pieceEl = document.getElementById('sum-piece');
+  const metalEl = document.getElementById('sum-metal');
+  const colourEl = document.getElementById('sum-colour');
+  const totalEl = document.getElementById('sum-total');
+
+  if (mtoState.piece) {
+    pieceEl.textContent = mtoState.piece;
+    pieceEl.classList.remove('empty');
+  }
+
+  if (mtoState.metal) {
+    metalEl.textContent = mtoState.metal;
+    metalEl.classList.remove('empty');
+  }
+
+  if (mtoState.colour) {
+    colourEl.textContent = mtoState.colour;
+    colourEl.classList.remove('empty');
+  }
+
+  // Calculate price
+  if (mtoState.piece && mtoState.metal) {
+    const base = mtoState.metal === 'Gold Fill' ? mtoState.basePriceGold : mtoState.basePriceSilver;
+    const total = base + mtoState.metalUpcharge;
+    totalEl.textContent = '$' + total;
+  }
+}
+
+function checkMTOComplete() {
+  if (mtoState.piece && mtoState.metal && mtoState.colour) {
+    document.getElementById('mtoCheckout').classList.add('enabled');
+  }
+}
+
+// ── FULL CUSTOM ──
+function toggleMetalCheck(label) {
+  label.classList.toggle('checked');
+}
+
+function handleUpload(input) {
+  const files = input.files;
+  if (files.length > 0) {
+    const names = Array.from(files).map(f => f.name).join(', ');
+    document.getElementById('uploadPreview').textContent = `✓ ${files.length} file${files.length > 1 ? 's' : ''} selected: ${names}`;
+  }
+}
+
+function submitCustomForm() {
+  document.getElementById('customForm').style.display = 'none';
+  document.getElementById('submitSuccess').classList.add('visible');
+}
+
+// ── HAMBURGER ──
+const navToggle = document.getElementById('navToggle');
+const mobileNav = document.getElementById('mobileNav');
+navToggle.addEventListener('click', () => {
+  navToggle.classList.toggle('open');
+  mobileNav.classList.toggle('open');
+});
+mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  navToggle.classList.remove('open');
+  mobileNav.classList.remove('open');
+}));
+
+// ── NAV ──
+window.addEventListener('scroll', () => {
+  document.getElementById('mainNav').style.boxShadow =
+    window.scrollY > 50 ? '0 2px 20px rgba(0,0,0,0.08)' : 'none';
+});
+
+// ── INIT ──
+renderRTS();
+</script>
+</body>
+</html>
