@@ -95,6 +95,7 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--ink);
+    text-decoration: none;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -1243,11 +1244,11 @@
     <li><a href="/index.html#about">About</a></li>
     <li><a href="/index.html#contact">Contact</a></li>
   </ul>
-  <div class="nav-cart">
+  <a href="/cart.html" class="nav-cart">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
     Bag
     <span class="cart-bubble" id="cartBubble">0</span>
-  </div>
+  </a>
   <button class="nav-hamburger" id="navToggle" aria-label="Open menu">
     <span></span><span></span><span></span>
   </button>
@@ -1697,7 +1698,24 @@ function renderRTS() {
 }
 
 function quickBuy(id) {
-  cartCount++;
+  const product = rtsProducts.find(p => p.id === id);
+  if (!product) return;
+
+  // Save to localStorage cart
+  try {
+    const cart = JSON.parse(localStorage.getItem('mai_cart') || '[]');
+    const existing = cart.find(i => i.id === id);
+    if (existing) {
+      existing.qty = Math.min(10, existing.qty + 1);
+    } else {
+      cart.push({ id: product.id, name: product.name, type: product.type, price: product.price, metal: product.metal, colour: product.colour, grad: product.grad, qty: 1 });
+    }
+    localStorage.setItem('mai_cart', JSON.stringify(cart));
+    cartCount = cart.reduce((sum, i) => sum + i.qty, 0);
+  } catch {
+    cartCount++;
+  }
+
   const el = document.getElementById('cartBubble');
   el.textContent = cartCount;
   el.classList.add('bump');

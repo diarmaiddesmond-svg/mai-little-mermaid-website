@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Bag — Mai Little Mermaid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sand: #f0e8d8;
+    --sand-dark: #d9cdb8;
+    --driftwood: #8b7355;
+    --ocean: #4a7c8e;
+    --ocean-deep: #2d5a6b;
+    --seafoam: #a8c5bc;
+    --coral: #c4715a;
+    --cream: #faf6f0;
+    --ink: #1a1410;
+    --gold: #b8943f;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.2rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(250,246,240,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(139,115,85,0.15);
+    transition: box-shadow 0.3s;
+  }
+
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--driftwood);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .nav-links a:hover { color: var(--ocean); }
+
+  .nav-cart {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ocean-deep);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .cart-bubble {
+    background: var(--ocean);
+    color: #fff;
+    font-size: 0.6rem;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── MOBILE NAV ── */
+  .nav-hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    margin-left: 1rem;
+  }
+
+  .nav-hamburger span {
+    display: block;
+    width: 22px;
+    height: 1.5px;
+    background: var(--ink);
+    transition: transform 0.3s, opacity 0.3s;
+  }
+
+  .nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+  .nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  .mobile-nav {
+    position: fixed;
+    top: 57px;
+    left: 0; right: 0;
+    background: var(--cream);
+    border-bottom: 1px solid var(--sand-dark);
+    z-index: 99;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+  }
+
+  .mobile-nav.open { max-height: 260px; }
+
+  .mobile-nav ul {
+    list-style: none;
+    padding: 0.5rem 1.5rem 1rem;
+  }
+
+  .mobile-nav li a {
+    display: block;
+    padding: 0.85rem 0;
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--driftwood);
+    text-decoration: none;
+    border-bottom: 1px solid var(--sand-dark);
+    transition: color 0.3s;
+  }
+
+  .mobile-nav li:last-child a { border-bottom: none; }
+  .mobile-nav li a:hover { color: var(--ocean); }
+
+  /* ── BREADCRUMB ── */
+  .breadcrumb {
+    padding: 5.5rem 5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .breadcrumb a, .breadcrumb span {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--driftwood);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .breadcrumb a:hover { color: var(--ocean); }
+  .breadcrumb .sep { opacity: 0.4; }
+  .breadcrumb .current { color: var(--ink); }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    padding: 1.5rem 5rem 2rem;
+    border-bottom: 1px solid var(--sand-dark);
+  }
+
+  .page-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 4vw, 3.5rem);
+    font-weight: 300;
+    line-height: 1.0;
+    color: var(--ink);
+  }
+
+  .page-title em { font-style: italic; color: var(--ocean); }
+
+  .page-subtitle {
+    font-size: 0.82rem;
+    font-weight: 300;
+    color: var(--driftwood);
+    margin-top: 0.5rem;
+  }
+
+  /* ── CART LAYOUT ── */
+  .cart-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 4rem;
+    padding: 3rem 5rem 6rem;
+    align-items: start;
+  }
+
+  /* ── CART ITEMS ── */
+  .cart-items-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--sand-dark);
+    margin-bottom: 0;
+  }
+
+  .cart-items-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--driftwood);
+  }
+
+  .cart-item {
+    display: grid;
+    grid-template-columns: 90px 1fr auto;
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--sand-dark);
+    align-items: start;
+  }
+
+  .cart-item-img {
+    aspect-ratio: 3/4;
+    overflow: hidden;
+  }
+
+  .cart-item-img-inner {
+    width: 100%;
+    height: 100%;
+  }
+
+  .cart-item-details { min-width: 0; }
+
+  .cart-item-category {
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ocean);
+    margin-bottom: 0.3rem;
+  }
+
+  .cart-item-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: var(--ink);
+    margin-bottom: 0.4rem;
+    line-height: 1.2;
+  }
+
+  .cart-item-meta {
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--driftwood);
+    line-height: 1.6;
+  }
+
+  .cart-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 1rem;
+  }
+
+  .qty-control {
+    display: flex;
+    border: 1px solid var(--sand-dark);
+  }
+
+  .qty-btn {
+    width: 34px;
+    height: 34px;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: var(--driftwood);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .qty-btn:hover { background: var(--sand); color: var(--ink); }
+
+  .qty-num {
+    width: 40px;
+    height: 34px;
+    text-align: center;
+    border: none;
+    border-left: 1px solid var(--sand-dark);
+    border-right: 1px solid var(--sand-dark);
+    background: transparent;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink);
+    outline: none;
+  }
+
+  .btn-remove {
+    background: none;
+    border: none;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--driftwood);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    opacity: 0.6;
+    transition: opacity 0.2s, color 0.2s;
+    padding: 0;
+  }
+
+  .btn-remove:hover { opacity: 1; color: var(--coral); }
+
+  .cart-item-price {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .item-price-main {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 300;
+    color: var(--ink);
+    display: block;
+  }
+
+  /* ── EMPTY STATE ── */
+  .cart-empty {
+    padding: 4rem 0;
+    text-align: center;
+    display: none;
+  }
+
+  .cart-empty.visible { display: block; }
+
+  .empty-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1.2rem;
+    opacity: 0.4;
+  }
+
+  .empty-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--ink);
+    margin-bottom: 0.6rem;
+  }
+
+  .empty-sub {
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: var(--driftwood);
+    margin-bottom: 2rem;
+    line-height: 1.7;
+  }
+
+  .btn-shop {
+    display: inline-block;
+    padding: 0.85rem 2.5rem;
+    background: var(--ocean-deep);
+    color: #fff;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.3s;
+  }
+
+  .btn-shop:hover { background: var(--ocean); }
+
+  /* ── ORDER SUMMARY ── */
+  .order-summary {
+    position: sticky;
+    top: 5.5rem;
+    background: var(--sand);
+    border: 1px solid var(--sand-dark);
+    padding: 2rem;
+  }
+
+  .summary-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--ink);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--sand-dark);
+  }
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0;
+    font-size: 0.82rem;
+    color: var(--driftwood);
+    font-weight: 300;
+  }
+
+  .summary-row.total {
+    border-top: 1.5px solid var(--sand-dark);
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    color: var(--ink);
+    font-weight: 400;
+  }
+
+  .summary-row.total .summary-val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 300;
+  }
+
+  .summary-shipping-note {
+    font-size: 0.68rem;
+    color: var(--ocean);
+    letter-spacing: 0.05em;
+    margin-top: 0.3rem;
+    font-style: italic;
+  }
+
+  .promo-row {
+    display: flex;
+    gap: 0.5rem;
+    margin: 1.2rem 0;
+  }
+
+  .promo-input {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--sand-dark);
+    padding: 0.6rem 0.8rem;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.78rem;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.3s;
+  }
+
+  .promo-input:focus { border-color: var(--ocean); }
+  .promo-input::placeholder { color: var(--sand-dark); }
+
+  .btn-promo {
+    padding: 0.6rem 1rem;
+    background: none;
+    border: 1px solid var(--sand-dark);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--driftwood);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.25s;
+  }
+
+  .btn-promo:hover { border-color: var(--ocean); color: var(--ocean); }
+
+  .btn-checkout {
+    width: 100%;
+    padding: 1rem;
+    background: var(--ocean-deep);
+    color: #fff;
+    border: none;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    margin-top: 1.2rem;
+  }
+
+  .btn-checkout:hover { background: var(--ocean); transform: translateY(-2px); }
+  .btn-checkout:disabled { opacity: 0.4; pointer-events: none; }
+
+  .checkout-stripe {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.8rem;
+    font-size: 0.62rem;
+    color: var(--driftwood);
+  }
+
+  .stripe-badge {
+    background: #635bff;
+    color: #fff;
+    font-size: 0.58rem;
+    padding: 0.15rem 0.45rem;
+    border-radius: 2px;
+    font-weight: 500;
+  }
+
+  .trust-list {
+    list-style: none;
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--sand-dark);
+  }
+
+  .trust-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 300;
+    color: var(--driftwood);
+  }
+
+  .trust-list .t-icon { color: var(--seafoam); font-size: 0.75rem; }
+
+  /* ── YOU MAY ALSO LOVE ── */
+  .upsell {
+    padding: 4rem 5rem 5rem;
+    border-top: 1px solid var(--sand-dark);
+    background: var(--sand);
+  }
+
+  .upsell-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 2rem;
+  }
+
+  .upsell-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--ink);
+  }
+
+  .upsell-title em { font-style: italic; color: var(--ocean); }
+
+  .upsell-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.2rem;
+  }
+
+  .upsell-card {
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .upsell-img {
+    aspect-ratio: 3/4;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+  }
+
+  .upsell-img-inner {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s ease;
+  }
+
+  .upsell-card:hover .upsell-img-inner { transform: scale(1.05); }
+
+  .u1 { background: linear-gradient(145deg, #cdd8d6, #9ab5b0); }
+  .u2 { background: linear-gradient(145deg, #ddd0c0, #bfa98e); }
+  .u3 { background: linear-gradient(145deg, #c8d4cc, #8eaaa4); }
+  .u4 { background: linear-gradient(145deg, #e4d8c4, #c2a87c); }
+
+  .upsell-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    color: var(--ink);
+    margin-bottom: 0.2rem;
+  }
+
+  .upsell-price {
+    font-size: 0.78rem;
+    font-weight: 300;
+    color: var(--driftwood);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    color: rgba(255,255,255,0.6);
+    padding: 3rem 5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #fff;
+  }
+
+  .footer-tagline {
+    font-size: 0.72rem;
+    font-style: italic;
+    color: var(--seafoam);
+    margin-top: 0.3rem;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .footer-links a {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .footer-links a:hover { color: var(--seafoam); }
+  .footer-copy { font-size: 0.7rem; color: rgba(255,255,255,0.3); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1000px) {
+    .cart-layout { grid-template-columns: 1fr; gap: 2.5rem; }
+    .order-summary { position: static; }
+    .upsell-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .nav-hamburger { display: flex; }
+    .breadcrumb { padding: 5rem 1.5rem 0; }
+    .page-header { padding: 1.5rem 1.5rem 1.5rem; }
+    .cart-layout { padding: 2rem 1.5rem 4rem; }
+    .upsell { padding: 3rem 1.5rem; }
+    footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2rem; }
+  }
+
+  @media (max-width: 480px) {
+    .cart-item { grid-template-columns: 72px 1fr auto; gap: 1rem; }
+    .upsell-grid { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; }
+    .breadcrumb { padding: 4.5rem 1.2rem 0; }
+    .page-header { padding: 1.2rem 1.2rem 1.2rem; }
+    .cart-layout { padding: 1.5rem 1.2rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="/index.html" class="nav-logo">Mai Little Mermaid</a>
+  <ul class="nav-links">
+    <li><a href="/shop.html">Shop</a></li>
+    <li><a href="/index.html#about">About</a></li>
+    <li><a href="/index.html#contact">Contact</a></li>
+  </ul>
+  <a href="/cart.html" class="nav-cart">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+    Bag
+    <span class="cart-bubble" id="cartBubble">0</span>
+  </a>
+  <button class="nav-hamburger" id="navToggle" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+  <ul>
+    <li><a href="/shop.html">Shop</a></li>
+    <li><a href="/index.html#about">About</a></li>
+    <li><a href="/index.html#contact">Contact</a></li>
+  </ul>
+</div>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <a href="/index.html">Home</a>
+  <span class="sep">/</span>
+  <span class="current">Your Bag</span>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <h1 class="page-title">Your <em>Bag</em></h1>
+  <p class="page-subtitle" id="pageSubtitle">Loading your items…</p>
+</div>
+
+<!-- CART LAYOUT -->
+<div class="cart-layout">
+
+  <!-- ITEMS COLUMN -->
+  <div>
+    <div class="cart-items-header">
+      <span class="cart-items-label" id="itemsLabel">Items</span>
+    </div>
+
+    <!-- Empty state -->
+    <div class="cart-empty" id="cartEmpty">
+      <div class="empty-icon">🐚</div>
+      <div class="empty-title">Your bag is empty</div>
+      <p class="empty-sub">The tides bring new pieces every week.<br>Head to the shop to find something you love.</p>
+      <a href="/shop.html" class="btn-shop">Browse the Shop</a>
+    </div>
+
+    <!-- Items list -->
+    <div id="cartItemsList"></div>
+  </div>
+
+  <!-- SUMMARY COLUMN -->
+  <div class="order-summary">
+    <div class="summary-title">Order Summary</div>
+
+    <div class="summary-row">
+      <span>Subtotal</span>
+      <span class="summary-val" id="summarySubtotal">$0</span>
+    </div>
+    <div class="summary-row">
+      <span>Shipping</span>
+      <span class="summary-val" id="summaryShipping">—</span>
+    </div>
+    <p class="summary-shipping-note" id="shippingNote"></p>
+
+    <div class="promo-row">
+      <input class="promo-input" type="text" placeholder="Promo code" id="promoInput">
+      <button class="btn-promo" onclick="applyPromo()">Apply</button>
+    </div>
+
+    <div class="summary-row total">
+      <span>Total</span>
+      <span class="summary-val" id="summaryTotal">$0</span>
+    </div>
+
+    <button class="btn-checkout" id="checkoutBtn" disabled onclick="checkout()">
+      Proceed to Checkout
+    </button>
+
+    <div class="checkout-stripe">
+      <span class="stripe-badge">stripe</span>
+      Secure · Card · Apple Pay · Google Pay
+    </div>
+
+    <ul class="trust-list">
+      <li><span class="t-icon">✦</span> Free shipping on orders over $75</li>
+      <li><span class="t-icon">✦</span> Ships within 2–3 days</li>
+      <li><span class="t-icon">✦</span> Free returns within 14 days</li>
+      <li><span class="t-icon">✦</span> Handmade in Newport, Rhode Island</li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- UPSELL -->
+<section class="upsell" id="upsellSection">
+  <div class="upsell-header">
+    <h2 class="upsell-title">You might also <em>love</em></h2>
+    <a href="/shop.html" style="font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--driftwood);text-decoration:none;border-bottom:1px solid var(--sand-dark);padding-bottom:2px;">View All →</a>
+  </div>
+  <div class="upsell-grid">
+    <a href="/shop1.html" class="upsell-card">
+      <div class="upsell-img"><div class="upsell-img-inner u1"></div></div>
+      <p class="upsell-name">Sea Glass Charm Necklace</p>
+      <p class="upsell-price">$75</p>
+    </a>
+    <a href="/shop1.html" class="upsell-card">
+      <div class="upsell-img"><div class="upsell-img-inner u2"></div></div>
+      <p class="upsell-name">Cobalt Drop Earrings</p>
+      <p class="upsell-price">$72</p>
+    </a>
+    <a href="/shop1.html" class="upsell-card">
+      <div class="upsell-img"><div class="upsell-img-inner u3"></div></div>
+      <p class="upsell-name">Amber Charm Necklace</p>
+      <p class="upsell-price">$130</p>
+    </a>
+    <a href="/shop1.html" class="upsell-card">
+      <div class="upsell-img"><div class="upsell-img-inner u4"></div></div>
+      <p class="upsell-name">Lavender Sea Pendant</p>
+      <p class="upsell-price">$130</p>
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">Mai Little Mermaid</div>
+    <div class="footer-tagline">Locally found beach treasures turned into art</div>
+  </div>
+  <ul class="footer-links">
+    <li><a href="/shop.html">Shop</a></li>
+    <li><a href="/index.html#about">About</a></li>
+    <li><a href="/index.html#contact">Contact</a></li>
+    <li><a href="https://www.instagram.com/mai.little.mermaid" target="_blank">Instagram</a></li>
+  </ul>
+  <div class="footer-copy">© 2025 Mai Little Mermaid</div>
+</footer>
+
+<script>
+// Placeholder gradients map (matches shop.html)
+const GRADS = {
+  g1: 'linear-gradient(145deg,#c9b99a,#8b7355)',
+  g2: 'linear-gradient(145deg,#cdd8d6,#9ab5b0)',
+  g3: 'linear-gradient(145deg,#ddd0c0,#bfa98e)',
+  g4: 'linear-gradient(145deg,#c8d4cc,#8eaaa4)',
+  g5: 'linear-gradient(145deg,#e4d8c4,#c2a87c)',
+  g6: 'linear-gradient(145deg,#d0dbd8,#94b4ae)',
+  g7: 'linear-gradient(145deg,#e8dcc8,#c49a6a)',
+  g8: 'linear-gradient(145deg,#cfd9d5,#7aaa9e)',
+};
+
+function loadCart() {
+  try {
+    return JSON.parse(localStorage.getItem('mai_cart') || '[]');
+  } catch { return []; }
+}
+
+function saveCart(cart) {
+  localStorage.setItem('mai_cart', JSON.stringify(cart));
+}
+
+function getSubtotal(cart) {
+  return cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+}
+
+function renderCart() {
+  const cart = loadCart();
+  const listEl = document.getElementById('cartItemsList');
+  const emptyEl = document.getElementById('cartEmpty');
+  const itemsLabel = document.getElementById('itemsLabel');
+  const pageSubtitle = document.getElementById('pageSubtitle');
+  const checkoutBtn = document.getElementById('checkoutBtn');
+
+  // Update bubble count
+  const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
+  document.getElementById('cartBubble').textContent = totalQty;
+
+  if (cart.length === 0) {
+    emptyEl.classList.add('visible');
+    listEl.innerHTML = '';
+    itemsLabel.textContent = '0 items';
+    pageSubtitle.textContent = 'Your bag is empty.';
+    checkoutBtn.disabled = true;
+    updateSummary(0);
+    return;
+  }
+
+  emptyEl.classList.remove('visible');
+  itemsLabel.textContent = `${totalQty} item${totalQty !== 1 ? 's' : ''}`;
+  pageSubtitle.textContent = `${totalQty} item${totalQty !== 1 ? 's' : ''} in your bag — ready to ship within 2–3 days.`;
+  checkoutBtn.disabled = false;
+
+  listEl.innerHTML = cart.map(item => `
+    <div class="cart-item" id="cart-item-${item.id}">
+      <div class="cart-item-img">
+        <div class="cart-item-img-inner" style="background:${GRADS[item.grad] || GRADS.g1}"></div>
+      </div>
+      <div class="cart-item-details">
+        <p class="cart-item-category">${item.type}</p>
+        <p class="cart-item-name">${item.name}</p>
+        <p class="cart-item-meta">${item.metal} · ${item.colour}</p>
+        <div class="cart-item-actions">
+          <div class="qty-control">
+            <button class="qty-btn" onclick="changeQty(${item.id}, -1)">−</button>
+            <input class="qty-num" type="number" value="${item.qty}" min="1" max="10" readonly>
+            <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
+          </div>
+          <button class="btn-remove" onclick="removeItem(${item.id})">Remove</button>
+        </div>
+      </div>
+      <div class="cart-item-price">
+        <span class="item-price-main">$${item.price * item.qty}</span>
+        ${item.qty > 1 ? `<span style="font-size:0.72rem;color:var(--driftwood);display:block;margin-top:0.2rem">$${item.price} each</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+
+  updateSummary(getSubtotal(cart));
+}
+
+function updateSummary(subtotal) {
+  const subtotalEl = document.getElementById('summarySubtotal');
+  const shippingEl = document.getElementById('summaryShipping');
+  const shippingNote = document.getElementById('shippingNote');
+  const totalEl = document.getElementById('summaryTotal');
+
+  subtotalEl.textContent = '$' + subtotal;
+
+  let shipping = 0;
+  if (subtotal === 0) {
+    shippingEl.textContent = '—';
+    shippingNote.textContent = '';
+  } else if (subtotal >= 75) {
+    shippingEl.textContent = 'Free';
+    shippingNote.textContent = 'You qualify for free shipping!';
+    shipping = 0;
+  } else {
+    const remaining = 75 - subtotal;
+    shippingEl.textContent = '$8';
+    shippingNote.textContent = `Add $${remaining} more for free shipping`;
+    shipping = 8;
+  }
+
+  totalEl.textContent = '$' + (subtotal + shipping);
+}
+
+function changeQty(id, delta) {
+  const cart = loadCart();
+  const item = cart.find(i => i.id === id);
+  if (!item) return;
+  item.qty = Math.max(1, Math.min(10, item.qty + delta));
+  saveCart(cart);
+  renderCart();
+}
+
+function removeItem(id) {
+  const cart = loadCart().filter(i => i.id !== id);
+  saveCart(cart);
+  renderCart();
+}
+
+function applyPromo() {
+  const code = document.getElementById('promoInput').value.trim().toUpperCase();
+  if (code === 'OCEAN10') {
+    document.getElementById('promoInput').style.borderColor = 'var(--ocean)';
+    document.getElementById('promoInput').value = 'OCEAN10 — 10% off applied';
+  } else {
+    document.getElementById('promoInput').style.borderColor = 'var(--coral)';
+    setTimeout(() => {
+      document.getElementById('promoInput').style.borderColor = '';
+    }, 1500);
+  }
+}
+
+function checkout() {
+  // Placeholder — no real backend
+  alert('Checkout coming soon! DM @mai.little.mermaid on Instagram to place your order.');
+}
+
+// Hamburger
+const navToggle = document.getElementById('navToggle');
+const mobileNav = document.getElementById('mobileNav');
+navToggle.addEventListener('click', () => {
+  navToggle.classList.toggle('open');
+  mobileNav.classList.toggle('open');
+});
+mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  navToggle.classList.remove('open');
+  mobileNav.classList.remove('open');
+}));
+
+// Nav shadow
+window.addEventListener('scroll', () => {
+  document.getElementById('mainNav').style.boxShadow =
+    window.scrollY > 50 ? '0 2px 20px rgba(0,0,0,0.08)' : 'none';
+});
+
+// Init
+renderCart();
+</script>
+</body>
+</html>
