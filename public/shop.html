@@ -1639,43 +1639,51 @@
 </footer>
 
 <script>
-// ── PRODUCT DATA — reads from localStorage (managed via admin.html) ──
+// ── CONFIG — paste your Supabase values here ──────────────────────────
+const SUPABASE_URL      = 'YOUR_SUPABASE_URL';      // https://xxxx.supabase.co
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // eyJ...
+// ─────────────────────────────────────────────────────────────────────
+
 const DEFAULT_RTS = [
-  { id:1, name:'Seafoam Glass Bracelet', type:'Bracelet',    price:55,  metal:'Sterling Silver', colour:'Seafoam',     grad:'g1', available:true,  new:true  },
-  { id:2, name:'Cobalt Drop Earrings',   type:'Earrings',    price:72,  metal:'Gold Fill',       colour:'Cobalt Blue', grad:'g2', available:true,  new:true  },
-  { id:3, name:'Amber Charm Necklace',   type:'Necklace',    price:130, metal:'Gold Fill',       colour:'Amber',       grad:'g3', available:true,  new:false },
-  { id:4, name:'Multi Stone Necklace',   type:'Multi Stone', price:92,  metal:'Sterling Silver', colour:'Mixed',       grad:'g4', available:false, new:false },
-  { id:5, name:'Forest Green Studs',     type:'Earrings',    price:47,  metal:'Sterling Silver', colour:'Green',       grad:'g5', available:true,  new:false },
-  { id:6, name:'Lavender Sea Pendant',   type:'Necklace',    price:130, metal:'Gold Fill',       colour:'Lavender',    grad:'g6', available:true,  new:true  },
-  { id:7, name:'Clear Glass Bracelet',   type:'Bracelet',    price:55,  metal:'Sterling Silver', colour:'Clear',       grad:'g7', available:false, new:false },
-  { id:8, name:'Coral Stone Earrings',   type:'Earrings',    price:72,  metal:'Gold Fill',       colour:'Coral Pink',  grad:'g8', available:true,  new:false },
+  { id:1, name:'Seafoam Glass Bracelet', type:'Bracelet', price:55,  metal:'Sterling Silver', colour:'Seafoam',     grad:'g1', available:true,  is_new:true  },
+  { id:2, name:'Cobalt Drop Earrings',   type:'Earrings', price:72,  metal:'Gold Fill',       colour:'Cobalt Blue', grad:'g2', available:true,  is_new:true  },
+  { id:3, name:'Amber Charm Necklace',   type:'Necklace', price:130, metal:'Gold Fill',       colour:'Amber',       grad:'g3', available:true,  is_new:false },
+  { id:4, name:'Multi Stone Necklace',   type:'Necklace', price:92,  metal:'Sterling Silver', colour:'Mixed',       grad:'g4', available:false, is_new:false },
+  { id:5, name:'Forest Green Studs',     type:'Earrings', price:47,  metal:'Sterling Silver', colour:'Green',       grad:'g5', available:true,  is_new:false },
+  { id:6, name:'Lavender Sea Pendant',   type:'Necklace', price:130, metal:'Gold Fill',       colour:'Lavender',    grad:'g6', available:true,  is_new:true  },
+  { id:7, name:'Clear Glass Bracelet',   type:'Bracelet', price:55,  metal:'Sterling Silver', colour:'Clear',       grad:'g7', available:false, is_new:false },
+  { id:8, name:'Coral Stone Earrings',   type:'Earrings', price:72,  metal:'Gold Fill',       colour:'Coral Pink',  grad:'g8', available:true,  is_new:false },
 ];
 
-function loadProducts() {
+async function fetchProducts() {
+  if (SUPABASE_URL === 'YOUR_SUPABASE_URL') return DEFAULT_RTS;
   try {
-    const stored = localStorage.getItem('mai_products');
-    return stored ? JSON.parse(stored) : DEFAULT_RTS;
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/products?order=created_at`, {
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+    });
+    if (!res.ok) throw new Error();
+    const rows = await res.json();
+    return rows.length ? rows : DEFAULT_RTS;
   } catch { return DEFAULT_RTS; }
 }
 
-const rtsProducts = loadProducts();
-
 let cartCount = 0;
 
-function renderRTS() {
+function renderRTS(products) {
   const grid = document.getElementById('rtsGrid');
   const cart = JSON.parse(localStorage.getItem('mai_cart') || '[]');
   const inCartIds = new Set(cart.filter(i => !i.isMTO).map(i => i.id));
 
-  const available = rtsProducts.filter(p => p.available && !inCartIds.has(p.id)).length;
+  const available = products.filter(p => p.available && !inCartIds.has(p.id)).length;
   document.getElementById('availableCount').textContent = `${available} pieces`;
 
-  grid.innerHTML = rtsProducts.map((p, i) => {
+  grid.innerHTML = products.map((p, i) => {
     const inCart = inCartIds.has(p.id);
     const soldOut = !p.available;
+    const isNew = p.is_new || p.new;
     const cardClass = soldOut ? 'sold-out' : inCart ? 'in-bag' : '';
-    const badgeClass = soldOut ? 'badge-soldout' : inCart ? 'badge-inbag' : p.new ? 'badge-new' : 'badge-available';
-    const badgeText = soldOut ? 'Sold Out' : inCart ? 'In Your Bag' : p.new ? 'New' : '1 Left';
+    const badgeClass = soldOut ? 'badge-soldout' : inCart ? 'badge-inbag' : isNew ? 'badge-new' : 'badge-available';
+    const badgeText = soldOut ? 'Sold Out' : inCart ? 'In Your Bag' : isNew ? 'New' : '1 Left';
     const bottomRight = soldOut
       ? `<span class="rts-sold-label">Sold out</span>`
       : inCart
@@ -1867,17 +1875,18 @@ function addMTOToCart() {
 }
 
 // ── INIT ──
-// Load cart count from localStorage
+// Cart count badge
 try {
   const storedCart = JSON.parse(localStorage.getItem('mai_cart') || '[]');
-  const initCount = storedCart.reduce((s, i) => s + i.qty, 0);
-  if (initCount > 0) {
-    cartCount = initCount;
-    document.getElementById('cartBubble').textContent = cartCount;
-  }
+  cartCount = storedCart.reduce((s, i) => s + i.qty, 0);
+  if (cartCount > 0) document.getElementById('cartBubble').textContent = cartCount;
 } catch {}
 
-renderRTS();
+// Show loading skeleton while fetching from Supabase
+document.getElementById('rtsGrid').innerHTML =
+  '<p style="grid-column:1/-1;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--driftwood);padding:2rem 0">Loading pieces…</p>';
+
+fetchProducts().then(products => renderRTS(products));
 </script>
 </body>
 </html>

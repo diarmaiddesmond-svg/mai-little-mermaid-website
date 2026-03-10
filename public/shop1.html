@@ -1158,19 +1158,22 @@
 </footer>
 
 <script>
-  // ── PRODUCT CATALOG (single source of truth) ──
-  const PRODUCTS = [
-    { id:1, name:'Seafoam Glass Bracelet', type:'Bracelet',    price:55,  metal:'Sterling Silver', colour:'Seafoam',     grad:'g1', available:true  },
-    { id:2, name:'Cobalt Drop Earrings',   type:'Earrings',    price:72,  metal:'Gold Fill',       colour:'Cobalt Blue', grad:'g2', available:true  },
-    { id:3, name:'Amber Charm Necklace',   type:'Necklace',    price:130, metal:'Gold Fill',       colour:'Amber',       grad:'g3', available:true  },
-    { id:4, name:'Multi Stone Necklace',   type:'Necklace',    price:92,  metal:'Sterling Silver', colour:'Mixed',       grad:'g4', available:false },
-    { id:5, name:'Forest Green Studs',     type:'Earrings',    price:47,  metal:'Sterling Silver', colour:'Green',       grad:'g5', available:true  },
-    { id:6, name:'Lavender Sea Pendant',   type:'Necklace',    price:130, metal:'Gold Fill',       colour:'Lavender',    grad:'g6', available:true  },
-    { id:7, name:'Clear Glass Bracelet',   type:'Bracelet',    price:55,  metal:'Sterling Silver', colour:'Clear',       grad:'g7', available:false },
-    { id:8, name:'Coral Stone Earrings',   type:'Earrings',    price:72,  metal:'Gold Fill',       colour:'Coral Pink',  grad:'g8', available:true  },
+  // ── CONFIG — same values as shop.html ──────────────────────────────
+  const SUPABASE_URL      = 'YOUR_SUPABASE_URL';
+  const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+  // ────────────────────────────────────────────────────────────────────
+
+  const FALLBACK_PRODUCTS = [
+    { id:1, name:'Seafoam Glass Bracelet', type:'Bracelet', price:55,  metal:'Sterling Silver', colour:'Seafoam',     grad:'g1', available:true  },
+    { id:2, name:'Cobalt Drop Earrings',   type:'Earrings', price:72,  metal:'Gold Fill',       colour:'Cobalt Blue', grad:'g2', available:true  },
+    { id:3, name:'Amber Charm Necklace',   type:'Necklace', price:130, metal:'Gold Fill',       colour:'Amber',       grad:'g3', available:true  },
+    { id:4, name:'Multi Stone Necklace',   type:'Necklace', price:92,  metal:'Sterling Silver', colour:'Mixed',       grad:'g4', available:false },
+    { id:5, name:'Forest Green Studs',     type:'Earrings', price:47,  metal:'Sterling Silver', colour:'Green',       grad:'g5', available:true  },
+    { id:6, name:'Lavender Sea Pendant',   type:'Necklace', price:130, metal:'Gold Fill',       colour:'Lavender',    grad:'g6', available:true  },
+    { id:7, name:'Clear Glass Bracelet',   type:'Bracelet', price:55,  metal:'Sterling Silver', colour:'Clear',       grad:'g7', available:false },
+    { id:8, name:'Coral Stone Earrings',   type:'Earrings', price:72,  metal:'Gold Fill',       colour:'Coral Pink',  grad:'g8', available:true  },
   ];
 
-  // Gradient map
   const GRADS = {
     g1:'linear-gradient(145deg,#c9b99a,#8b7355)', g2:'linear-gradient(145deg,#cdd8d6,#9ab5b0)',
     g3:'linear-gradient(145deg,#ddd0c0,#bfa98e)', g4:'linear-gradient(145deg,#c8d4cc,#8eaaa4)',
@@ -1178,49 +1181,77 @@
     g7:'linear-gradient(145deg,#e8dcc8,#c49a6a)', g8:'linear-gradient(145deg,#cfd9d5,#7aaa9e)',
   };
 
-  // ── LOAD PRODUCT FROM URL ──
-  const params = new URLSearchParams(window.location.search);
-  const product = PRODUCTS.find(p => p.id === parseInt(params.get('id')));
-  if (!product) { window.location = '/shop.html'; }
+  const productId = parseInt(new URLSearchParams(window.location.search).get('id'));
+  if (!productId) { window.location = '/shop.html'; }
 
-  // ── RENDER PRODUCT DATA INTO PAGE ──
-  document.querySelector('.product-category').textContent = product.type + 's';
-  document.querySelector('.product-title').innerHTML = product.name;
-  document.querySelector('.price-main').textContent = '$' + product.price;
-  document.querySelector('.breadcrumb .current').textContent = product.name;
-  document.querySelector('.breadcrumb a:last-of-type').textContent = product.type + 's';
-  document.getElementById('mainImg').style.background = GRADS[product.grad];
+  let product = null; // set after async load
 
-  // Update all gallery thumbs to show the same product gradient (tinted variations)
-  const thumbInners = document.querySelectorAll('.thumb-inner');
-  if (thumbInners[0]) thumbInners[0].style.background = GRADS[product.grad];
-  if (thumbInners[1]) thumbInners[1].style.background = GRADS[product.grad].replace('145deg', '160deg');
-  if (thumbInners[2]) thumbInners[2].style.background = GRADS[product.grad].replace('145deg', '130deg');
-  if (thumbInners[3]) thumbInners[3].style.background = GRADS[product.grad].replace('145deg', '120deg');
+  async function loadAndRender() {
+    // Try Supabase, fallback to hardcoded
+    if (SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${productId}&limit=1`, {
+          headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+        });
+        if (res.ok) {
+          const rows = await res.json();
+          if (rows.length) { product = rows[0]; }
+        }
+      } catch {}
+    }
+    if (!product) product = FALLBACK_PRODUCTS.find(p => p.id === productId) || null;
+    if (!product) { window.location = '/shop.html'; return; }
 
-  // Update thumb onclicks
-  document.querySelectorAll('.thumb').forEach((thumb, i) => {
+    // Populate page
+    document.querySelector('.product-category').textContent = product.type + 's';
+    document.querySelector('.product-title').innerHTML = product.name;
+    document.querySelector('.price-main').textContent = '$' + product.price;
+    document.querySelector('.breadcrumb .current').textContent = product.name;
+    document.querySelector('.breadcrumb a:last-of-type').textContent = product.type + 's';
+    document.title = product.name + ' — Mai Little Mermaid';
+
+    // Image: real photo or gradient
+    const mainImg = document.getElementById('mainImg');
+    const baseStyle = product.image_url
+      ? `url('${product.image_url}') center/cover`
+      : GRADS[product.grad] || GRADS.g1;
+    mainImg.style.background = baseStyle;
+
+    // Gallery thumbs
     const angles = ['145deg','160deg','130deg','120deg'];
-    const g = GRADS[product.grad].replace('145deg', angles[i] || '145deg');
-    thumb.setAttribute('onclick', `switchImage(this, '${g}')`);
-  });
+    document.querySelectorAll('.thumb-inner').forEach((el, i) => {
+      el.style.background = product.image_url ? baseStyle
+        : (GRADS[product.grad] || GRADS.g1).replace('145deg', angles[i] || '145deg');
+    });
+    document.querySelectorAll('.thumb').forEach((thumb, i) => {
+      const g = product.image_url ? baseStyle
+        : (GRADS[product.grad] || GRADS.g1).replace('145deg', angles[i] || '145deg');
+      thumb.setAttribute('onclick', `switchImage(this, '${g}')`);
+    });
 
-  document.title = product.name + ' — Mai Little Mermaid';
+    // Chain length: only for necklaces
+    if (product.type !== 'Necklace') {
+      const g = document.querySelector('.option-group');
+      if (g) g.style.display = 'none';
+    }
 
-  // Hide chain length for non-necklace products
-  if (product.type !== 'Necklace') {
-    const lengthGroup = document.querySelector('.option-group');
-    if (lengthGroup) lengthGroup.style.display = 'none';
+    // Sold-out
+    if (!product.available) {
+      const btn = document.getElementById('atcBtn');
+      btn.textContent = 'Sold Out'; btn.disabled = true;
+      btn.style.opacity = '0.4'; btn.style.cursor = 'default';
+      return;
+    }
+
+    // Already in cart?
+    const initCart = loadCart();
+    if (initCart.some(i => i.id === product.id)) {
+      const btn = document.getElementById('atcBtn');
+      btn.textContent = 'In Your Bag ✓'; btn.disabled = true; btn.style.opacity = '0.6';
+    }
   }
 
-  // Show sold-out state if needed
-  if (!product.available) {
-    const btn = document.getElementById('atcBtn');
-    btn.textContent = 'Sold Out';
-    btn.disabled = true;
-    btn.style.opacity = '0.4';
-    btn.style.cursor = 'default';
-  }
+  loadAndRender();
 
   // ── IMAGE SWITCHER ──
   function switchImage(thumb, gradient) {
@@ -1256,20 +1287,15 @@
     try { return JSON.parse(localStorage.getItem('mai_cart') || '[]'); } catch { return []; }
   }
 
-  // Init cart count + check if already in cart
-  const initCart = loadCart();
-  cartCount = initCart.reduce((s, i) => s + i.qty, 0);
-  if (cartCount > 0) {
-    const countEl = document.getElementById('cartCount');
-    countEl.textContent = cartCount;
-    countEl.classList.add('visible');
-  }
-  if (product && product.available && initCart.some(i => i.id === product.id)) {
-    const btn = document.getElementById('atcBtn');
-    btn.textContent = 'In Your Bag ✓';
-    btn.disabled = true;
-    btn.style.opacity = '0.6';
-  }
+  // Init cart count badge
+  try {
+    const c = loadCart();
+    cartCount = c.reduce((s, i) => s + i.qty, 0);
+    if (cartCount > 0) {
+      const countEl = document.getElementById('cartCount');
+      countEl.textContent = cartCount; countEl.classList.add('visible');
+    }
+  } catch {}
 
   function addToCart() {
     if (!product || !product.available) return;

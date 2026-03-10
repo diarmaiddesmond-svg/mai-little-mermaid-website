@@ -3,1136 +3,441 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — Mai Little Mermaid</title>
-<meta name="robots" content="noindex, nofollow">
+<title>Products · Mai Little Mermaid</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
   :root {
-    --cream: #faf6f0;
-    --sand: #f0e8d8;
-    --sand-dark: #d9cdb8;
-    --driftwood: #8b7355;
-    --ocean: #4a7c8e;
-    --ocean-deep: #2d5a6b;
-    --seafoam: #a8c5bc;
-    --coral: #c4715a;
-    --ink: #1a1410;
-    --gold: #b8943f;
-    --green: #5a8a5a;
-    --red: #c05050;
+    --cream: #faf6f0; --ink: #1a1410; --sand: #f0e8d8; --sand-dark: #d9cdb8;
+    --driftwood: #8b7355; --ocean: #4a7c8e; --ocean-deep: #2d5a6b;
+    --seafoam: #a8c5bc; --coral: #c4715a; --gold: #b8943f; --green: #4a7c5a;
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Jost', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; }
 
-  body {
-    font-family: 'Jost', sans-serif;
-    background: var(--cream);
-    color: var(--ink);
-    min-height: 100vh;
+  /* LOGIN */
+  #loginScreen {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 2rem;
   }
-
-  /* ── GRADIENT SWATCH COLOURS ── */
-  .g1 { background: linear-gradient(145deg, #cdd8d6, #9ab5b0, #6b9e94); }
-  .g2 { background: linear-gradient(145deg, #c8d4e4, #8fa8c8, #6080a8); }
-  .g3 { background: linear-gradient(145deg, #e8d8c0, #c4983c, #a87828); }
-  .g4 { background: linear-gradient(145deg, #d4c8e0, #b0a0c8, #907898); }
-  .g5 { background: linear-gradient(145deg, #c0d4c0, #88b888, #609060); }
-  .g6 { background: linear-gradient(145deg, #dcd4e8, #b4a4cc, #9080b0); }
-  .g7 { background: linear-gradient(145deg, #e0e0dc, #c8c8c4, #a8a8a4); }
-  .g8 { background: linear-gradient(145deg, #e8c8bc, #c89080, #a86858); }
-
-  /* ── PASSWORD GATE ── */
-  #gate {
-    position: fixed;
-    inset: 0;
-    background: var(--ocean-deep);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
+  .login-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .login-sub  { font-size: 0.72rem; color: var(--driftwood); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 3rem; }
+  .login-card { background: #fff; border: 1px solid var(--sand-dark); padding: 2.5rem; width: 100%; max-width: 380px; }
+  .login-title { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; font-weight: 300; margin-bottom: 1.8rem; }
+  .field { margin-bottom: 1.1rem; }
+  .field label { display: block; font-size: 0.67rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--driftwood); margin-bottom: 0.35rem; }
+  .field input, .field select {
+    width: 100%; padding: 0.75rem; border: 1px solid var(--sand-dark);
+    font-family: 'Jost', sans-serif; font-size: 0.88rem; color: var(--ink);
+    background: var(--cream); outline: none; transition: border-color 0.2s;
   }
-
-  .gate-card {
-    background: var(--cream);
-    padding: 3rem;
-    width: 340px;
-    text-align: center;
-  }
-
-  .gate-logo {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.3rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--ink);
-    margin-bottom: 0.3rem;
-  }
-
-  .gate-sub {
-    font-size: 0.68rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--driftwood);
-    margin-bottom: 2.5rem;
-  }
-
-  .gate-input {
-    width: 100%;
-    padding: 0.9rem 1rem;
-    border: 1px solid var(--sand-dark);
-    background: var(--sand);
-    font-family: 'Jost', sans-serif;
-    font-size: 0.9rem;
-    color: var(--ink);
-    outline: none;
-    margin-bottom: 0.8rem;
-    transition: border-color 0.3s;
-  }
-
-  .gate-input:focus { border-color: var(--ocean); }
-
-  .gate-btn {
-    width: 100%;
-    padding: 0.9rem;
-    background: var(--ocean-deep);
-    color: #fff;
-    border: none;
-    font-family: 'Jost', sans-serif;
-    font-size: 0.75rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-
-  .gate-btn:hover { background: var(--ocean); }
-
-  .gate-error {
-    font-size: 0.75rem;
-    color: var(--coral);
-    margin-top: 0.8rem;
-    min-height: 1.2em;
-  }
-
-  /* ── ADMIN LAYOUT ── */
-  #admin { display: none; }
-
-  .admin-header {
-    background: var(--ink);
-    padding: 1rem 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 50;
-  }
-
-  .admin-logo {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: #fff;
-  }
-
-  .admin-logo span {
-    font-size: 0.68rem;
-    font-family: 'Jost', sans-serif;
-    letter-spacing: 0.12em;
-    color: var(--seafoam);
-    margin-left: 0.8rem;
-    vertical-align: middle;
-  }
-
-  .header-actions { display: flex; gap: 0.8rem; align-items: center; }
-
-  .btn {
-    padding: 0.5rem 1.1rem;
-    font-family: 'Jost', sans-serif;
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    cursor: pointer;
-    border: none;
-    transition: all 0.25s;
-  }
-
-  .btn-ocean { background: var(--ocean); color: #fff; }
-  .btn-ocean:hover { background: var(--ocean-deep); }
-
-  .btn-outline {
-    background: none;
-    border: 1px solid rgba(255,255,255,0.3);
-    color: rgba(255,255,255,0.7);
-  }
-
-  .btn-outline:hover { border-color: #fff; color: #fff; }
-
-  .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.65rem; }
-
-  .btn-danger { background: var(--red); color: #fff; }
-  .btn-danger:hover { background: #a03030; }
-
-  .btn-ghost { background: none; border: 1px solid var(--sand-dark); color: var(--driftwood); }
-  .btn-ghost:hover { border-color: var(--driftwood); color: var(--ink); }
-
-  /* ── STATS BAR ── */
-  .stats-bar {
-    background: var(--sand);
-    border-bottom: 1px solid var(--sand-dark);
-    padding: 0.75rem 2rem;
-    display: flex;
-    gap: 2.5rem;
-    align-items: center;
-  }
-
-  .stat {
-    display: flex;
-    align-items: baseline;
-    gap: 0.4rem;
-  }
-
-  .stat-num {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.4rem;
-    font-weight: 400;
-    color: var(--ink);
-  }
-
-  .stat-label { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--driftwood); }
-
-  .stat-dot {
-    width: 8px; height: 8px; border-radius: 50%; margin-right: 0.3rem;
-  }
-
-  .dot-green { background: var(--green); }
-  .dot-red { background: var(--red); }
-  .dot-gold { background: var(--gold); }
-
-  /* ── NOTICE BANNER ── */
-  .notice {
-    background: rgba(74,124,142,0.08);
-    border-left: 3px solid var(--ocean);
-    padding: 0.75rem 2rem;
-    font-size: 0.78rem;
-    color: var(--ocean-deep);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  /* ── PRODUCT GRID ── */
-  .admin-body { padding: 2rem; }
-
-  .section-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.2rem;
-    font-weight: 300;
-    color: var(--ink);
-    margin-bottom: 1.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  #productGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1rem;
-  }
-
-  .product-card {
-    background: #fff;
-    border: 1px solid var(--sand-dark);
-    padding: 0;
-    overflow: hidden;
-    transition: box-shadow 0.25s;
-  }
-
-  .product-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.07); }
-
-  .product-card.sold-out { opacity: 0.65; }
-
-  .card-top {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    border-bottom: 1px solid var(--sand-dark);
-  }
-
-  .card-swatch {
-    width: 52px;
-    height: 52px;
-    flex-shrink: 0;
-  }
-
-  .card-meta { flex: 1; min-width: 0; }
-
-  .card-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1rem;
-    color: var(--ink);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .card-type {
-    font-size: 0.67rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--driftwood);
-    margin-top: 0.1rem;
-  }
-
-  .card-badges { display: flex; gap: 0.4rem; margin-top: 0.4rem; flex-wrap: wrap; }
-
-  .badge {
-    font-size: 0.6rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.2rem 0.5rem;
-  }
-
-  .badge-available { background: rgba(90,138,90,0.12); color: var(--green); }
-  .badge-soldout { background: rgba(192,80,80,0.1); color: var(--red); }
-  .badge-new { background: rgba(74,124,142,0.1); color: var(--ocean); }
-  .badge-rts { background: rgba(184,148,63,0.1); color: var(--gold); }
-  .badge-mto { background: rgba(139,115,85,0.1); color: var(--driftwood); }
-
-  .card-price {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.2rem;
-    font-weight: 300;
-    color: var(--ink);
-    text-align: right;
-    white-space: nowrap;
-  }
-
-  .card-bottom {
-    padding: 0.75rem 1rem;
-    display: flex;
-    gap: 0.5rem;
-    justify-content: flex-end;
-    background: var(--cream);
-  }
-
-  /* ── EMPTY STATE ── */
-  .empty-state {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 4rem 2rem;
-    color: var(--driftwood);
-  }
-
-  .empty-state h3 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.5rem;
-    font-weight: 300;
-    margin-bottom: 0.5rem;
-    color: var(--ink);
-  }
-
-  .empty-state p { font-size: 0.85rem; }
-
-  /* ── MODAL OVERLAY ── */
-  #modalOverlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(26,20,16,0.55);
-    z-index: 200;
-    display: none;
-    align-items: flex-start;
-    justify-content: center;
-    overflow-y: auto;
-    padding: 2rem 1rem;
-  }
-
-  #modalOverlay.open { display: flex; }
-
-  .modal {
-    background: var(--cream);
-    width: 100%;
-    max-width: 560px;
-    padding: 2rem;
-    position: relative;
-    margin: auto;
-  }
-
-  .modal-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.4rem;
-    font-weight: 300;
-    color: var(--ink);
-    margin-bottom: 1.8rem;
-  }
-
-  .modal-close {
-    position: absolute;
-    top: 1.2rem; right: 1.2rem;
-    background: none;
-    border: none;
-    font-size: 1.3rem;
-    color: var(--driftwood);
-    cursor: pointer;
-    line-height: 1;
-    transition: color 0.2s;
-  }
-
-  .modal-close:hover { color: var(--ink); }
-
-  /* ── FORM ── */
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-
-  .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
-  .form-group.full { grid-column: 1 / -1; }
-
-  .form-label {
-    font-size: 0.68rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--driftwood);
-  }
-
-  .form-input, .form-select, .form-textarea {
-    padding: 0.7rem 0.9rem;
-    border: 1px solid var(--sand-dark);
-    background: #fff;
-    font-family: 'Jost', sans-serif;
-    font-size: 0.88rem;
-    color: var(--ink);
-    outline: none;
-    transition: border-color 0.25s;
-    width: 100%;
-  }
-
-  .form-input:focus, .form-select:focus, .form-textarea:focus {
-    border-color: var(--ocean);
-  }
-
-  .form-textarea { resize: vertical; min-height: 70px; }
-
-  /* Gradient picker */
-  .grad-picker { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.3rem; }
-
-  .grad-option {
-    width: 36px;
-    height: 36px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    outline: 2px solid transparent;
-    outline-offset: 3px;
-    transition: outline 0.2s;
-    position: relative;
-  }
-
-  .grad-option:hover { outline: 2px solid var(--sand-dark); }
-  .grad-option.active { outline: 2px solid var(--ocean); }
-
-  /* Toggle switches */
-  .toggles-row { display: flex; gap: 2rem; flex-wrap: wrap; }
-
-  .toggle-group { display: flex; align-items: center; gap: 0.7rem; }
-
-  .toggle-switch {
-    position: relative;
-    width: 40px;
-    height: 22px;
-    cursor: pointer;
-  }
-
-  .toggle-switch input { opacity: 0; width: 0; height: 0; }
-
-  .toggle-track {
-    position: absolute;
-    inset: 0;
-    background: var(--sand-dark);
-    border-radius: 11px;
-    transition: background 0.3s;
-  }
-
-  .toggle-switch input:checked + .toggle-track { background: var(--ocean); }
-
-  .toggle-track::after {
-    content: '';
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    background: #fff;
-    border-radius: 50%;
-    top: 3px; left: 3px;
-    transition: transform 0.3s;
-  }
-
-  .toggle-switch input:checked + .toggle-track::after { transform: translateX(18px); }
-
-  .toggle-label { font-size: 0.78rem; color: var(--ink); }
-
-  /* Tab radio */
-  .tab-radio-group { display: flex; gap: 0; }
-
-  .tab-radio-group label {
-    flex: 1;
-    text-align: center;
-    padding: 0.6rem;
-    border: 1px solid var(--sand-dark);
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--driftwood);
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-right: -1px;
-  }
-
-  .tab-radio-group input { display: none; }
-
-  .tab-radio-group input:checked + label {
-    background: var(--ocean);
-    border-color: var(--ocean);
-    color: #fff;
-    z-index: 1;
-  }
-
-  /* Form actions */
-  .modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
-    margin-top: 1.8rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--sand-dark);
-  }
-
-  .btn-save {
-    padding: 0.7rem 2rem;
-    background: var(--ocean-deep);
-    color: #fff;
-    font-family: 'Jost', sans-serif;
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    border: none;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-
+  .field input:focus, .field select:focus { border-color: var(--ocean); }
+  .btn-login { width: 100%; padding: 0.9rem; background: var(--ocean-deep); color: #fff; border: none; font-family: 'Jost', sans-serif; font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; margin-top: 0.4rem; }
+  .btn-login:hover { background: var(--ocean); }
+  .btn-login:disabled { opacity: 0.5; cursor: default; }
+  .login-error { font-size: 0.78rem; color: var(--coral); margin-top: 0.8rem; text-align: center; min-height: 1.2em; }
+
+  /* ADMIN SHELL */
+  #adminScreen { display: none; }
+  .admin-header { background: var(--ink); color: #fff; padding: 1.1rem 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .admin-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; letter-spacing: 0.2em; text-transform: uppercase; }
+  .admin-right { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+  .admin-user { font-size: 0.7rem; color: rgba(255,255,255,0.45); }
+  .btn-add { background: var(--seafoam); color: var(--ink); border: none; font-family: 'Jost', sans-serif; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.55rem 1.2rem; cursor: pointer; transition: background 0.2s; }
+  .btn-add:hover { background: #8eb8b0; }
+  .btn-signout { background: none; border: 1px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.6); font-family: 'Jost', sans-serif; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.45rem 0.9rem; cursor: pointer; transition: all 0.2s; }
+  .btn-signout:hover { border-color: #fff; color: #fff; }
+  .admin-body { padding: 2rem; max-width: 1000px; margin: 0 auto; }
+
+  /* FORM */
+  #productForm { display: none; background: #fff; border: 1px solid var(--sand-dark); padding: 2rem; margin-bottom: 2rem; }
+  .form-title { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 300; margin-bottom: 1.5rem; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-grid .full { grid-column: 1 / -1; }
+  .grad-picker { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.5rem; }
+  .grad-swatch { width: 38px; height: 38px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: border-color 0.15s; flex-shrink: 0; }
+  .grad-swatch.selected { border-color: var(--ink); }
+  .form-actions { display: flex; gap: 0.8rem; margin-top: 1.5rem; }
+  .btn-save { flex: 1; padding: 0.85rem; background: var(--ocean-deep); color: #fff; border: none; font-family: 'Jost', sans-serif; font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
   .btn-save:hover { background: var(--ocean); }
+  .btn-save:disabled { opacity: 0.5; cursor: default; }
+  .btn-cancel { padding: 0.85rem 1.5rem; background: none; border: 1px solid var(--sand-dark); font-family: 'Jost', sans-serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--driftwood); cursor: pointer; transition: all 0.2s; }
+  .btn-cancel:hover { border-color: var(--coral); color: var(--coral); }
 
-  /* ── DELETE CONFIRM ── */
-  #confirmOverlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(26,20,16,0.55);
-    z-index: 300;
-    display: none;
-    align-items: center;
-    justify-content: center;
-  }
+  /* PRODUCT LIST */
+  .list-header { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--driftwood); margin-bottom: 1rem; }
+  #productsList { display: flex; flex-direction: column; gap: 0.7rem; }
+  .product-row { background: #fff; border: 1px solid var(--sand-dark); display: flex; align-items: center; gap: 1rem; padding: 0.9rem 1.1rem; transition: border-color 0.2s; }
+  .product-row:hover { border-color: var(--ocean); }
+  .product-row.sold { background: var(--sand); }
+  .p-swatch { width: 46px; height: 46px; flex-shrink: 0; border-radius: 2px; background-size: cover; background-position: center; }
+  .p-info { flex: 1; min-width: 0; }
+  .p-name { font-size: 0.92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .p-meta { font-size: 0.7rem; color: var(--driftwood); margin-top: 0.2rem; }
+  .p-price { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; font-weight: 300; white-space: nowrap; min-width: 50px; text-align: right; }
+  .btn-toggle { padding: 0.5rem 1rem; border: none; font-family: 'Jost', sans-serif; font-size: 0.63rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+  .btn-toggle.avail { background: #e6f4ee; color: var(--green); }
+  .btn-toggle.avail:hover { background: var(--green); color: #fff; }
+  .btn-toggle.sold { background: #faeae6; color: var(--coral); }
+  .btn-toggle.sold:hover { background: var(--coral); color: #fff; }
+  .btn-edit { background: none; border: 1px solid var(--sand-dark); color: var(--driftwood); font-family: 'Jost', sans-serif; font-size: 0.63rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.5rem 0.8rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+  .btn-edit:hover { border-color: var(--ocean); color: var(--ocean); }
+  .btn-del { background: none; border: none; color: var(--sand-dark); font-size: 1rem; cursor: pointer; padding: 0.3rem; transition: color 0.2s; line-height: 1; flex-shrink: 0; }
+  .btn-del:hover { color: var(--coral); }
+  .loading { text-align: center; padding: 3rem; font-size: 0.78rem; color: var(--driftwood); letter-spacing: 0.1em; text-transform: uppercase; }
 
-  #confirmOverlay.open { display: flex; }
+  /* TOAST */
+  .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--ink); color: #fff; padding: 0.8rem 1.4rem; font-size: 0.78rem; letter-spacing: 0.06em; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 999; }
+  .toast.show { opacity: 1; }
 
-  .confirm-box {
-    background: var(--cream);
-    padding: 2rem;
-    width: 360px;
-    text-align: center;
-  }
+  /* SETUP WARNING */
+  .setup-warn { background: #fff8e1; border: 1px solid #f5c842; padding: 1rem 1.4rem; margin-bottom: 1.5rem; font-size: 0.82rem; line-height: 1.8; }
+  .setup-warn strong { display: block; margin-bottom: 0.3rem; font-size: 0.85rem; }
+  .setup-warn code { background: rgba(0,0,0,0.07); padding: 0.1rem 0.4rem; font-size: 0.78rem; }
 
-  .confirm-box h3 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.3rem;
-    font-weight: 300;
-    margin-bottom: 0.5rem;
-  }
-
-  .confirm-box p { font-size: 0.82rem; color: var(--driftwood); margin-bottom: 1.5rem; line-height: 1.7; }
-
-  .confirm-actions { display: flex; gap: 0.75rem; justify-content: center; }
-
-  /* ── TOAST ── */
-  #toast {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    background: var(--ink);
-    color: #fff;
-    padding: 0.8rem 1.5rem;
-    font-size: 0.78rem;
-    letter-spacing: 0.05em;
-    z-index: 400;
-    transform: translateY(20px);
-    opacity: 0;
-    transition: transform 0.3s, opacity 0.3s;
-    pointer-events: none;
-  }
-
-  #toast.show { transform: translateY(0); opacity: 1; }
-
-  /* ── EXPORT PANEL ── */
-  #exportPanel {
-    display: none;
-    margin: 0 2rem 2rem;
-    background: var(--sand);
-    border: 1px solid var(--sand-dark);
-    padding: 1.5rem;
-  }
-
-  #exportPanel.open { display: block; }
-
-  .export-title {
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--driftwood);
-    margin-bottom: 0.8rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .export-code {
-    background: #fff;
-    border: 1px solid var(--sand-dark);
-    padding: 1rem;
-    font-family: monospace;
-    font-size: 0.75rem;
-    color: var(--ink);
-    max-height: 200px;
-    overflow: auto;
-    white-space: pre-wrap;
-    word-break: break-all;
-    line-height: 1.5;
-  }
-
-  .export-help { font-size: 0.75rem; color: var(--driftwood); margin-top: 0.8rem; line-height: 1.7; }
-
-  /* ── RESPONSIVE ── */
   @media (max-width: 600px) {
-    .stats-bar { flex-wrap: wrap; gap: 1rem; }
-    .form-grid { grid-template-columns: 1fr; }
-    .form-group.full { grid-column: 1; }
-    #productGrid { grid-template-columns: 1fr; }
     .admin-body { padding: 1rem; }
-    .modal { padding: 1.5rem; }
-    .admin-header { flex-wrap: wrap; gap: 0.7rem; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid .full { grid-column: 1; }
+    .p-price { display: none; }
+    .product-row { flex-wrap: wrap; }
   }
 </style>
 </head>
 <body>
 
-<!-- PASSWORD GATE -->
-<div id="gate">
-  <div class="gate-card">
-    <div class="gate-logo">Mai Little Mermaid</div>
-    <div class="gate-sub">Product Manager</div>
-    <input type="password" class="gate-input" id="pwInput" placeholder="Enter password" autocomplete="current-password">
-    <button class="gate-btn" onclick="login()">Sign In</button>
-    <div class="gate-error" id="gateError"></div>
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-logo">Mai Little Mermaid</div>
+  <div class="login-sub">Product Manager</div>
+  <div class="login-card">
+    <h1 class="login-title">Sign in</h1>
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn-login" id="loginBtn" onclick="signIn()">Sign In</button>
+    <div class="login-error" id="loginError"></div>
   </div>
 </div>
 
 <!-- ADMIN -->
-<div id="admin">
-
-  <!-- Header -->
-  <header class="admin-header">
-    <div>
-      <span class="admin-logo">Mai Little Mermaid <span>Admin</span></span>
-    </div>
-    <div class="header-actions">
-      <button class="btn btn-outline btn-sm" onclick="toggleExport()">Export JSON</button>
-      <button class="btn btn-outline btn-sm" onclick="importJSON()">Import JSON</button>
-      <button class="btn btn-ocean btn-sm" onclick="openAdd()">+ Add Product</button>
-      <button class="btn btn-outline btn-sm" onclick="logout()">Sign Out</button>
-    </div>
-  </header>
-
-  <!-- Stats -->
-  <div class="stats-bar">
-    <div class="stat">
-      <span class="stat-num" id="statTotal">0</span>
-      <span class="stat-label">Total Products</span>
-    </div>
-    <div class="stat">
-      <span class="stat-dot dot-green"></span>
-      <span class="stat-num" id="statAvail">0</span>
-      <span class="stat-label">Available</span>
-    </div>
-    <div class="stat">
-      <span class="stat-dot dot-red"></span>
-      <span class="stat-num" id="statSold">0</span>
-      <span class="stat-label">Sold Out</span>
-    </div>
-    <div class="stat">
-      <span class="stat-dot dot-gold"></span>
-      <span class="stat-num" id="statNew">0</span>
-      <span class="stat-label">New</span>
+<div id="adminScreen">
+  <div class="admin-header">
+    <div class="admin-logo">Mai Little Mermaid</div>
+    <div class="admin-right">
+      <span class="admin-user" id="adminUser"></span>
+      <button class="btn-add" onclick="openForm()">+ Add Product</button>
+      <button class="btn-signout" onclick="signOut()">Sign Out</button>
     </div>
   </div>
 
-  <!-- Notice -->
-  <div class="notice">
-    ✦ Changes save automatically and appear on the shop page immediately — on this device.
-    Use <strong>Export JSON</strong> to copy your product list for backup or to share across devices.
-  </div>
-
-  <!-- Export panel -->
-  <div id="exportPanel">
-    <div class="export-title">
-      Exported Product Data
-      <button class="btn btn-ghost btn-sm" onclick="copyExport()">Copy to Clipboard</button>
-    </div>
-    <div class="export-code" id="exportCode"></div>
-    <p class="export-help">
-      Paste this JSON somewhere safe as a backup. To restore on another device, click <strong>Import JSON</strong> and paste it in.
-    </p>
-  </div>
-
-  <!-- Product grid -->
   <div class="admin-body">
-    <div class="section-title">
-      Products
-      <span style="font-family:'Jost',sans-serif;font-size:0.7rem;color:var(--driftwood);font-weight:300">Drag to reorder coming soon</span>
+
+    <div class="setup-warn" id="setupWarn" style="display:none">
+      <strong>⚠ Supabase not configured yet</strong>
+      Open <code>admin.html</code> and <code>shop.html</code>, replace <code>YOUR_SUPABASE_URL</code>
+      and <code>YOUR_SUPABASE_ANON_KEY</code> with your project values from
+      <strong>Supabase → Project Settings → API</strong>.
     </div>
-    <div id="productGrid"></div>
-  </div>
 
-</div>
-
-<!-- ADD / EDIT MODAL -->
-<div id="modalOverlay" onclick="handleOverlayClick(event)">
-  <div class="modal" id="modalBox">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <h2 class="modal-title" id="modalTitle">Add Product</h2>
-
-    <form id="productForm" onsubmit="saveProduct(event)">
+    <!-- ADD / EDIT FORM -->
+    <div id="productForm">
+      <div class="form-title" id="formTitle">Add New Product</div>
       <div class="form-grid">
-
-        <div class="form-group full">
-          <label class="form-label">Product Name *</label>
-          <input class="form-input" id="fName" type="text" placeholder="e.g. Seafoam Glass Bracelet" required>
+        <div class="field">
+          <label>Product Name *</label>
+          <input type="text" id="fName" placeholder="e.g. Seafoam Glass Bracelet">
         </div>
-
-        <div class="form-group">
-          <label class="form-label">Type / Category *</label>
-          <select class="form-select" id="fType" required>
-            <option value="">— Select —</option>
-            <option>Necklace</option>
-            <option>Earrings</option>
+        <div class="field">
+          <label>Type *</label>
+          <select id="fType">
+            <option value="">— choose type —</option>
             <option>Bracelet</option>
-            <option>Multi Stone</option>
-            <option>Art</option>
-            <option>Other</option>
+            <option>Earrings</option>
+            <option>Necklace</option>
+            <option>Pendant</option>
+            <option>Ring</option>
           </select>
         </div>
-
-        <div class="form-group">
-          <label class="form-label">Price (USD) *</label>
-          <input class="form-input" id="fPrice" type="number" min="1" step="1" placeholder="75" required>
+        <div class="field">
+          <label>Price ($) *</label>
+          <input type="number" id="fPrice" placeholder="55" min="1">
         </div>
-
-        <div class="form-group">
-          <label class="form-label">Metal</label>
-          <select class="form-select" id="fMetal">
-            <option>Sterling Silver</option>
+        <div class="field">
+          <label>Metal *</label>
+          <select id="fMetal">
+            <option value="">— choose metal —</option>
             <option>Gold Fill</option>
-            <option>Gold Vermeil</option>
-            <option>Brass</option>
-            <option>N/A</option>
+            <option>Sterling Silver</option>
+            <option>14k Gold</option>
+            <option>Rose Gold Fill</option>
           </select>
         </div>
-
-        <div class="form-group">
-          <label class="form-label">Colour / Glass</label>
-          <input class="form-input" id="fColour" type="text" placeholder="e.g. Seafoam, Cobalt Blue">
+        <div class="field">
+          <label>Colour / Description</label>
+          <input type="text" id="fColour" placeholder="e.g. Seafoam, Cobalt Blue">
         </div>
-
-        <div class="form-group full">
-          <label class="form-label">Short Description</label>
-          <textarea class="form-textarea" id="fDesc" placeholder="One sentence about this piece…"></textarea>
+        <div class="field">
+          <label>Photo URL <span style="font-weight:300;text-transform:none;letter-spacing:0">(paste link to image)</span></label>
+          <input type="url" id="fImage" placeholder="https://…">
         </div>
-
-        <div class="form-group full">
-          <label class="form-label">Display Colour (card preview)</label>
-          <div class="grad-picker" id="gradPicker">
-            <div class="grad-option g1 active" data-grad="g1" onclick="pickGrad(this)" title="Ocean Teal"></div>
-            <div class="grad-option g2" data-grad="g2" onclick="pickGrad(this)" title="Cobalt Blue"></div>
-            <div class="grad-option g3" data-grad="g3" onclick="pickGrad(this)" title="Amber Gold"></div>
-            <div class="grad-option g4" data-grad="g4" onclick="pickGrad(this)" title="Soft Purple"></div>
-            <div class="grad-option g5" data-grad="g5" onclick="pickGrad(this)" title="Sea Green"></div>
-            <div class="grad-option g6" data-grad="g6" onclick="pickGrad(this)" title="Lavender"></div>
-            <div class="grad-option g7" data-grad="g7" onclick="pickGrad(this)" title="Sea Clear"></div>
-            <div class="grad-option g8" data-grad="g8" onclick="pickGrad(this)" title="Coral Pink"></div>
-          </div>
+        <div class="field full">
+          <label>Colour Swatch <span style="font-weight:300;text-transform:none;letter-spacing:0">(shown if no photo)</span></label>
+          <div class="grad-picker" id="gradPicker"></div>
+          <input type="hidden" id="fGrad" value="g1">
         </div>
-
-        <div class="form-group full">
-          <label class="form-label">Tab</label>
-          <div class="tab-radio-group">
-            <input type="radio" name="tab" id="tabRts" value="rts" checked>
-            <label for="tabRts">Ready to Ship</label>
-            <input type="radio" name="tab" id="tabMto" value="mto">
-            <label for="tabMto">Made to Order</label>
-          </div>
+        <div class="field">
+          <label>Status</label>
+          <select id="fAvailable">
+            <option value="true">Available for sale</option>
+            <option value="false">Sold out</option>
+          </select>
         </div>
-
-        <div class="form-group full">
-          <label class="form-label">Status</label>
-          <div class="toggles-row">
-            <div class="toggle-group">
-              <label class="toggle-switch">
-                <input type="checkbox" id="fAvailable" checked>
-                <div class="toggle-track"></div>
-              </label>
-              <span class="toggle-label">Available for purchase</span>
-            </div>
-            <div class="toggle-group">
-              <label class="toggle-switch">
-                <input type="checkbox" id="fNew">
-                <div class="toggle-track"></div>
-              </label>
-              <span class="toggle-label">Show "New" badge</span>
-            </div>
-          </div>
+        <div class="field">
+          <label>Show "New" badge?</label>
+          <select id="fNew">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
         </div>
-
       </div>
-
-      <div class="modal-actions">
-        <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-        <button type="submit" class="btn-save" id="saveBtn">Save Product</button>
+      <div class="form-actions">
+        <button class="btn-save" id="saveBtn" onclick="saveProduct()">Save Product</button>
+        <button class="btn-cancel" onclick="closeForm()">Cancel</button>
       </div>
-    </form>
-  </div>
-</div>
-
-<!-- DELETE CONFIRM -->
-<div id="confirmOverlay">
-  <div class="confirm-box">
-    <h3>Delete Product?</h3>
-    <p id="confirmMsg">This will permanently remove the product from your shop. This cannot be undone.</p>
-    <div class="confirm-actions">
-      <button class="btn btn-ghost" onclick="closeConfirm()">Cancel</button>
-      <button class="btn btn-danger" onclick="confirmDelete()">Yes, Delete</button>
     </div>
+
+    <div class="list-header" id="listHeader"></div>
+    <div id="productsList"><div class="loading">Loading…</div></div>
   </div>
 </div>
 
-<!-- HIDDEN FILE INPUT FOR IMPORT -->
-<input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
-
-<!-- TOAST -->
-<div id="toast"></div>
+<div class="toast" id="toast"></div>
 
 <script>
-const STORAGE_KEY = 'mai_products';
-const ADMIN_PASSWORD = 'mermaid2025';
+// ── CONFIG — paste your Supabase values here ──────────────────────────────
+const SUPABASE_URL      = 'YOUR_SUPABASE_URL';      // https://xxxx.supabase.co
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // eyJ...
+// ─────────────────────────────────────────────────────────────────────────
 
-// ── DEFAULT PRODUCTS ──
-const DEFAULT_PRODUCTS = [
-  { id: 1, name: 'Seafoam Glass Bracelet',   type: 'Bracelet',    price: 55,  metal: 'Sterling Silver', colour: 'Seafoam',      grad: 'g1', available: true,  new: true,  tab: 'rts', desc: 'Ocean-polished seafoam glass beads on a delicate sterling chain.' },
-  { id: 2, name: 'Cobalt Drop Earrings',     type: 'Earrings',    price: 72,  metal: 'Gold Fill',       colour: 'Cobalt Blue',  grad: 'g2', available: true,  new: true,  tab: 'rts', desc: 'Deep cobalt sea glass set on gold-fill ear wires.' },
-  { id: 3, name: 'Amber Charm Necklace',     type: 'Necklace',    price: 130, metal: 'Gold Fill',       colour: 'Amber',        grad: 'g3', available: true,  new: false, tab: 'rts', desc: 'Warm amber glass charm hand-set on a 16" gold-fill chain.' },
-  { id: 4, name: 'Multi Stone Necklace',     type: 'Multi Stone', price: 92,  metal: 'Sterling Silver', colour: 'Mixed',        grad: 'g4', available: false, new: false, tab: 'rts', desc: 'A curated mix of Newport beach stones on a sterling link chain.' },
-  { id: 5, name: 'Forest Green Studs',       type: 'Earrings',    price: 47,  metal: 'Sterling Silver', colour: 'Green',        grad: 'g5', available: true,  new: false, tab: 'rts', desc: 'Forest green sea glass set in sterling silver stud posts.' },
-  { id: 6, name: 'Lavender Sea Pendant',     type: 'Necklace',    price: 130, metal: 'Gold Fill',       colour: 'Lavender',     grad: 'g6', available: true,  new: true,  tab: 'rts', desc: 'Rare lavender sea glass on a gold-fill satellite chain.' },
-  { id: 7, name: 'Clear Glass Bracelet',     type: 'Bracelet',    price: 55,  metal: 'Sterling Silver', colour: 'Clear',        grad: 'g7', available: false, new: false, tab: 'rts', desc: 'Sea-worn clear glass beads strung on sterling silver wire.' },
-  { id: 8, name: 'Coral Stone Earrings',     type: 'Earrings',    price: 72,  metal: 'Gold Fill',       colour: 'Coral Pink',   grad: 'g8', available: true,  new: false, tab: 'rts', desc: 'Coral-pink glass drops on polished gold-fill ear wires.' },
-];
+const GRADS = {
+  g1:'linear-gradient(145deg,#c9b99a,#8b7355)', g2:'linear-gradient(145deg,#cdd8d6,#9ab5b0)',
+  g3:'linear-gradient(145deg,#ddd0c0,#bfa98e)', g4:'linear-gradient(145deg,#c8d4cc,#8eaaa4)',
+  g5:'linear-gradient(145deg,#e4d8c4,#c2a87c)', g6:'linear-gradient(145deg,#d0dbd8,#94b4ae)',
+  g7:'linear-gradient(145deg,#e8dcc8,#c49a6a)', g8:'linear-gradient(145deg,#cfd9d5,#7aaa9e)',
+};
 
-// ── STATE ──
-let products = [];
-let editingId = null;
-let deletingId = null;
-let selectedGrad = 'g1';
+const configured = SUPABASE_URL !== 'YOUR_SUPABASE_URL';
+let sb, currentUser, editingId = null;
 
-// ── AUTH ──
-function login() {
-  const val = document.getElementById('pwInput').value;
-  if (val === ADMIN_PASSWORD) {
-    sessionStorage.setItem('mai_admin', '1');
-    document.getElementById('gate').style.display = 'none';
-    document.getElementById('admin').style.display = 'block';
-    loadProducts();
-  } else {
-    document.getElementById('gateError').textContent = 'Incorrect password. Try again.';
-    document.getElementById('pwInput').value = '';
-    document.getElementById('pwInput').focus();
+if (configured) {
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
+
+// ── GRAD PICKER ──────────────────────────────────────────────────────────
+function buildGradPicker(selected) {
+  document.getElementById('gradPicker').innerHTML =
+    Object.entries(GRADS).map(([k, g]) =>
+      `<div class="grad-swatch ${k === selected ? 'selected' : ''}"
+            style="background:${g}" title="${k}"
+            onclick="pickGrad('${k}',this)"></div>`
+    ).join('');
+}
+function pickGrad(k, el) {
+  document.querySelectorAll('.grad-swatch').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('fGrad').value = k;
+}
+
+// ── AUTH ─────────────────────────────────────────────────────────────────
+async function signIn() {
+  if (!configured) {
+    document.getElementById('loginError').textContent = 'Supabase not configured yet.';
+    return;
   }
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  document.getElementById('loginError').textContent = '';
+
+  const { data, error } = await sb.auth.signInWithPassword({
+    email:    document.getElementById('loginEmail').value.trim(),
+    password: document.getElementById('loginPassword').value,
+  });
+
+  if (error) {
+    document.getElementById('loginError').textContent = error.message;
+    btn.disabled = false; btn.textContent = 'Sign In';
+    return;
+  }
+  currentUser = data.user;
+  enterAdmin();
 }
 
-function logout() {
-  sessionStorage.removeItem('mai_admin');
-  location.reload();
+async function signOut() {
+  await sb.auth.signOut();
+  document.getElementById('adminScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginPassword').value = '';
 }
 
-document.getElementById('pwInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') login();
-});
-
-// Auto-login if already authenticated this session
-if (sessionStorage.getItem('mai_admin') === '1') {
-  document.getElementById('gate').style.display = 'none';
-  document.getElementById('admin').style.display = 'block';
+async function checkSession() {
+  if (!configured) {
+    // Show demo mode so the page is visible without Supabase
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminScreen').style.display = 'block';
+    document.getElementById('setupWarn').style.display = 'block';
+    document.getElementById('adminUser').textContent = 'not connected';
+    document.getElementById('listHeader').textContent = 'Demo — connect Supabase to manage real products';
+    document.getElementById('productsList').innerHTML = '<div class="loading">No products loaded — Supabase not configured</div>';
+    buildGradPicker('g1');
+    return;
+  }
+  const { data } = await sb.auth.getSession();
+  if (data.session) { currentUser = data.session.user; enterAdmin(); }
 }
 
-// ── LOAD / SAVE ──
-function loadProducts() {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  products = stored ? JSON.parse(stored) : JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
-  renderAll();
+function enterAdmin() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminScreen').style.display = 'block';
+  document.getElementById('adminUser').textContent = currentUser?.email || '';
+  buildGradPicker('g1');
+  loadProducts();
 }
 
-function saveProducts() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
-  renderAll();
+// ── PRODUCTS ─────────────────────────────────────────────────────────────
+async function loadProducts() {
+  if (!configured) return;
+  const { data, error } = await sb.from('products').select('*').order('created_at');
+  if (error) { showToast('Error loading products'); return; }
+  renderList(data || []);
 }
 
-// ── RENDER ──
-function renderAll() {
-  updateStats();
-  renderGrid();
-}
+function renderList(rows) {
+  const avail = rows.filter(p => p.available).length;
+  document.getElementById('listHeader').textContent =
+    `${rows.length} product${rows.length !== 1 ? 's' : ''} · ${avail} available · ${rows.length - avail} sold`;
 
-function updateStats() {
-  document.getElementById('statTotal').textContent = products.length;
-  document.getElementById('statAvail').textContent = products.filter(p => p.available).length;
-  document.getElementById('statSold').textContent = products.filter(p => !p.available).length;
-  document.getElementById('statNew').textContent = products.filter(p => p.new).length;
-}
-
-function renderGrid() {
-  const grid = document.getElementById('productGrid');
-
-  if (products.length === 0) {
-    grid.innerHTML = `
-      <div class="empty-state">
-        <h3>No products yet</h3>
-        <p>Click "+ Add Product" to add your first piece to the shop.</p>
-      </div>`;
+  if (!rows.length) {
+    document.getElementById('productsList').innerHTML = '<div class="loading">No products yet — add your first one above.</div>';
     return;
   }
 
-  grid.innerHTML = products.map(p => `
-    <div class="product-card ${p.available ? '' : 'sold-out'}">
-      <div class="card-top">
-        <div class="card-swatch ${p.grad}"></div>
-        <div class="card-meta">
-          <div class="card-name" title="${p.name}">${p.name}</div>
-          <div class="card-type">${p.type}${p.colour ? ' · ' + p.colour : ''}</div>
-          <div class="card-badges">
-            <span class="badge ${p.available ? 'badge-available' : 'badge-soldout'}">${p.available ? 'Available' : 'Sold Out'}</span>
-            ${p.new ? '<span class="badge badge-new">New</span>' : ''}
-            <span class="badge ${p.tab === 'rts' ? 'badge-rts' : 'badge-mto'}">${p.tab === 'rts' ? 'Ready to Ship' : 'Made to Order'}</span>
-          </div>
-        </div>
-        <div class="card-price">$${p.price}</div>
+  document.getElementById('productsList').innerHTML = rows.map(p => {
+    const bg = p.image_url
+      ? `background:url('${p.image_url}') center/cover`
+      : `background:${GRADS[p.grad] || GRADS.g1}`;
+    const newBadge = p.is_new ? ' <span style="font-size:0.58rem;background:var(--ocean-deep);color:#fff;padding:0.1rem 0.35rem;margin-left:0.4rem;letter-spacing:0.1em;vertical-align:middle">NEW</span>' : '';
+    return `
+    <div class="product-row ${p.available ? '' : 'sold'}">
+      <div class="p-swatch" style="${bg}"></div>
+      <div class="p-info">
+        <div class="p-name">${p.name}${newBadge}</div>
+        <div class="p-meta">${p.type} · ${p.metal}${p.colour ? ' · ' + p.colour : ''}</div>
       </div>
-      <div class="card-bottom">
-        <button class="btn btn-ghost btn-sm" onclick="toggleAvailable(${p.id})">
-          ${p.available ? 'Mark Sold Out' : 'Mark Available'}
-        </button>
-        <button class="btn btn-ghost btn-sm" onclick="openEdit(${p.id})">Edit</button>
-        <button class="btn btn-danger btn-sm" onclick="askDelete(${p.id}, '${p.name.replace(/'/g, "\\'")}')">Delete</button>
-      </div>
-    </div>
-  `).join('');
+      <div class="p-price">$${p.price}</div>
+      <button class="btn-toggle ${p.available ? 'avail' : 'sold'}"
+              onclick="toggleAvail(${p.id}, ${p.available})">
+        ${p.available ? '✓ Available' : '✗ Sold Out'}
+      </button>
+      <button class="btn-edit" onclick="editProduct(${p.id})">Edit</button>
+      <button class="btn-del" onclick="delProduct(${p.id})" title="Delete">✕</button>
+    </div>`;
+  }).join('');
 }
 
-// ── QUICK TOGGLE ──
-function toggleAvailable(id) {
-  const p = products.find(x => x.id === id);
-  if (!p) return;
-  p.available = !p.available;
-  saveProducts();
-  toast(p.available ? `${p.name} marked available` : `${p.name} marked sold out`);
+async function toggleAvail(id, current) {
+  const { error } = await sb.from('products').update({ available: !current }).eq('id', id);
+  if (error) { showToast('Error: ' + error.message); return; }
+  showToast(current ? '📦 Marked as Sold Out' : '✓ Marked as Available');
+  loadProducts();
 }
 
-// ── ADD ──
-function openAdd() {
-  editingId = null;
-  document.getElementById('modalTitle').textContent = 'Add Product';
-  document.getElementById('saveBtn').textContent = 'Add Product';
-  resetForm();
-  document.getElementById('modalOverlay').classList.add('open');
-  document.getElementById('fName').focus();
+// ── FORM ─────────────────────────────────────────────────────────────────
+function openForm(p) {
+  editingId = p?.id || null;
+  document.getElementById('formTitle').textContent = p ? 'Edit Product' : 'Add New Product';
+  document.getElementById('fName').value      = p?.name      || '';
+  document.getElementById('fType').value      = p?.type      || '';
+  document.getElementById('fPrice').value     = p?.price     || '';
+  document.getElementById('fMetal').value     = p?.metal     || '';
+  document.getElementById('fColour').value    = p?.colour    || '';
+  document.getElementById('fImage').value     = p?.image_url || '';
+  document.getElementById('fGrad').value      = p?.grad      || 'g1';
+  document.getElementById('fAvailable').value = String(p?.available ?? true);
+  document.getElementById('fNew').value       = String(p?.is_new ?? false);
+  buildGradPicker(p?.grad || 'g1');
+  document.getElementById('productForm').style.display = 'block';
+  document.getElementById('productForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-// ── EDIT ──
-function openEdit(id) {
-  const p = products.find(x => x.id === id);
-  if (!p) return;
-  editingId = id;
-  document.getElementById('modalTitle').textContent = 'Edit Product';
-  document.getElementById('saveBtn').textContent = 'Save Changes';
-
-  document.getElementById('fName').value = p.name;
-  document.getElementById('fType').value = p.type;
-  document.getElementById('fPrice').value = p.price;
-  document.getElementById('fMetal').value = p.metal;
-  document.getElementById('fColour').value = p.colour || '';
-  document.getElementById('fDesc').value = p.desc || '';
-  document.getElementById('fAvailable').checked = p.available;
-  document.getElementById('fNew').checked = p.new;
-  document.getElementById(p.tab === 'mto' ? 'tabMto' : 'tabRts').checked = true;
-
-  // Gradient
-  selectedGrad = p.grad;
-  document.querySelectorAll('.grad-option').forEach(el => {
-    el.classList.toggle('active', el.dataset.grad === p.grad);
-  });
-
-  document.getElementById('modalOverlay').classList.add('open');
-  document.getElementById('fName').focus();
-}
-
-// ── SAVE ──
-function saveProduct(e) {
-  e.preventDefault();
-
-  const tab = document.querySelector('input[name="tab"]:checked').value;
-
-  const data = {
-    name: document.getElementById('fName').value.trim(),
-    type: document.getElementById('fType').value,
-    price: parseInt(document.getElementById('fPrice').value, 10),
-    metal: document.getElementById('fMetal').value,
-    colour: document.getElementById('fColour').value.trim(),
-    desc: document.getElementById('fDesc').value.trim(),
-    grad: selectedGrad,
-    available: document.getElementById('fAvailable').checked,
-    new: document.getElementById('fNew').checked,
-    tab,
-  };
-
-  if (editingId !== null) {
-    const idx = products.findIndex(x => x.id === editingId);
-    products[idx] = { ...products[idx], ...data };
-    toast('Product updated');
-  } else {
-    const newId = products.length ? Math.max(...products.map(p => p.id)) + 1 : 1;
-    products.push({ id: newId, ...data });
-    toast('Product added');
-  }
-
-  saveProducts();
-  closeModal();
-}
-
-// ── DELETE ──
-function askDelete(id, name) {
-  deletingId = id;
-  document.getElementById('confirmMsg').textContent = `"${name}" will be permanently removed from your shop. This cannot be undone.`;
-  document.getElementById('confirmOverlay').classList.add('open');
-}
-
-function confirmDelete() {
-  products = products.filter(p => p.id !== deletingId);
-  saveProducts();
-  closeConfirm();
-  toast('Product deleted');
-}
-
-function closeConfirm() {
-  deletingId = null;
-  document.getElementById('confirmOverlay').classList.remove('open');
-}
-
-// ── MODAL ──
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('open');
+function closeForm() {
+  document.getElementById('productForm').style.display = 'none';
   editingId = null;
 }
 
-function handleOverlayClick(e) {
-  if (e.target === document.getElementById('modalOverlay')) closeModal();
-}
+async function saveProduct() {
+  const name  = document.getElementById('fName').value.trim();
+  const type  = document.getElementById('fType').value;
+  const price = parseInt(document.getElementById('fPrice').value);
+  const metal = document.getElementById('fMetal').value;
+  if (!name || !type || !price || !metal) { showToast('Fill in Name, Type, Price and Metal'); return; }
 
-function resetForm() {
-  document.getElementById('productForm').reset();
-  selectedGrad = 'g1';
-  document.querySelectorAll('.grad-option').forEach((el, i) => {
-    el.classList.toggle('active', i === 0);
-  });
-  document.getElementById('tabRts').checked = true;
-  document.getElementById('fAvailable').checked = true;
-  document.getElementById('fNew').checked = false;
-}
-
-// ── GRADIENT PICKER ──
-function pickGrad(el) {
-  document.querySelectorAll('.grad-option').forEach(e => e.classList.remove('active'));
-  el.classList.add('active');
-  selectedGrad = el.dataset.grad;
-}
-
-// ── EXPORT / IMPORT ──
-function toggleExport() {
-  const panel = document.getElementById('exportPanel');
-  if (!panel.classList.contains('open')) {
-    document.getElementById('exportCode').textContent = JSON.stringify(products, null, 2);
-    panel.classList.add('open');
-  } else {
-    panel.classList.remove('open');
-  }
-}
-
-function copyExport() {
-  const text = document.getElementById('exportCode').textContent;
-  navigator.clipboard.writeText(text).then(() => toast('Copied to clipboard!'));
-}
-
-function importJSON() {
-  document.getElementById('importFile').click();
-}
-
-function handleImport(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(ev) {
-    try {
-      const data = JSON.parse(ev.target.result);
-      if (!Array.isArray(data)) throw new Error();
-      products = data;
-      saveProducts();
-      toast(`Imported ${products.length} products`);
-    } catch {
-      toast('Invalid JSON file — import failed');
-    }
-    e.target.value = '';
+  const payload = {
+    name, type, price, metal,
+    colour:    document.getElementById('fColour').value.trim() || null,
+    image_url: document.getElementById('fImage').value.trim()  || null,
+    grad:      document.getElementById('fGrad').value,
+    available: document.getElementById('fAvailable').value === 'true',
+    is_new:    document.getElementById('fNew').value === 'true',
   };
-  reader.readAsText(file);
+
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  const op = editingId
+    ? sb.from('products').update(payload).eq('id', editingId)
+    : sb.from('products').insert(payload);
+  const { error } = await op;
+
+  btn.disabled = false; btn.textContent = 'Save Product';
+  if (error) { showToast('Error: ' + error.message); return; }
+  showToast(editingId ? '✓ Product updated' : '✓ Product added');
+  closeForm();
+  loadProducts();
 }
 
-// ── TOAST ──
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 2500);
+async function editProduct(id) {
+  const { data } = await sb.from('products').select('*').eq('id', id).single();
+  if (data) openForm(data);
 }
 
-// ── KEYBOARD ──
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    closeModal();
-    closeConfirm();
-    document.getElementById('exportPanel').classList.remove('open');
-  }
+async function delProduct(id) {
+  if (!confirm('Delete this product permanently?')) return;
+  const { error } = await sb.from('products').delete().eq('id', id);
+  if (error) { showToast('Error: ' + error.message); return; }
+  showToast('Product deleted');
+  loadProducts();
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+document.getElementById('loginPassword').addEventListener('keydown', e => {
+  if (e.key === 'Enter') signIn();
 });
 
-// ── INIT ──
-if (sessionStorage.getItem('mai_admin') === '1') loadProducts();
+checkSession();
 </script>
 </body>
 </html>
