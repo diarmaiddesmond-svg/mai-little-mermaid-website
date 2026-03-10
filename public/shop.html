@@ -1668,14 +1668,14 @@ function renderRTS() {
 
   grid.innerHTML = rtsProducts.map((p, i) => `
     <div class="rts-card ${p.available ? '' : 'sold-out'}"
-         style="transition-delay:${i*55}ms"
-         onclick="${p.available ? `quickBuy(${p.id})` : ''}">
+         style="transition-delay:${i*55}ms; cursor:${p.available ? 'pointer' : 'default'}"
+         onclick="${p.available ? `window.location='/shop1.html'` : ''}">
       <div class="rts-image">
         <div class="rts-img-inner ${p.grad}"></div>
         <span class="rts-badge ${p.available ? (p.new ? 'badge-new' : 'badge-available') : 'badge-soldout'}">
           ${p.available ? (p.new ? 'New' : '1 Left') : 'Sold Out'}
         </span>
-        ${p.available ? `<div class="rts-quick-add">+ Add to Bag</div>` : ''}
+        ${p.available ? `<div class="rts-quick-add" onclick="event.stopPropagation();quickBuy(${p.id})">+ Add to Bag</div>` : ''}
       </div>
       <p class="rts-name">${p.name}</p>
       <div class="rts-bottom">
