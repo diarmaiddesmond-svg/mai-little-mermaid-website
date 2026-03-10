@@ -1187,10 +1187,48 @@
 
   // Add to cart
   let cartCount = 0;
+
+  // Init cart count from localStorage
+  try {
+    const existing = JSON.parse(localStorage.getItem('mai_cart') || '[]');
+    cartCount = existing.reduce((s, i) => s + i.qty, 0);
+    if (cartCount > 0) {
+      const countEl = document.getElementById('cartCount');
+      countEl.textContent = cartCount;
+      countEl.classList.add('visible');
+    }
+  } catch {}
+
   function addToCart() {
+    const length = document.getElementById('selectedLength').textContent;
+    const item = {
+      id: 'sgcn-1',
+      name: 'Sea Glass Charm Necklace',
+      type: 'Necklace',
+      price: 75,
+      metal: 'Gold Fill',
+      colour: `Chain ${length}`,
+      grad: 'g3',
+      qty: qty,
+      isRTS: true
+    };
+
+    try {
+      const cart = JSON.parse(localStorage.getItem('mai_cart') || '[]');
+      const existing = cart.find(i => i.id === item.id && i.colour === item.colour);
+      if (existing) {
+        existing.qty = Math.min(10, existing.qty + qty);
+      } else {
+        cart.push(item);
+      }
+      localStorage.setItem('mai_cart', JSON.stringify(cart));
+      cartCount = cart.reduce((s, i) => s + i.qty, 0);
+    } catch {
+      cartCount += qty;
+    }
+
     const btn = document.getElementById('atcBtn');
     btn.classList.add('added');
-    cartCount += qty;
     const countEl = document.getElementById('cartCount');
     countEl.textContent = cartCount;
     countEl.classList.add('visible');

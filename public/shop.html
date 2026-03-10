@@ -324,21 +324,6 @@
     color: #fff;
   }
 
-  .rts-quick-add {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    background: rgba(45,90,107,0.93);
-    color: #fff;
-    text-align: center;
-    padding: 0.75rem;
-    font-size: 0.63rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    transform: translateY(100%);
-    transition: transform 0.3s ease;
-  }
-
-  .rts-card:not(.sold-out):hover .rts-quick-add { transform: translateY(0); }
 
   .rts-name {
     font-family: 'Cormorant Garamond', serif;
@@ -1451,7 +1436,7 @@
       </div>
       <p class="summary-lead">Price includes metal & handcrafting</p>
 
-      <button class="btn-mto-checkout" id="mtoCheckout">Proceed to Checkout</button>
+      <button class="btn-mto-checkout" id="mtoCheckout" onclick="addMTOToCart()">Add to Bag →</button>
 
       <div class="summary-stripe">
         <span class="stripe-badge">stripe</span>
@@ -1676,7 +1661,6 @@ function renderRTS() {
         <span class="rts-badge ${p.available ? (p.new ? 'badge-new' : 'badge-available') : 'badge-soldout'}">
           ${p.available ? (p.new ? 'New' : '1 Left') : 'Sold Out'}
         </span>
-        ${p.available ? `<div class="rts-quick-add" onclick="event.stopPropagation();quickBuy(${p.id})">+ Add to Bag</div>` : ''}
       </div>
       <p class="rts-name">${p.name}</p>
       <div class="rts-bottom">
@@ -1858,7 +1842,40 @@ window.addEventListener('scroll', () => {
     window.scrollY > 50 ? '0 2px 20px rgba(0,0,0,0.08)' : 'none';
 });
 
+// ── MTO ADD TO CART ──
+function addMTOToCart() {
+  if (!mtoState.piece || !mtoState.metal || !mtoState.colour) return;
+  const price = mtoState.metal === 'Gold Fill' ? mtoState.basePriceGold : mtoState.basePriceSilver;
+  const item = {
+    id: `mto-${Date.now()}`,
+    name: `Made to Order ${mtoState.piece}`,
+    type: mtoState.piece,
+    price: price,
+    metal: mtoState.metal,
+    colour: mtoState.colour,
+    grad: 'mto',
+    qty: 1,
+    isMTO: true
+  };
+  try {
+    const cart = JSON.parse(localStorage.getItem('mai_cart') || '[]');
+    cart.push(item);
+    localStorage.setItem('mai_cart', JSON.stringify(cart));
+  } catch {}
+  window.location = '/cart.html';
+}
+
 // ── INIT ──
+// Load cart count from localStorage
+try {
+  const storedCart = JSON.parse(localStorage.getItem('mai_cart') || '[]');
+  const initCount = storedCart.reduce((s, i) => s + i.qty, 0);
+  if (initCount > 0) {
+    cartCount = initCount;
+    document.getElementById('cartBubble').textContent = cartCount;
+  }
+} catch {}
+
 renderRTS();
 </script>
 </body>

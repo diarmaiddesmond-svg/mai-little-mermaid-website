@@ -776,6 +776,10 @@
       Proceed to Checkout
     </button>
 
+    <p id="checkoutError" style="display:none;font-size:0.72rem;color:var(--coral);margin-top:0.6rem;line-height:1.6;">
+      Stripe isn't configured yet — add your <code>STRIPE_SECRET_KEY</code> to get checkout working. DM <a href="https://www.instagram.com/mai.little.mermaid" target="_blank" style="color:var(--ocean)">@mai.little.mermaid</a> to order in the meantime.
+    </p>
+
     <div class="checkout-stripe">
       <span class="stripe-badge">stripe</span>
       Secure · Card · Apple Pay · Google Pay
@@ -837,7 +841,6 @@
 </footer>
 
 <script>
-// Placeholder gradients map (matches shop.html)
 const GRADS = {
   g1: 'linear-gradient(145deg,#c9b99a,#8b7355)',
   g2: 'linear-gradient(145deg,#cdd8d6,#9ab5b0)',
@@ -847,101 +850,101 @@ const GRADS = {
   g6: 'linear-gradient(145deg,#d0dbd8,#94b4ae)',
   g7: 'linear-gradient(145deg,#e8dcc8,#c49a6a)',
   g8: 'linear-gradient(145deg,#cfd9d5,#7aaa9e)',
+  mto: 'linear-gradient(145deg,#a8c5bc,#4a7c8e)',
 };
 
+// Promo state
+let promoDiscount = 0;
+
 function loadCart() {
-  try {
-    return JSON.parse(localStorage.getItem('mai_cart') || '[]');
-  } catch { return []; }
+  try { return JSON.parse(localStorage.getItem('mai_cart') || '[]'); } catch { return []; }
 }
-
-function saveCart(cart) {
-  localStorage.setItem('mai_cart', JSON.stringify(cart));
-}
-
-function getSubtotal(cart) {
-  return cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-}
+function saveCart(cart) { localStorage.setItem('mai_cart', JSON.stringify(cart)); }
+function getSubtotal(cart) { return cart.reduce((sum, i) => sum + i.price * i.qty, 0); }
 
 function renderCart() {
   const cart = loadCart();
   const listEl = document.getElementById('cartItemsList');
   const emptyEl = document.getElementById('cartEmpty');
-  const itemsLabel = document.getElementById('itemsLabel');
-  const pageSubtitle = document.getElementById('pageSubtitle');
   const checkoutBtn = document.getElementById('checkoutBtn');
 
-  // Update bubble count
   const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
   document.getElementById('cartBubble').textContent = totalQty;
 
   if (cart.length === 0) {
     emptyEl.classList.add('visible');
     listEl.innerHTML = '';
-    itemsLabel.textContent = '0 items';
-    pageSubtitle.textContent = 'Your bag is empty.';
+    document.getElementById('itemsLabel').textContent = '0 items';
+    document.getElementById('pageSubtitle').textContent = 'Your bag is empty.';
     checkoutBtn.disabled = true;
     updateSummary(0);
     return;
   }
 
   emptyEl.classList.remove('visible');
-  itemsLabel.textContent = `${totalQty} item${totalQty !== 1 ? 's' : ''}`;
-  pageSubtitle.textContent = `${totalQty} item${totalQty !== 1 ? 's' : ''} in your bag — ready to ship within 2–3 days.`;
+  document.getElementById('itemsLabel').textContent = `${totalQty} item${totalQty !== 1 ? 's' : ''}`;
+
+  const hasMTO = cart.some(i => i.isMTO);
+  document.getElementById('pageSubtitle').textContent = hasMTO
+    ? `${totalQty} item${totalQty !== 1 ? 's' : ''} — ready-to-ship and made-to-order pieces.`
+    : `${totalQty} item${totalQty !== 1 ? 's' : ''} in your bag — ships within 2–3 days.`;
+
   checkoutBtn.disabled = false;
 
-  listEl.innerHTML = cart.map(item => `
-    <div class="cart-item" id="cart-item-${item.id}">
+  listEl.innerHTML = cart.map(item => {
+    // Escape id for safe use in onclick attribute (MTO ids contain hyphens)
+    const safeId = JSON.stringify(item.id);
+    return `
+    <div class="cart-item">
       <div class="cart-item-img">
         <div class="cart-item-img-inner" style="background:${GRADS[item.grad] || GRADS.g1}"></div>
       </div>
       <div class="cart-item-details">
-        <p class="cart-item-category">${item.type}</p>
+        <p class="cart-item-category">
+          ${item.type}${item.isMTO ? ' <span style="background:var(--ocean-deep);color:#fff;font-size:0.55rem;padding:0.15rem 0.4rem;letter-spacing:0.1em;margin-left:0.4rem;">MADE TO ORDER</span>' : ''}
+        </p>
         <p class="cart-item-name">${item.name}</p>
         <p class="cart-item-meta">${item.metal} · ${item.colour}</p>
+        ${item.isMTO ? '<p style="font-size:0.7rem;color:var(--ocean);margin-top:0.3rem;font-style:italic;">~1 week lead time · Maile will confirm your order</p>' : ''}
         <div class="cart-item-actions">
+          ${item.isMTO ? '' : `
           <div class="qty-control">
-            <button class="qty-btn" onclick="changeQty(${item.id}, -1)">−</button>
+            <button class="qty-btn" onclick="changeQty(${safeId}, -1)">−</button>
             <input class="qty-num" type="number" value="${item.qty}" min="1" max="10" readonly>
-            <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
-          </div>
-          <button class="btn-remove" onclick="removeItem(${item.id})">Remove</button>
+            <button class="qty-btn" onclick="changeQty(${safeId}, 1)">+</button>
+          </div>`}
+          <button class="btn-remove" onclick="removeItem(${safeId})">Remove</button>
         </div>
       </div>
       <div class="cart-item-price">
         <span class="item-price-main">$${item.price * item.qty}</span>
         ${item.qty > 1 ? `<span style="font-size:0.72rem;color:var(--driftwood);display:block;margin-top:0.2rem">$${item.price} each</span>` : ''}
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 
   updateSummary(getSubtotal(cart));
 }
 
 function updateSummary(subtotal) {
-  const subtotalEl = document.getElementById('summarySubtotal');
-  const shippingEl = document.getElementById('summaryShipping');
-  const shippingNote = document.getElementById('shippingNote');
-  const totalEl = document.getElementById('summaryTotal');
-
-  subtotalEl.textContent = '$' + subtotal;
+  const discounted = Math.max(0, subtotal - promoDiscount);
+  document.getElementById('summarySubtotal').textContent = '$' + subtotal;
 
   let shipping = 0;
   if (subtotal === 0) {
-    shippingEl.textContent = '—';
-    shippingNote.textContent = '';
-  } else if (subtotal >= 75) {
-    shippingEl.textContent = 'Free';
-    shippingNote.textContent = 'You qualify for free shipping!';
-    shipping = 0;
+    document.getElementById('summaryShipping').textContent = '—';
+    document.getElementById('shippingNote').textContent = '';
+  } else if (discounted >= 75) {
+    document.getElementById('summaryShipping').textContent = 'Free';
+    document.getElementById('shippingNote').textContent = 'You qualify for free shipping!';
   } else {
-    const remaining = 75 - subtotal;
-    shippingEl.textContent = '$8';
-    shippingNote.textContent = `Add $${remaining} more for free shipping`;
+    const remaining = 75 - discounted;
+    document.getElementById('summaryShipping').textContent = '$8';
+    document.getElementById('shippingNote').textContent = `Add $${remaining} more for free shipping`;
     shipping = 8;
   }
 
-  totalEl.textContent = '$' + (subtotal + shipping);
+  document.getElementById('summaryTotal').textContent = '$' + (discounted + shipping);
 }
 
 function changeQty(id, delta) {
@@ -954,27 +957,54 @@ function changeQty(id, delta) {
 }
 
 function removeItem(id) {
-  const cart = loadCart().filter(i => i.id !== id);
-  saveCart(cart);
+  saveCart(loadCart().filter(i => i.id !== id));
   renderCart();
 }
 
 function applyPromo() {
   const code = document.getElementById('promoInput').value.trim().toUpperCase();
+  const input = document.getElementById('promoInput');
   if (code === 'OCEAN10') {
-    document.getElementById('promoInput').style.borderColor = 'var(--ocean)';
-    document.getElementById('promoInput').value = 'OCEAN10 — 10% off applied';
+    promoDiscount = Math.round(getSubtotal(loadCart()) * 0.1);
+    input.style.borderColor = 'var(--ocean)';
+    input.value = 'OCEAN10 — 10% off applied';
+    input.readOnly = true;
+    renderCart();
   } else {
-    document.getElementById('promoInput').style.borderColor = 'var(--coral)';
-    setTimeout(() => {
-      document.getElementById('promoInput').style.borderColor = '';
-    }, 1500);
+    input.style.borderColor = 'var(--coral)';
+    setTimeout(() => { input.style.borderColor = ''; }, 1500);
   }
 }
 
-function checkout() {
-  // Placeholder — no real backend
-  alert('Checkout coming soon! DM @mai.little.mermaid on Instagram to place your order.');
+async function checkout() {
+  const cart = loadCart();
+  if (cart.length === 0) return;
+
+  const btn = document.getElementById('checkoutBtn');
+  btn.disabled = true;
+  btn.textContent = 'Redirecting to checkout…';
+
+  try {
+    const res = await fetch('/api/create-checkout-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        items: cart,
+        promoDiscount,
+        successUrl: window.location.origin + '/order-success.html',
+        cancelUrl: window.location.origin + '/cart.html',
+      }),
+    });
+
+    if (!res.ok) throw new Error('Server error');
+    const { url } = await res.json();
+    window.location = url;
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Proceed to Checkout';
+    // Stripe not yet configured — show friendly message
+    document.getElementById('checkoutError').style.display = 'block';
+  }
 }
 
 // Hamburger
@@ -989,13 +1019,11 @@ mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
   mobileNav.classList.remove('open');
 }));
 
-// Nav shadow
 window.addEventListener('scroll', () => {
   document.getElementById('mainNav').style.boxShadow =
     window.scrollY > 50 ? '0 2px 20px rgba(0,0,0,0.08)' : 'none';
 });
 
-// Init
 renderCart();
 </script>
 </body>
