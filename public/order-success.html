@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Confirmed — Mai Little Mermaid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sand: #f0e8d8; --sand-dark: #d9cdb8; --driftwood: #8b7355;
+    --ocean: #4a7c8e; --ocean-deep: #2d5a6b; --seafoam: #a8c5bc;
+    --cream: #faf6f0; --ink: #1a1410; --gold: #b8943f;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Jost', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
+  nav {
+    padding: 1.2rem 3rem; display: flex; justify-content: space-between; align-items: center;
+    background: rgba(250,246,240,0.95); border-bottom: 1px solid rgba(139,115,85,0.15);
+  }
+  .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink); text-decoration: none; }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--driftwood); text-decoration: none; transition: color 0.3s; }
+  .nav-links a:hover { color: var(--ocean); }
+
+  .success-page {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 5rem 2rem;
+  }
+
+  .success-wave { font-size: 3.5rem; margin-bottom: 1.5rem; }
+
+  .success-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--ink);
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  .success-title em { color: var(--ocean); }
+
+  .success-sub {
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: var(--driftwood);
+    line-height: 1.9;
+    max-width: 480px;
+    margin-bottom: 2.5rem;
+  }
+
+  .success-steps {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .success-step {
+    background: var(--sand);
+    border: 1px solid var(--sand-dark);
+    padding: 1.5rem;
+    width: 200px;
+    text-align: center;
+  }
+
+  .step-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--seafoam);
+    margin-bottom: 0.5rem;
+  }
+
+  .step-text {
+    font-size: 0.78rem;
+    font-weight: 300;
+    color: var(--driftwood);
+    line-height: 1.6;
+  }
+
+  .success-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+
+  .btn-primary {
+    padding: 0.9rem 2.5rem;
+    background: var(--ocean-deep);
+    color: #fff;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.3s;
+    border: none; cursor: pointer;
+  }
+  .btn-primary:hover { background: var(--ocean); }
+
+  .btn-secondary {
+    padding: 0.9rem 2.5rem;
+    background: none;
+    color: var(--driftwood);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid var(--sand-dark);
+    transition: border-color 0.3s, color 0.3s;
+  }
+  .btn-secondary:hover { border-color: var(--ocean); color: var(--ocean); }
+
+  footer { background: var(--ink); color: rgba(255,255,255,0.4); padding: 2rem 3rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.7rem; }
+  .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 1rem; letter-spacing: 0.2em; text-transform: uppercase; color: #fff; font-weight: 300; }
+
+  @media (max-width: 600px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; padding: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/index.html" class="nav-logo">Mai Little Mermaid</a>
+  <ul class="nav-links">
+    <li><a href="/shop.html">Shop</a></li>
+    <li><a href="/index.html#about">About</a></li>
+    <li><a href="/index.html#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="success-page">
+  <div class="success-wave">🌊</div>
+  <h1 class="success-title">Thank you for<br>your <em>order</em></h1>
+  <p class="success-sub">
+    Your order has been received and your payment processed securely through Stripe.
+    Maile will get to work on your piece straight away — you'll receive a confirmation email shortly.
+  </p>
+
+  <div class="success-steps">
+    <div class="success-step">
+      <div class="step-num">01</div>
+      <p class="step-text">Confirmation email sent to your inbox</p>
+    </div>
+    <div class="success-step">
+      <div class="step-num">02</div>
+      <p class="step-text">Maile crafts your piece by hand in Newport, RI</p>
+    </div>
+    <div class="success-step">
+      <div class="step-num">03</div>
+      <p class="step-text">Ships to you with tracking in 2–5 business days</p>
+    </div>
+  </div>
+
+  <div class="success-actions">
+    <a href="/shop.html" class="btn-primary">Continue Shopping</a>
+    <a href="https://www.instagram.com/mai.little.mermaid" target="_blank" class="btn-secondary">Follow the Journey ↗</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">Mai Little Mermaid</div>
+  <div>© 2025 Mai Little Mermaid · Handmade in Newport, Rhode Island</div>
+</footer>
+
+<script>
+  // Clear cart on successful order
+  localStorage.removeItem('mai_cart');
+</script>
+</body>
+</html>

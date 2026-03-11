@@ -95,6 +95,7 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--ink);
+    text-decoration: none;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -269,6 +270,9 @@
   .rts-card.visible { opacity: 1; transform: translateY(0); }
 
   .rts-card.sold-out { cursor: default; }
+  .rts-card.in-bag { cursor: pointer; }
+  .rts-card.in-bag .rts-img-inner { opacity: 0.8; }
+  .rts-card.in-bag .rts-name { color: var(--driftwood); }
 
   .rts-image {
     aspect-ratio: 3/4;
@@ -318,26 +322,23 @@
     color: rgba(255,255,255,0.8);
   }
 
+  .badge-inbag {
+    background: var(--seafoam);
+    color: var(--ink);
+  }
+
+  .rts-inbag-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ocean);
+  }
+
   .badge-new {
     background: var(--ocean-deep);
     color: #fff;
   }
 
-  .rts-quick-add {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    background: rgba(45,90,107,0.93);
-    color: #fff;
-    text-align: center;
-    padding: 0.75rem;
-    font-size: 0.63rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    transform: translateY(100%);
-    transition: transform 0.3s ease;
-  }
-
-  .rts-card:not(.sold-out):hover .rts-quick-add { transform: translateY(0); }
 
   .rts-name {
     font-family: 'Cormorant Garamond', serif;
@@ -1243,11 +1244,11 @@
     <li><a href="/index.html#about">About</a></li>
     <li><a href="/index.html#contact">Contact</a></li>
   </ul>
-  <div class="nav-cart">
+  <a href="/cart.html" class="nav-cart">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
     Bag
     <span class="cart-bubble" id="cartBubble">0</span>
-  </div>
+  </a>
   <button class="nav-hamburger" id="navToggle" aria-label="Open menu">
     <span></span><span></span><span></span>
   </button>
@@ -1450,7 +1451,7 @@
       </div>
       <p class="summary-lead">Price includes metal & handcrafting</p>
 
-      <button class="btn-mto-checkout" id="mtoCheckout">Proceed to Checkout</button>
+      <button class="btn-mto-checkout" id="mtoCheckout" onclick="addMTOToCart()">Add to Bag →</button>
 
       <div class="summary-stripe">
         <span class="stripe-badge">stripe</span>
@@ -1638,55 +1639,72 @@
 </footer>
 
 <script>
-// ── PRODUCT DATA — reads from localStorage (managed via admin.html) ──
+// ── CONFIG — paste your Supabase values here ──────────────────────────
+const SUPABASE_URL      = 'https://istjxzspjqftrnztosiy.supabase.co';      // https://xxxx.supabase.co
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzdGp4enNwanFmdHJuenRvc2l5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMjM2MjIsImV4cCI6MjA4ODc5OTYyMn0.vvKfN168Pgz_-VedCn4fGYJqzBt8KYkFicrmrc6UiHU'; // eyJ...
+// ─────────────────────────────────────────────────────────────────────
+
 const DEFAULT_RTS = [
-  { id:1, name:'Seafoam Glass Bracelet', type:'Bracelet',    price:55,  metal:'Sterling Silver', colour:'Seafoam',     grad:'g1', available:true,  new:true  },
-  { id:2, name:'Cobalt Drop Earrings',   type:'Earrings',    price:72,  metal:'Gold Fill',       colour:'Cobalt Blue', grad:'g2', available:true,  new:true  },
-  { id:3, name:'Amber Charm Necklace',   type:'Necklace',    price:130, metal:'Gold Fill',       colour:'Amber',       grad:'g3', available:true,  new:false },
-  { id:4, name:'Multi Stone Necklace',   type:'Multi Stone', price:92,  metal:'Sterling Silver', colour:'Mixed',       grad:'g4', available:false, new:false },
-  { id:5, name:'Forest Green Studs',     type:'Earrings',    price:47,  metal:'Sterling Silver', colour:'Green',       grad:'g5', available:true,  new:false },
-  { id:6, name:'Lavender Sea Pendant',   type:'Necklace',    price:130, metal:'Gold Fill',       colour:'Lavender',    grad:'g6', available:true,  new:true  },
-  { id:7, name:'Clear Glass Bracelet',   type:'Bracelet',    price:55,  metal:'Sterling Silver', colour:'Clear',       grad:'g7', available:false, new:false },
-  { id:8, name:'Coral Stone Earrings',   type:'Earrings',    price:72,  metal:'Gold Fill',       colour:'Coral Pink',  grad:'g8', available:true,  new:false },
+  { id:1, name:'Seafoam Glass Bracelet', type:'Bracelet', price:55,  metal:'Sterling Silver', colour:'Seafoam',     grad:'g1', available:true,  is_new:true  },
+  { id:2, name:'Cobalt Drop Earrings',   type:'Earrings', price:72,  metal:'Gold Fill',       colour:'Cobalt Blue', grad:'g2', available:true,  is_new:true  },
+  { id:3, name:'Amber Charm Necklace',   type:'Necklace', price:130, metal:'Gold Fill',       colour:'Amber',       grad:'g3', available:true,  is_new:false },
+  { id:4, name:'Multi Stone Necklace',   type:'Necklace', price:92,  metal:'Sterling Silver', colour:'Mixed',       grad:'g4', available:false, is_new:false },
+  { id:5, name:'Forest Green Studs',     type:'Earrings', price:47,  metal:'Sterling Silver', colour:'Green',       grad:'g5', available:true,  is_new:false },
+  { id:6, name:'Lavender Sea Pendant',   type:'Necklace', price:130, metal:'Gold Fill',       colour:'Lavender',    grad:'g6', available:true,  is_new:true  },
+  { id:7, name:'Clear Glass Bracelet',   type:'Bracelet', price:55,  metal:'Sterling Silver', colour:'Clear',       grad:'g7', available:false, is_new:false },
+  { id:8, name:'Coral Stone Earrings',   type:'Earrings', price:72,  metal:'Gold Fill',       colour:'Coral Pink',  grad:'g8', available:true,  is_new:false },
 ];
 
-function loadProducts() {
+async function fetchProducts() {
+  if (!SUPABASE_URL.startsWith('https://')) return DEFAULT_RTS;
   try {
-    const stored = localStorage.getItem('mai_products');
-    return stored ? JSON.parse(stored) : DEFAULT_RTS;
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/products?order=created_at`, {
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+    });
+    if (!res.ok) throw new Error();
+    const rows = await res.json();
+    return rows.length ? rows : DEFAULT_RTS;
   } catch { return DEFAULT_RTS; }
 }
 
-const rtsProducts = loadProducts();
-
 let cartCount = 0;
 
-function renderRTS() {
+function renderRTS(products) {
   const grid = document.getElementById('rtsGrid');
-  const available = rtsProducts.filter(p => p.available).length;
+  const cart = JSON.parse(localStorage.getItem('mai_cart') || '[]');
+  const inCartIds = new Set(cart.filter(i => !i.isMTO).map(i => i.id));
+
+  const available = products.filter(p => p.available && !inCartIds.has(p.id)).length;
   document.getElementById('availableCount').textContent = `${available} pieces`;
 
-  grid.innerHTML = rtsProducts.map((p, i) => `
-    <div class="rts-card ${p.available ? '' : 'sold-out'}"
+  grid.innerHTML = products.map((p, i) => {
+    const inCart = inCartIds.has(p.id);
+    const soldOut = !p.available;
+    const isNew = p.is_new || p.new;
+    const cardClass = soldOut ? 'sold-out' : inCart ? 'in-bag' : '';
+    const badgeClass = soldOut ? 'badge-soldout' : inCart ? 'badge-inbag' : isNew ? 'badge-new' : 'badge-available';
+    const badgeText = soldOut ? 'Sold Out' : inCart ? 'In Your Bag' : isNew ? 'New' : '1 Left';
+    const bottomRight = soldOut
+      ? `<span class="rts-sold-label">Sold out</span>`
+      : inCart
+        ? `<span class="rts-inbag-label">In Bag ✓</span>`
+        : `<button class="rts-wish" onclick="event.stopPropagation();toggleWish(this)">♡</button>`;
+
+    return `
+    <div class="rts-card ${cardClass}"
          style="transition-delay:${i*55}ms"
-         onclick="${p.available ? `quickBuy(${p.id})` : ''}">
+         onclick="window.location='/shop1.html?id=${p.id}'">
       <div class="rts-image">
         <div class="rts-img-inner ${p.grad}"></div>
-        <span class="rts-badge ${p.available ? (p.new ? 'badge-new' : 'badge-available') : 'badge-soldout'}">
-          ${p.available ? (p.new ? 'New' : '1 Left') : 'Sold Out'}
-        </span>
-        ${p.available ? `<div class="rts-quick-add">+ Add to Bag</div>` : ''}
+        <span class="rts-badge ${badgeClass}">${badgeText}</span>
       </div>
       <p class="rts-name">${p.name}</p>
       <div class="rts-bottom">
         <span class="rts-price">$${p.price} · ${p.metal}</span>
-        ${p.available
-          ? `<button class="rts-wish" onclick="event.stopPropagation();toggleWish(this)">♡</button>`
-          : `<span class="rts-sold-label">Sold out</span>`
-        }
+        ${bottomRight}
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 
   // Stagger reveal
   requestAnimationFrame(() => {
@@ -1696,13 +1714,6 @@ function renderRTS() {
   });
 }
 
-function quickBuy(id) {
-  cartCount++;
-  const el = document.getElementById('cartBubble');
-  el.textContent = cartCount;
-  el.classList.add('bump');
-  setTimeout(() => el.classList.remove('bump'), 250);
-}
 
 function toggleWish(btn) {
   btn.classList.toggle('liked');
@@ -1840,8 +1851,42 @@ window.addEventListener('scroll', () => {
     window.scrollY > 50 ? '0 2px 20px rgba(0,0,0,0.08)' : 'none';
 });
 
+// ── MTO ADD TO CART ──
+function addMTOToCart() {
+  if (!mtoState.piece || !mtoState.metal || !mtoState.colour) return;
+  const price = mtoState.metal === 'Gold Fill' ? mtoState.basePriceGold : mtoState.basePriceSilver;
+  const item = {
+    id: `mto-${Date.now()}`,
+    name: `Made to Order ${mtoState.piece}`,
+    type: mtoState.piece,
+    price: price,
+    metal: mtoState.metal,
+    colour: mtoState.colour,
+    grad: 'mto',
+    qty: 1,
+    isMTO: true
+  };
+  try {
+    const cart = JSON.parse(localStorage.getItem('mai_cart') || '[]');
+    cart.push(item);
+    localStorage.setItem('mai_cart', JSON.stringify(cart));
+  } catch {}
+  window.location = '/cart.html';
+}
+
 // ── INIT ──
-renderRTS();
+// Cart count badge
+try {
+  const storedCart = JSON.parse(localStorage.getItem('mai_cart') || '[]');
+  cartCount = storedCart.reduce((s, i) => s + i.qty, 0);
+  if (cartCount > 0) document.getElementById('cartBubble').textContent = cartCount;
+} catch {}
+
+// Show loading skeleton while fetching from Supabase
+document.getElementById('rtsGrid').innerHTML =
+  '<p style="grid-column:1/-1;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--driftwood);padding:2rem 0">Loading pieces…</p>';
+
+fetchProducts().then(products => renderRTS(products));
 </script>
 </body>
 </html>
