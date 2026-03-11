@@ -176,6 +176,17 @@
 <script>
   // Clear cart on successful order
   localStorage.removeItem('mai_cart');
+
+  // Mark ordered products as sold in Supabase
+  const sessionId = new URLSearchParams(window.location.search).get('session_id');
+  if (sessionId) {
+    fetch('/api/mark-sold', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId }),
+    }).catch(() => {}); // fire-and-forget; shop will update via Realtime
+  }
+  localStorage.removeItem('mai_pending_cart');
 </script>
 </body>
 </html>

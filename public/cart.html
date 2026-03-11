@@ -909,11 +909,11 @@ function renderCart() {
         <div class="cart-item-actions">
           ${item.isMTO ? '' : `
           <div class="qty-control">
-            <button class="qty-btn" onclick="changeQty(${safeId}, -1)">−</button>
+            <button class="qty-btn" onclick='changeQty(${safeId}, -1)'>−</button>
             <input class="qty-num" type="number" value="${item.qty}" min="1" max="10" readonly>
-            <button class="qty-btn" onclick="changeQty(${safeId}, 1)">+</button>
+            <button class="qty-btn" onclick='changeQty(${safeId}, 1)'>+</button>
           </div>`}
-          <button class="btn-remove" onclick="removeItem(${safeId})">Remove</button>
+          <button class="btn-remove" onclick='removeItem(${safeId})'>Remove</button>
         </div>
       </div>
       <div class="cart-item-price">
@@ -984,6 +984,9 @@ async function checkout() {
   btn.disabled = true;
   btn.textContent = 'Redirecting to checkout…';
 
+  // Save cart so order-success.html can mark items sold
+  localStorage.setItem('mai_pending_cart', JSON.stringify(cart));
+
   try {
     const res = await fetch('/api/create-checkout-session', {
       method: 'POST',
@@ -996,14 +999,15 @@ async function checkout() {
       }),
     });
 
-    if (!res.ok) throw new Error('Server error');
-    const { url } = await res.json();
-    window.location = url;
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Server error');
+    window.location = data.url;
   } catch (err) {
     btn.disabled = false;
     btn.textContent = 'Proceed to Checkout';
-    // Stripe not yet configured — show friendly message
-    document.getElementById('checkoutError').style.display = 'block';
+    const errEl = document.getElementById('checkoutError');
+    errEl.style.display = 'block';
+    errEl.textContent = 'Checkout error: ' + err.message;
   }
 }
 

@@ -10,6 +10,7 @@
 <meta property="og:type" content="website">
 <meta property="og:image" content="/og-image.jpg">
 <link rel="canonical" href="https://mailittlemermaid.com/shop.html">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
@@ -1667,6 +1668,16 @@ async function fetchProducts() {
   } catch { return DEFAULT_RTS; }
 }
 
+function subscribeProducts() {
+  if (!SUPABASE_URL.startsWith('https://')) return;
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  sb.channel('products-shop')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
+      fetchProducts().then(products => renderRTS(products));
+    })
+    .subscribe();
+}
+
 let cartCount = 0;
 
 function renderRTS(products) {
@@ -1887,6 +1898,7 @@ document.getElementById('rtsGrid').innerHTML =
   '<p style="grid-column:1/-1;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--driftwood);padding:2rem 0">Loading pieces…</p>';
 
 fetchProducts().then(products => renderRTS(products));
+subscribeProducts();
 </script>
 </body>
 </html>
