@@ -96,6 +96,8 @@ module.exports = async function handler(req, res) {
       metadata: {
         source: 'mai-little-mermaid-website',
         hasMTO: items.some(i => i.isMTO) ? 'true' : 'false',
+        // RTS product IDs so mark-sold.js can update Supabase after payment
+        rts_ids: JSON.stringify(items.filter(i => i.isRTS).map(i => i.id)),
       },
       // Optional: collect customer email for order confirmation
       customer_creation: 'always',
