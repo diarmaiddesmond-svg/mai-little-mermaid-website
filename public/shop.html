@@ -1706,7 +1706,8 @@ function renderRTS(products) {
          style="transition-delay:${i*55}ms"
          onclick="window.location='/shop1.html?id=${p.id}'">
       <div class="rts-image">
-        <div class="rts-img-inner ${p.grad}"></div>
+        <div class="rts-img-inner ${p.image_url ? '' : p.grad}"
+             ${p.image_url ? `style="background:url('${p.image_url}') center/cover no-repeat"` : ''}></div>
         <span class="rts-badge ${badgeClass}">${badgeText}</span>
       </div>
       <p class="rts-name">${p.name}</p>
