@@ -191,12 +191,6 @@
       and <code>YOUR_SUPABASE_ANON_KEY</code> with your project values from
       <strong>Supabase → Project Settings → API</strong>.
     </div>
-    <div class="setup-warn" id="storageWarn" style="display:none">
-      <strong>⚠ First-time setup — run this SQL in Supabase → SQL Editor</strong>
-      If you see "violates row-level security policy" when uploading a photo, you haven't run the storage policy SQL yet.<br>
-      Open <strong>supabase-setup.sql</strong> in this repo and run the section labelled <em>"5. PHOTO STORAGE BUCKET + POLICIES"</em> in your Supabase SQL Editor.
-      It creates the bucket and grants upload permission to your logged-in account.
-    </div>
 
     <!-- PRODUCTS TAB -->
     <div class="tab-pane active" id="tabProducts">
@@ -347,6 +341,16 @@
             <label>Pieces crafted (number)</label>
             <input type="number" id="cAboutCount" placeholder="43" min="0">
           </div>
+          <div class="field">
+            <label>Photo <span style="font-weight:300;text-transform:none;letter-spacing:0">(replaces the gradient panel)</span></label>
+            <div class="upload-area mini" id="aboutArea" onclick="document.getElementById('aboutFile').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');handleAboutSelect(event.dataTransfer.files[0])">
+              <div class="upload-placeholder" id="aboutPlaceholder"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
+              <img class="hero-preview" id="aboutPreview" alt="">
+              <button class="upload-clear" id="aboutClear" onclick="clearAboutImage(event)" title="Remove">✕</button>
+            </div>
+            <input type="file" id="aboutFile" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleAboutSelect(this.files[0]);this.value=''">
+            <div class="upload-status" id="aboutUploadStatus"></div>
+          </div>
           <div class="field full">
             <label>Bio — paragraph 1</label>
             <textarea id="cAboutBio1" style="min-height:110px" placeholder="Maile started this business…"></textarea>
@@ -355,6 +359,22 @@
             <label>Bio — paragraph 2</label>
             <textarea id="cAboutBio2" placeholder="Custom orders are always welcome…"></textarea>
           </div>
+        </div>
+      </div>
+
+      <!-- STUDIO NOTES / NEWS -->
+      <div class="content-section">
+        <div class="content-section-title">From the Studio <span style="font-family:'Jost',sans-serif;font-size:0.65rem;font-style:normal;font-weight:300;color:var(--driftwood);letter-spacing:0.06em;text-transform:none;margin-left:0.5rem">— appears on homepage when at least one card has a title</span></div>
+        <div class="content-grid">
+          <div class="field"><label>Card 1 — date / label</label><input type="text" id="cNews1Date" placeholder="e.g. March 2026 · Upcoming"></div>
+          <div class="field"><label>Card 1 — title</label><input type="text" id="cNews1Title" placeholder="Spring Collection Preview"></div>
+          <div class="field full"><label>Card 1 — body</label><textarea id="cNews1Body" placeholder="A short update…"></textarea></div>
+          <div class="field"><label>Card 2 — date / label</label><input type="text" id="cNews2Date" placeholder="e.g. Feb 2026 · Event"></div>
+          <div class="field"><label>Card 2 — title</label><input type="text" id="cNews2Title" placeholder="Custom Orders Open"></div>
+          <div class="field full"><label>Card 2 — body</label><textarea id="cNews2Body"></textarea></div>
+          <div class="field"><label>Card 3 — date / label</label><input type="text" id="cNews3Date" placeholder="e.g. Jan 2026 · Market"></div>
+          <div class="field"><label>Card 3 — title</label><input type="text" id="cNews3Title" placeholder="Newport Market Season"></div>
+          <div class="field full"><label>Card 3 — body</label><textarea id="cNews3Body"></textarea></div>
         </div>
       </div>
 
@@ -592,7 +612,6 @@ function enterAdmin() {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('adminScreen').style.display = 'block';
   document.getElementById('adminUser').textContent = currentUser?.email || '';
-  document.getElementById('storageWarn').style.display = 'block';
   buildGradPicker('g1');
   loadProducts();
   loadContent();
@@ -607,9 +626,10 @@ async function loadProducts() {
 }
 
 function renderList(rows) {
-  const avail = rows.filter(p => p.available).length;
+  const avail  = rows.filter(p => p.available).length;
+  const photos = rows.filter(p => p.image_url).length;
   document.getElementById('listHeader').textContent =
-    `${rows.length} product${rows.length !== 1 ? 's' : ''} · ${avail} available · ${rows.length - avail} sold`;
+    `${rows.length} product${rows.length !== 1 ? 's' : ''} · ${avail} available · ${rows.length - avail} sold · ${photos} with photos`;
 
   if (!rows.length) {
     document.getElementById('productsList').innerHTML = '<div class="loading">No products yet — add your first one above.</div>';
@@ -810,6 +830,33 @@ function resizeSquare(file) {
   });
 }
 
+// ── ABOUT PHOTO ──────────────────────────────────────────────────────────
+let pendingAboutBlob = null;
+
+async function handleAboutSelect(file) {
+  if (!file) return;
+  document.getElementById('aboutUploadStatus').textContent = 'Resizing…';
+  let blob;
+  try { blob = await resizeImage(file); }
+  catch (err) { document.getElementById('aboutUploadStatus').textContent = 'Error: ' + err.message; return; }
+  pendingAboutBlob = blob;
+  const preview = document.getElementById('aboutPreview');
+  preview.src = URL.createObjectURL(blob); preview.style.display = 'block';
+  document.getElementById('aboutPlaceholder').style.display = 'none';
+  document.getElementById('aboutClear').style.display = 'flex';
+  document.getElementById('aboutUploadStatus').textContent = 'Ready — will upload on Save';
+}
+
+function clearAboutImage(e) {
+  e.stopPropagation();
+  pendingAboutBlob = null;
+  document.getElementById('aboutPreview').src = ''; document.getElementById('aboutPreview').style.display = 'none';
+  document.getElementById('aboutPlaceholder').style.display = 'block';
+  document.getElementById('aboutClear').style.display = 'none';
+  document.getElementById('aboutArea').dataset.cleared = 'true';
+  document.getElementById('aboutUploadStatus').textContent = 'Photo removed';
+}
+
 // ── CONTENT ───────────────────────────────────────────────────────────────
 // Map of Supabase key → input element id
 const CONTENT_FIELDS = {
@@ -826,6 +873,15 @@ const CONTENT_FIELDS = {
   step3_desc:   'cStep3Desc',
   step4_title:  'cStep4Title',
   step4_desc:   'cStep4Desc',
+  news_1_date:  'cNews1Date',
+  news_1_title: 'cNews1Title',
+  news_1_body:  'cNews1Body',
+  news_2_date:  'cNews2Date',
+  news_2_title: 'cNews2Title',
+  news_2_body:  'cNews2Body',
+  news_3_date:  'cNews3Date',
+  news_3_title: 'cNews3Title',
+  news_3_body:  'cNews3Body',
 };
 
 async function loadContent() {
@@ -842,6 +898,13 @@ async function loadContent() {
     if (row.key === 'hero_img1' && row.value) showHeroPreview(1, row.value);
     if (row.key === 'hero_img2' && row.value) showHeroPreview(2, row.value);
     if (row.key === 'hero_img3' && row.value) showHeroPreview(3, row.value);
+    // About photo
+    if (row.key === 'about_img' && row.value) {
+      const p = document.getElementById('aboutPreview');
+      p.src = row.value; p.style.display = 'block';
+      document.getElementById('aboutPlaceholder').style.display = 'none';
+      document.getElementById('aboutClear').style.display = 'flex';
+    }
   });
 }
 
@@ -869,6 +932,27 @@ async function saveContent() {
     delete pendingHeroBlobs[slot];
   }
   document.getElementById('heroUploadStatus').textContent = '';
+
+  // Upload about photo if pending
+  if (pendingAboutBlob) {
+    btn.textContent = 'Uploading about photo…';
+    document.getElementById('aboutUploadStatus').textContent = 'Uploading…';
+    const filename = `about-${Date.now()}.jpg`;
+    const { error: abErr } = await sb.storage
+      .from('product-images')
+      .upload(filename, pendingAboutBlob, { contentType: 'image/jpeg', upsert: false });
+    if (abErr) {
+      showToast('Upload failed: ' + abErr.message);
+      btn.disabled = false; btn.textContent = 'Save Content Changes'; return;
+    }
+    const aboutUrl = sb.storage.from('product-images').getPublicUrl(filename).data.publicUrl;
+    document.getElementById('aboutUploadStatus').textContent = '';
+    pendingAboutBlob = null;
+    rows.push({ key: 'about_img', value: aboutUrl, updated_at: new Date().toISOString() });
+  } else if (document.getElementById('aboutArea')?.dataset.cleared === 'true') {
+    rows.push({ key: 'about_img', value: '', updated_at: new Date().toISOString() });
+    delete document.getElementById('aboutArea').dataset.cleared;
+  }
 
   // Build rows for all text fields
   const rows = Object.entries(CONTENT_FIELDS).map(([key, elId]) => ({

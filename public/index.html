@@ -888,6 +888,68 @@
   .mobile-nav li:last-child a { border-bottom: none; }
   .mobile-nav li a:hover { color: var(--ocean); }
 
+  /* ── FROM THE STUDIO ── */
+  .studio-notes {
+    padding: 5rem;
+    background: var(--cream);
+    border-top: 1px solid var(--sand-dark);
+  }
+
+  .studio-header { margin-bottom: 2.5rem; }
+
+  .studio-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ocean);
+    margin-bottom: 0.8rem;
+  }
+
+  .studio-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 300;
+    color: var(--ink);
+  }
+
+  .studio-title em { font-style: italic; color: var(--ocean); }
+
+  .studio-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .studio-card {
+    background: var(--sand);
+    border: 1px solid var(--sand-dark);
+    padding: 2rem 1.8rem;
+  }
+
+  .studio-card-date {
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ocean);
+    margin-bottom: 0.7rem;
+  }
+
+  .studio-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 0.7rem;
+    line-height: 1.2;
+  }
+
+  .studio-card-body {
+    font-size: 0.88rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--driftwood);
+  }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 900px) {
     nav { padding: 1rem 1.5rem; }
@@ -898,7 +960,8 @@
     .hero-right { height: 60vw; }
     .hero-badge { left: 1rem; bottom: 1.5rem; }
     .section, .about-strip, .process, .contact { padding: 3rem 1.5rem; }
-    .instagram-strip { padding: 3rem 1.5rem; }
+    .instagram-strip, .studio-notes { padding: 3rem 1.5rem; }
+    .studio-grid { grid-template-columns: 1fr; }
     .product-grid { grid-template-columns: repeat(2, 1fr); }
     .shop-cta { flex-direction: column; text-align: center; padding: 2rem 1.5rem; }
     .about-strip { grid-template-columns: 1fr; gap: 2rem; }
@@ -1071,7 +1134,7 @@
 <!-- ABOUT -->
 <div class="about-strip" id="about">
   <div class="about-visual reveal">
-    <div class="about-visual-inner">
+    <div class="about-visual-inner" id="aboutVisualInner">
       <span class="about-visual-text">Mai</span>
     </div>
     <div class="about-badge-corner">
@@ -1112,6 +1175,31 @@
       <div class="step-num">04</div>
       <p class="step-title" id="step4Title">To You</p>
       <p class="step-desc" id="step4Desc">Packaged with love and shipped directly — or available as a custom personal order.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FROM THE STUDIO -->
+<section class="studio-notes" id="studioNotes" style="display:none">
+  <div class="studio-header reveal">
+    <p class="studio-eyebrow">From the Studio</p>
+    <h2 class="studio-title">What's <em>new</em></h2>
+  </div>
+  <div class="studio-grid">
+    <div class="studio-card reveal" id="newsCard1">
+      <p class="studio-card-date" id="news1Date"></p>
+      <h3 class="studio-card-title" id="news1Title"></h3>
+      <p class="studio-card-body" id="news1Body"></p>
+    </div>
+    <div class="studio-card reveal" id="newsCard2" style="transition-delay:0.1s">
+      <p class="studio-card-date" id="news2Date"></p>
+      <h3 class="studio-card-title" id="news2Title"></h3>
+      <p class="studio-card-body" id="news2Body"></p>
+    </div>
+    <div class="studio-card reveal" id="newsCard3" style="transition-delay:0.2s">
+      <p class="studio-card-date" id="news3Date"></p>
+      <h3 class="studio-card-title" id="news3Title"></h3>
+      <p class="studio-card-body" id="news3Body"></p>
     </div>
   </div>
 </section>
@@ -1219,25 +1307,21 @@
     const SUPABASE_URL      = 'https://istjxzspjqftrnztosiy.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzdGp4enNwanFmdHJuenRvc2l5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMjM2MjIsImV4cCI6MjA4ODc5OTYyMn0.vvKfN168Pgz_-VedCn4fGYJqzBt8KYkFicrmrc6UiHU';
 
-    // Map: supabase key → element id (text content)
+    // Map: supabase key → element id (textContent)
     const FIELDS = {
-      hero_eyebrow: 'heroEyebrow',
-      hero_sub:     'heroSub',
-      about_count:  'aboutCount',
-      about_bio1:   'aboutBio1',
-      about_bio2:   'aboutBio2',
-      step1_title:  'step1Title',
-      step1_desc:   'step1Desc',
-      step2_title:  'step2Title',
-      step2_desc:   'step2Desc',
-      step3_title:  'step3Title',
-      step3_desc:   'step3Desc',
-      step4_title:  'step4Title',
-      step4_desc:   'step4Desc',
+      hero_eyebrow: 'heroEyebrow', hero_sub: 'heroSub',
+      about_count: 'aboutCount', about_bio1: 'aboutBio1', about_bio2: 'aboutBio2',
+      step1_title: 'step1Title', step1_desc: 'step1Desc',
+      step2_title: 'step2Title', step2_desc: 'step2Desc',
+      step3_title: 'step3Title', step3_desc: 'step3Desc',
+      step4_title: 'step4Title', step4_desc: 'step4Desc',
+      news_1_date: 'news1Date', news_1_title: 'news1Title', news_1_body: 'news1Body',
+      news_2_date: 'news2Date', news_2_title: 'news2Title', news_2_body: 'news2Body',
+      news_3_date: 'news3Date', news_3_title: 'news3Title', news_3_body: 'news3Body',
     };
 
-    // Hero image keys → element id (background-image)
-    const HERO_IMGS = { hero_img1: 'heroImg1', hero_img2: 'heroImg2', hero_img3: 'heroImg3' };
+    // Keys that drive background-image on an element
+    const BG_IMGS = { hero_img1: 'heroImg1', hero_img2: 'heroImg2', hero_img3: 'heroImg3' };
 
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/site_content?select=key,value`, {
@@ -1245,19 +1329,29 @@
       });
       if (!res.ok) return;
       const rows = await res.json();
+
       rows.forEach(({ key, value }) => {
         if (!value) return;
         const elId = FIELDS[key];
-        if (elId) {
-          const el = document.getElementById(elId);
-          if (el) el.textContent = value;
-        }
-        const imgId = HERO_IMGS[key];
-        if (imgId) {
-          const el = document.getElementById(imgId);
-          if (el) el.style.background = `url('${value}') center/cover no-repeat`;
+        if (elId) { const el = document.getElementById(elId); if (el) el.textContent = value; }
+        const bgId = BG_IMGS[key];
+        if (bgId) { const el = document.getElementById(bgId); if (el) el.style.background = `url('${value}') center/cover no-repeat`; }
+        // About photo
+        if (key === 'about_img') {
+          const el = document.getElementById('aboutVisualInner');
+          if (el) { el.style.background = `url('${value}') center/cover no-repeat`; const t = el.querySelector('.about-visual-text'); if (t) t.style.display = 'none'; }
         }
       });
+
+      // Show "From the Studio" only when at least one card has a title
+      const newsTitleKeys = ['news_1_title', 'news_2_title', 'news_3_title'];
+      if (rows.some(r => newsTitleKeys.includes(r.key) && r.value.trim())) {
+        document.getElementById('studioNotes').style.display = 'block';
+        [1, 2, 3].forEach(n => {
+          const row = rows.find(r => r.key === `news_${n}_title`);
+          if (!row || !row.value.trim()) document.getElementById(`newsCard${n}`).style.display = 'none';
+        });
+      }
     } catch { /* silently skip — page shows hardcoded defaults */ }
   })();
 </script>
