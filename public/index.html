@@ -888,67 +888,24 @@
   .mobile-nav li:last-child a { border-bottom: none; }
   .mobile-nav li a:hover { color: var(--ocean); }
 
-  /* ── FROM THE STUDIO ── */
-  .studio-notes {
-    padding: 5rem;
-    background: var(--cream);
-    border-top: 1px solid var(--sand-dark);
-  }
-
-  .studio-header { margin-bottom: 2.5rem; }
-
-  .studio-eyebrow {
-    font-size: 0.7rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--ocean);
-    margin-bottom: 0.8rem;
-  }
-
-  .studio-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(1.8rem, 3vw, 2.5rem);
-    font-weight: 300;
-    color: var(--ink);
-  }
-
-  .studio-title em { font-style: italic; color: var(--ocean); }
-
-  .studio-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-  }
-
-  .studio-card {
-    background: var(--sand);
-    border: 1px solid var(--sand-dark);
-    padding: 2rem 1.8rem;
-  }
-
-  .studio-card-date {
-    font-size: 0.65rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--ocean);
-    margin-bottom: 0.7rem;
-  }
-
-  .studio-card-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.3rem;
-    font-weight: 400;
-    color: var(--ink);
-    margin-bottom: 0.7rem;
-    line-height: 1.2;
-  }
-
-  .studio-card-body {
-    font-size: 0.88rem;
-    font-weight: 300;
-    line-height: 1.8;
-    color: var(--driftwood);
-  }
+  /* ── FROM THE STUDIO — dark announcement banner ── */
+  .studio-notes { background: var(--ink); padding: 5rem; }
+  .studio-header { margin-bottom: 3rem; }
+  .studio-eyebrow { font-size: 0.68rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--seafoam); margin-bottom: 0.6rem; }
+  .studio-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 300; color: #fff; line-height: 1.1; }
+  .studio-title em { font-style: italic; color: var(--seafoam); }
+  .studio-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 0; border-top: 1px solid rgba(255,255,255,0.1); }
+  .studio-card { padding: 2.5rem 2.5rem 2.5rem 0; border-right: 1px solid rgba(255,255,255,0.08); position: relative; }
+  .studio-card:first-child { padding-right: 3rem; }
+  .studio-card:not(:first-child) { padding-left: 2.5rem; }
+  .studio-card:last-child { border-right: none; }
+  .studio-card::before { content: ''; position: absolute; top: 2.5rem; left: 0; width: 2.5rem; height: 2px; background: var(--ocean); }
+  .studio-card:not(:first-child)::before { left: 2.5rem; }
+  .studio-card-date { font-size: 0.63rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--seafoam); margin-bottom: 0.9rem; margin-top: 1.2rem; }
+  .studio-card:first-child .studio-card-title { font-size: clamp(1.6rem, 2.5vw, 2.2rem); }
+  .studio-card:not(:first-child) .studio-card-title { font-size: 1.25rem; }
+  .studio-card-title { font-family: 'Cormorant Garamond', serif; font-weight: 300; color: #fff; line-height: 1.15; margin-bottom: 0.9rem; }
+  .studio-card-body { font-size: 0.88rem; font-weight: 300; line-height: 1.85; color: rgba(255,255,255,0.55); }
 
   /* ── RESPONSIVE ── */
   @media (max-width: 900px) {
@@ -962,6 +919,9 @@
     .section, .about-strip, .process, .contact { padding: 3rem 1.5rem; }
     .instagram-strip, .studio-notes { padding: 3rem 1.5rem; }
     .studio-grid { grid-template-columns: 1fr; }
+    .studio-card, .studio-card:first-child, .studio-card:not(:first-child) { padding: 2rem 0; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .studio-card:last-child { border-bottom: none; }
+    .studio-card::before, .studio-card:not(:first-child)::before { left: 0; }
     .product-grid { grid-template-columns: repeat(2, 1fr); }
     .shop-cta { flex-direction: column; text-align: center; padding: 2rem 1.5rem; }
     .about-strip { grid-template-columns: 1fr; gap: 2rem; }

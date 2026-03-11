@@ -252,6 +252,36 @@
           <input type="hidden" id="fImage">
         </div>
         <div class="field full">
+          <label>More photos <span style="font-weight:300;text-transform:none;letter-spacing:0">(optional — up to 3 extra angles)</span></label>
+          <div class="hero-upload-grid">
+            <div class="hero-slot">
+              <label>Photo 2</label>
+              <div class="upload-area mini" id="extraArea1" onclick="document.getElementById('extraFile1').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');handleExtraSelect(1,event.dataTransfer.files[0])">
+                <div class="upload-placeholder" id="extraPlaceholder1"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
+                <img class="hero-preview" id="extraPreview1" alt=""><button class="upload-clear" id="extraClear1" onclick="clearExtraImage(event,1)" title="Remove">✕</button>
+              </div>
+              <input type="file" id="extraFile1" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleExtraSelect(1,this.files[0]);this.value=''">
+            </div>
+            <div class="hero-slot">
+              <label>Photo 3</label>
+              <div class="upload-area mini" id="extraArea2" onclick="document.getElementById('extraFile2').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');handleExtraSelect(2,event.dataTransfer.files[0])">
+                <div class="upload-placeholder" id="extraPlaceholder2"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
+                <img class="hero-preview" id="extraPreview2" alt=""><button class="upload-clear" id="extraClear2" onclick="clearExtraImage(event,2)" title="Remove">✕</button>
+              </div>
+              <input type="file" id="extraFile2" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleExtraSelect(2,this.files[0]);this.value=''">
+            </div>
+            <div class="hero-slot">
+              <label>Photo 4</label>
+              <div class="upload-area mini" id="extraArea3" onclick="document.getElementById('extraFile3').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');handleExtraSelect(3,event.dataTransfer.files[0])">
+                <div class="upload-placeholder" id="extraPlaceholder3"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
+                <img class="hero-preview" id="extraPreview3" alt=""><button class="upload-clear" id="extraClear3" onclick="clearExtraImage(event,3)" title="Remove">✕</button>
+              </div>
+              <input type="file" id="extraFile3" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleExtraSelect(3,this.files[0]);this.value=''">
+            </div>
+          </div>
+          <div class="upload-status" id="extraUploadStatus"></div>
+        </div>
+        <div class="field full">
           <label>Colour Swatch <span style="font-weight:300;text-transform:none;letter-spacing:0">(shown if no photo)</span></label>
           <div class="grad-picker" id="gradPicker"></div>
           <input type="hidden" id="fGrad" value="g1">
@@ -680,7 +710,7 @@ function openForm(p) {
   document.getElementById('fAvailable').value = String(p?.available ?? true);
   document.getElementById('fNew').value       = String(p?.is_new ?? false);
   buildGradPicker(p?.grad || 'g1');
-  // Reset upload area
+  // Reset main upload area
   pendingImageBlob = null;
   document.getElementById('fImageFile').value = '';
   document.getElementById('uploadPreview').style.display = 'none';
@@ -689,6 +719,10 @@ function openForm(p) {
   document.getElementById('uploadClear').style.display = 'none';
   document.getElementById('uploadStatus').textContent = '';
   if (p?.image_url) showExistingPreview(p.image_url);
+  // Reset and load extra photos
+  resetExtraSlots();
+  const extras = JSON.parse(p?.extra_images || '[]');
+  if (extras.length) loadExtraSlots(extras);
   document.getElementById('productForm').style.display = 'block';
   document.getElementById('productForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -725,6 +759,23 @@ async function saveProduct() {
     if (uploadedUrl === false) { btn.disabled = false; btn.textContent = 'Save Product'; return; }
     if (uploadedUrl) { payload.image_url = uploadedUrl; pendingImageBlob = null; }
   }
+
+  // Upload extra photos and collect final list
+  const finalExtras = [];
+  for (let s = 1; s <= 3; s++) {
+    if (pendingExtraBlobs[s]) {
+      btn.textContent = `Uploading photo ${s + 1}…`;
+      const filename = `product-${Date.now()}-${s}.jpg`;
+      const { error: exErr } = await sb.storage.from('product-images')
+        .upload(filename, pendingExtraBlobs[s], { contentType: 'image/jpeg', upsert: false });
+      if (exErr) { showToast('Upload failed: ' + exErr.message); btn.disabled = false; btn.textContent = 'Save Product'; return; }
+      finalExtras.push(sb.storage.from('product-images').getPublicUrl(filename).data.publicUrl);
+      pendingExtraBlobs[s] = null;
+    } else if (extraSlotUrls[s]) {
+      finalExtras.push(extraSlotUrls[s]);
+    }
+  }
+  payload.extra_images = JSON.stringify(finalExtras);
 
   const op = editingId
     ? sb.from('products').update(payload).eq('id', editingId)
@@ -764,6 +815,56 @@ function switchTab(name) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
   event.target.classList.add('active');
+}
+
+// ── EXTRA PRODUCT PHOTOS ─────────────────────────────────────────────────
+const extraSlotUrls   = {1: null, 2: null, 3: null}; // existing DB URLs per slot
+const pendingExtraBlobs = {1: null, 2: null, 3: null}; // new blobs awaiting upload
+
+function resetExtraSlots() {
+  for (let s = 1; s <= 3; s++) {
+    extraSlotUrls[s] = null; pendingExtraBlobs[s] = null;
+    document.getElementById(`extraPreview${s}`).style.display = 'none';
+    document.getElementById(`extraPreview${s}`).src = '';
+    document.getElementById(`extraPlaceholder${s}`).style.display = 'block';
+    document.getElementById(`extraClear${s}`).style.display = 'none';
+  }
+  document.getElementById('extraUploadStatus').textContent = '';
+}
+
+function loadExtraSlots(extras) {
+  extras.slice(0, 3).forEach((url, i) => {
+    const s = i + 1;
+    extraSlotUrls[s] = url;
+    const prev = document.getElementById(`extraPreview${s}`);
+    prev.src = url; prev.style.display = 'block';
+    document.getElementById(`extraPlaceholder${s}`).style.display = 'none';
+    document.getElementById(`extraClear${s}`).style.display = 'flex';
+  });
+}
+
+async function handleExtraSelect(slot, file) {
+  if (!file) return;
+  document.getElementById('extraUploadStatus').textContent = `Resizing photo ${slot + 1}…`;
+  let blob;
+  try { blob = await resizeImage(file); }
+  catch (err) { document.getElementById('extraUploadStatus').textContent = 'Error: ' + err.message; return; }
+  pendingExtraBlobs[slot] = blob;
+  const prev = document.getElementById(`extraPreview${slot}`);
+  prev.src = URL.createObjectURL(blob); prev.style.display = 'block';
+  document.getElementById(`extraPlaceholder${slot}`).style.display = 'none';
+  document.getElementById(`extraClear${slot}`).style.display = 'flex';
+  document.getElementById('extraUploadStatus').textContent = 'Ready — will upload on Save';
+}
+
+function clearExtraImage(e, slot) {
+  e.stopPropagation();
+  extraSlotUrls[slot] = null; pendingExtraBlobs[slot] = null;
+  document.getElementById(`extraPreview${slot}`).src = '';
+  document.getElementById(`extraPreview${slot}`).style.display = 'none';
+  document.getElementById(`extraPlaceholder${slot}`).style.display = 'block';
+  document.getElementById(`extraClear${slot}`).style.display = 'none';
+  document.getElementById('extraUploadStatus').textContent = '';
 }
 
 // ── HERO IMAGE UPLOADS ────────────────────────────────────────────────────

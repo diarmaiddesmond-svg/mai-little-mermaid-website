@@ -51,6 +51,12 @@ insert into public.products (name, type, price, metal, colour, grad, available, 
   ('Coral Stone Earrings',   'Earrings', 72,  'Gold Fill',       'Coral Pink',  'g8', true,  false);
 
 -- ============================================================
+-- MIGRATION: add extra_images column (run if table already exists)
+-- ============================================================
+alter table public.products
+  add column if not exists extra_images text not null default '[]';
+
+-- ============================================================
 -- 4. SITE CONTENT TABLE (for admin Content editor)
 -- ============================================================
 
