@@ -56,6 +56,21 @@
   .form-title { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 300; margin-bottom: 1.5rem; }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   .form-grid .full { grid-column: 1 / -1; }
+  /* UPLOAD AREA */
+  .upload-area {
+    border: 2px dashed var(--sand-dark); cursor: pointer; transition: border-color 0.2s;
+    position: relative; overflow: hidden; aspect-ratio: 3/4; max-width: 220px;
+    background: var(--sand); display: flex; align-items: center; justify-content: center;
+  }
+  .upload-area:hover { border-color: var(--ocean); }
+  .upload-area.drag-over { border-color: var(--ocean); background: #eef4f6; }
+  .upload-placeholder { text-align: center; padding: 1.5rem; pointer-events: none; }
+  .upload-icon { font-size: 2rem; color: var(--driftwood); line-height: 1; margin-bottom: 0.5rem; }
+  .upload-hint { font-size: 0.67rem; color: var(--driftwood); letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.6; }
+  #uploadPreview { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; display: none; }
+  .upload-clear { position: absolute; top: 0.4rem; right: 0.4rem; background: rgba(0,0,0,0.55); color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 0.75rem; cursor: pointer; display: none; align-items: center; justify-content: center; line-height: 1; }
+  .upload-status { font-size: 0.7rem; color: var(--driftwood); margin-top: 0.4rem; letter-spacing: 0.06em; min-height: 1.1em; }
+
   .grad-picker { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.5rem; }
   .grad-swatch { width: 38px; height: 38px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: border-color 0.15s; flex-shrink: 0; }
   .grad-swatch.selected { border-color: var(--ink); }
@@ -184,9 +199,24 @@
           <label>Colour / Description</label>
           <input type="text" id="fColour" placeholder="e.g. Seafoam, Cobalt Blue">
         </div>
-        <div class="field">
-          <label>Photo URL <span style="font-weight:300;text-transform:none;letter-spacing:0">(paste link to image)</span></label>
-          <input type="url" id="fImage" placeholder="https://…">
+        <div class="field full">
+          <label>Product Photo</label>
+          <div class="upload-area" id="uploadArea"
+               onclick="document.getElementById('fImageFile').click()"
+               ondragover="event.preventDefault();this.classList.add('drag-over')"
+               ondragleave="this.classList.remove('drag-over')"
+               ondrop="event.preventDefault();this.classList.remove('drag-over');handleImageSelect(event.dataTransfer.files[0])">
+            <div class="upload-placeholder" id="uploadPlaceholder">
+              <div class="upload-icon">+</div>
+              <div class="upload-hint">Click or drag &amp; drop<br>JPEG · PNG · WebP<br>Auto-cropped to 3:4</div>
+            </div>
+            <img id="uploadPreview" alt="Product preview">
+            <button class="upload-clear" id="uploadClear" onclick="clearImage(event)" title="Remove photo">✕</button>
+          </div>
+          <div class="upload-status" id="uploadStatus"></div>
+          <input type="file" id="fImageFile" accept="image/jpeg,image/png,image/webp" style="display:none"
+                 onchange="handleImageSelect(this.files[0])">
+          <input type="hidden" id="fImage">
         </div>
         <div class="field full">
           <label>Colour Swatch <span style="font-weight:300;text-transform:none;letter-spacing:0">(shown if no photo)</span></label>
@@ -239,6 +269,89 @@ let sb, currentUser, editingId = null;
 
 if (configured) {
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
+
+// ── IMAGE UPLOAD ──────────────────────────────────────────────────────────
+let pendingImageBlob = null; // resized blob waiting to be uploaded on save
+
+function resizeImage(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const W = 800, H = 1067; // 3:4 ratio
+        const canvas = document.createElement('canvas');
+        canvas.width = W; canvas.height = H;
+        const ctx = canvas.getContext('2d');
+        // Cover-crop: fill 3:4, trim excess
+        const srcRatio = img.width / img.height;
+        const dstRatio = W / H;
+        let sx, sy, sw, sh;
+        if (srcRatio > dstRatio) {
+          sh = img.height; sw = img.height * dstRatio;
+          sx = (img.width - sw) / 2; sy = 0;
+        } else {
+          sw = img.width; sh = img.width / dstRatio;
+          sx = 0; sy = (img.height - sh) / 2;
+        }
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, W, H);
+        canvas.toBlob(resolve, 'image/jpeg', 0.88);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleImageSelect(file) {
+  if (!file) return;
+  document.getElementById('uploadStatus').textContent = 'Resizing…';
+  const blob = await resizeImage(file);
+  pendingImageBlob = blob;
+  // Show preview
+  const url = URL.createObjectURL(blob);
+  const preview = document.getElementById('uploadPreview');
+  preview.src = url;
+  preview.style.display = 'block';
+  document.getElementById('uploadPlaceholder').style.display = 'none';
+  const clearBtn = document.getElementById('uploadClear');
+  clearBtn.style.display = 'flex';
+  document.getElementById('uploadStatus').textContent = 'Ready to save · will upload on Save';
+  // Reset file input so same file can be re-selected
+  document.getElementById('fImageFile').value = '';
+}
+
+function showExistingPreview(url) {
+  if (!url) return;
+  const preview = document.getElementById('uploadPreview');
+  preview.src = url;
+  preview.style.display = 'block';
+  document.getElementById('uploadPlaceholder').style.display = 'none';
+  document.getElementById('uploadClear').style.display = 'flex';
+  document.getElementById('uploadStatus').textContent = 'Current photo loaded';
+}
+
+function clearImage(e) {
+  e.stopPropagation();
+  pendingImageBlob = null;
+  document.getElementById('fImage').value = '';
+  document.getElementById('uploadPreview').style.display = 'none';
+  document.getElementById('uploadPreview').src = '';
+  document.getElementById('uploadPlaceholder').style.display = 'block';
+  document.getElementById('uploadClear').style.display = 'none';
+  document.getElementById('uploadStatus').textContent = 'Photo removed';
+}
+
+async function uploadPendingImage() {
+  if (!pendingImageBlob) return null;
+  const filename = `${Date.now()}.jpg`;
+  const { error } = await sb.storage
+    .from('product-images')
+    .upload(filename, pendingImageBlob, { contentType: 'image/jpeg', upsert: false });
+  if (error) { showToast('Image upload failed: ' + error.message); return false; }
+  const { data } = sb.storage.from('product-images').getPublicUrl(filename);
+  return data.publicUrl;
 }
 
 // ── GRAD PICKER ──────────────────────────────────────────────────────────
@@ -373,6 +486,15 @@ function openForm(p) {
   document.getElementById('fAvailable').value = String(p?.available ?? true);
   document.getElementById('fNew').value       = String(p?.is_new ?? false);
   buildGradPicker(p?.grad || 'g1');
+  // Reset upload area
+  pendingImageBlob = null;
+  document.getElementById('fImageFile').value = '';
+  document.getElementById('uploadPreview').style.display = 'none';
+  document.getElementById('uploadPreview').src = '';
+  document.getElementById('uploadPlaceholder').style.display = 'block';
+  document.getElementById('uploadClear').style.display = 'none';
+  document.getElementById('uploadStatus').textContent = '';
+  if (p?.image_url) showExistingPreview(p.image_url);
   document.getElementById('productForm').style.display = 'block';
   document.getElementById('productForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -400,6 +522,15 @@ async function saveProduct() {
 
   const btn = document.getElementById('saveBtn');
   btn.disabled = true; btn.textContent = 'Saving…';
+
+  // Upload image if a new file was selected
+  if (pendingImageBlob) {
+    btn.textContent = 'Uploading photo…';
+    document.getElementById('uploadStatus').textContent = 'Uploading…';
+    const uploadedUrl = await uploadPendingImage();
+    if (uploadedUrl === false) { btn.disabled = false; btn.textContent = 'Save Product'; return; }
+    if (uploadedUrl) { payload.image_url = uploadedUrl; pendingImageBlob = null; }
+  }
 
   const op = editingId
     ? sb.from('products').update(payload).eq('id', editingId)
