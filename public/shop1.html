@@ -1159,8 +1159,8 @@
 
 <script>
   // ── CONFIG — same values as shop.html ──────────────────────────────
-  const SUPABASE_URL      = 'YOUR_SUPABASE_URL';
-  const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+  const SUPABASE_URL      = 'https://istjxzspjqftrnztosiy.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzdGp4enNwanFmdHJuenRvc2l5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMjM2MjIsImV4cCI6MjA4ODc5OTYyMn0.vvKfN168Pgz_-VedCn4fGYJqzBt8KYkFicrmrc6UiHU';
   // ────────────────────────────────────────────────────────────────────
 
   const FALLBACK_PRODUCTS = [
@@ -1188,7 +1188,7 @@
 
   async function loadAndRender() {
     // Try Supabase, fallback to hardcoded
-    if (SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+    if (SUPABASE_URL.startsWith('https://')) {
       try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${productId}&limit=1`, {
           headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }

@@ -223,8 +223,8 @@
 
 <script>
 // ── CONFIG — paste your Supabase values here ──────────────────────────────
-const SUPABASE_URL      = 'YOUR_SUPABASE_URL';      // https://xxxx.supabase.co
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // eyJ...
+const SUPABASE_URL      = 'https://istjxzspjqftrnztosiy.supabase.co';      // https://xxxx.supabase.co
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzdGp4enNwanFmdHJuenRvc2l5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMjM2MjIsImV4cCI6MjA4ODc5OTYyMn0.vvKfN168Pgz_-VedCn4fGYJqzBt8KYkFicrmrc6UiHU'; // eyJ...
 // ─────────────────────────────────────────────────────────────────────────
 
 const GRADS = {
@@ -234,7 +234,7 @@ const GRADS = {
   g7:'linear-gradient(145deg,#e8dcc8,#c49a6a)', g8:'linear-gradient(145deg,#cfd9d5,#7aaa9e)',
 };
 
-const configured = SUPABASE_URL !== 'YOUR_SUPABASE_URL';
+const configured = !SUPABASE_URL.includes('YOUR_SUPABASE') && SUPABASE_URL.startsWith('https://');
 let sb, currentUser, editingId = null;
 
 if (configured) {
