@@ -969,9 +969,9 @@
 
   <div class="hero-right">
     <div class="hero-image-grid">
-      <div class="hero-img-block" style="background: linear-gradient(145deg,#c9b99a,#8b7355);"></div>
-      <div class="hero-img-block" style="background: linear-gradient(145deg,#a8c5bc,#4a7c8e); grid-row: span 2;"></div>
-      <div class="hero-img-block" style="background: linear-gradient(145deg,#d9cdb8,#b8943f);"></div>
+      <div class="hero-img-block" id="heroImg1" style="background: linear-gradient(145deg,#c9b99a,#8b7355);"></div>
+      <div class="hero-img-block" id="heroImg2" style="background: linear-gradient(145deg,#a8c5bc,#4a7c8e); grid-row: span 2;"></div>
+      <div class="hero-img-block" id="heroImg3" style="background: linear-gradient(145deg,#d9cdb8,#b8943f);"></div>
     </div>
   </div>
 </section>
@@ -1219,7 +1219,7 @@
     const SUPABASE_URL      = 'https://istjxzspjqftrnztosiy.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzdGp4enNwanFmdHJuenRvc2l5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMjM2MjIsImV4cCI6MjA4ODc5OTYyMn0.vvKfN168Pgz_-VedCn4fGYJqzBt8KYkFicrmrc6UiHU';
 
-    // Map: supabase key → element id
+    // Map: supabase key → element id (text content)
     const FIELDS = {
       hero_eyebrow: 'heroEyebrow',
       hero_sub:     'heroSub',
@@ -1236,6 +1236,9 @@
       step4_desc:   'step4Desc',
     };
 
+    // Hero image keys → element id (background-image)
+    const HERO_IMGS = { hero_img1: 'heroImg1', hero_img2: 'heroImg2', hero_img3: 'heroImg3' };
+
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/site_content?select=key,value`, {
         headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }
@@ -1243,10 +1246,16 @@
       if (!res.ok) return;
       const rows = await res.json();
       rows.forEach(({ key, value }) => {
+        if (!value) return;
         const elId = FIELDS[key];
-        if (elId && value) {
+        if (elId) {
           const el = document.getElementById(elId);
           if (el) el.textContent = value;
+        }
+        const imgId = HERO_IMGS[key];
+        if (imgId) {
+          const el = document.getElementById(imgId);
+          if (el) el.style.background = `url('${value}') center/cover no-repeat`;
         }
       });
     } catch { /* silently skip — page shows hardcoded defaults */ }

@@ -70,6 +70,13 @@
   #uploadPreview { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; display: none; }
   .upload-clear { position: absolute; top: 0.4rem; right: 0.4rem; background: rgba(0,0,0,0.55); color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 0.75rem; cursor: pointer; display: none; align-items: center; justify-content: center; line-height: 1; }
   .upload-status { font-size: 0.7rem; color: var(--driftwood); margin-top: 0.4rem; letter-spacing: 0.06em; min-height: 1.1em; }
+  /* Hero mini upload slots */
+  .hero-upload-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.8rem; margin-top: 0.5rem; }
+  .hero-slot label { display: block; font-size: 0.63rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--driftwood); margin-bottom: 0.3rem; }
+  .upload-area.mini { max-width: none; aspect-ratio: 1/1; }
+  .upload-area.mini .upload-icon { font-size: 1.4rem; }
+  .upload-area.mini .upload-hint { font-size: 0.6rem; }
+  .hero-preview { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; display: none; }
 
   .grad-picker { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.5rem; }
   .grad-swatch { width: 38px; height: 38px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: border-color 0.15s; flex-shrink: 0; }
@@ -185,9 +192,10 @@
       <strong>Supabase → Project Settings → API</strong>.
     </div>
     <div class="setup-warn" id="storageWarn" style="display:none">
-      <strong>⚠ Photo uploads need a Storage bucket</strong>
-      In Supabase go to <strong>Storage → New bucket</strong>, name it <code>product-images</code>, tick <strong>Public bucket</strong>, then save.
-      Also run the SQL in <code>supabase-setup.sql</code> to add the site_content table for the Content editor.
+      <strong>⚠ First-time setup — run this SQL in Supabase → SQL Editor</strong>
+      If you see "violates row-level security policy" when uploading a photo, you haven't run the storage policy SQL yet.<br>
+      Open <strong>supabase-setup.sql</strong> in this repo and run the section labelled <em>"5. PHOTO STORAGE BUCKET + POLICIES"</em> in your Supabase SQL Editor.
+      It creates the bucket and grants upload permission to your logged-in account.
     </div>
 
     <!-- PRODUCTS TAB -->
@@ -294,6 +302,39 @@
           <div class="field full">
             <label>Subtitle</label>
             <textarea id="cHeroSub" placeholder="Each piece begins with a walk along the shore…"></textarea>
+          </div>
+          <div class="field full">
+            <label>Hero photos <span style="font-weight:300;text-transform:none;letter-spacing:0">(3-panel grid on homepage, auto-cropped to square)</span></label>
+            <div class="hero-upload-grid">
+              <div class="hero-slot">
+                <label>Top left</label>
+                <div class="upload-area mini" id="heroArea1" onclick="document.getElementById('heroFile1').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');handleHeroSelect(1,event.dataTransfer.files[0])">
+                  <div class="upload-placeholder" id="heroPlaceholder1"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
+                  <img class="hero-preview" id="heroPreview1" alt="">
+                  <button class="upload-clear" id="heroClear1" onclick="clearHeroImage(event,1)" title="Remove">✕</button>
+                </div>
+                <input type="file" id="heroFile1" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleHeroSelect(1,this.files[0]);this.value=''">
+              </div>
+              <div class="hero-slot">
+                <label>Right (tall)</label>
+                <div class="upload-area mini" id="heroArea2" onclick="document.getElementById('heroFile2').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');handleHeroSelect(2,event.dataTransfer.files[0])">
+                  <div class="upload-placeholder" id="heroPlaceholder2"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
+                  <img class="hero-preview" id="heroPreview2" alt="">
+                  <button class="upload-clear" id="heroClear2" onclick="clearHeroImage(event,2)" title="Remove">✕</button>
+                </div>
+                <input type="file" id="heroFile2" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleHeroSelect(2,this.files[0]);this.value=''">
+              </div>
+              <div class="hero-slot">
+                <label>Bottom left</label>
+                <div class="upload-area mini" id="heroArea3" onclick="document.getElementById('heroFile3').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');handleHeroSelect(3,event.dataTransfer.files[0])">
+                  <div class="upload-placeholder" id="heroPlaceholder3"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
+                  <img class="hero-preview" id="heroPreview3" alt="">
+                  <button class="upload-clear" id="heroClear3" onclick="clearHeroImage(event,3)" title="Remove">✕</button>
+                </div>
+                <input type="file" id="heroFile3" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleHeroSelect(3,this.files[0]);this.value=''">
+              </div>
+            </div>
+            <div class="upload-status" id="heroUploadStatus"></div>
           </div>
         </div>
       </div>
@@ -705,6 +746,70 @@ function switchTab(name) {
   event.target.classList.add('active');
 }
 
+// ── HERO IMAGE UPLOADS ────────────────────────────────────────────────────
+const pendingHeroBlobs = {}; // slot (1/2/3) → Blob
+
+async function handleHeroSelect(slot, file) {
+  if (!file) return;
+  document.getElementById('heroUploadStatus').textContent = `Resizing photo ${slot}…`;
+  let blob;
+  try { blob = await resizeSquare(file); }
+  catch (err) { document.getElementById('heroUploadStatus').textContent = 'Error: ' + err.message; return; }
+  pendingHeroBlobs[slot] = blob;
+  const url = URL.createObjectURL(blob);
+  const preview = document.getElementById(`heroPreview${slot}`);
+  preview.src = url; preview.style.display = 'block';
+  document.getElementById(`heroPlaceholder${slot}`).style.display = 'none';
+  document.getElementById(`heroClear${slot}`).style.display = 'flex';
+  document.getElementById('heroUploadStatus').textContent = 'Ready — will upload on Save';
+}
+
+function showHeroPreview(slot, url) {
+  if (!url) return;
+  const preview = document.getElementById(`heroPreview${slot}`);
+  preview.src = url; preview.style.display = 'block';
+  document.getElementById(`heroPlaceholder${slot}`).style.display = 'none';
+  document.getElementById(`heroClear${slot}`).style.display = 'flex';
+}
+
+function clearHeroImage(e, slot) {
+  e.stopPropagation();
+  delete pendingHeroBlobs[slot];
+  const preview = document.getElementById(`heroPreview${slot}`);
+  preview.src = ''; preview.style.display = 'none';
+  document.getElementById(`heroPlaceholder${slot}`).style.display = 'block';
+  document.getElementById(`heroClear${slot}`).style.display = 'none';
+  // Mark for removal in site_content on next save
+  document.getElementById(`heroArea${slot}`).dataset.cleared = 'true';
+}
+
+// Resize to 800×800 square (cover-crop) for hero blocks
+function resizeSquare(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Could not read file'));
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('Could not decode image'));
+      img.onload = () => {
+        const S = 800;
+        const canvas = document.createElement('canvas');
+        canvas.width = S; canvas.height = S;
+        const ctx = canvas.getContext('2d');
+        const side = Math.min(img.width, img.height);
+        const sx = (img.width - side) / 2, sy = (img.height - side) / 2;
+        ctx.drawImage(img, sx, sy, side, side, 0, 0, S, S);
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error('Canvas export failed'));
+        }, 'image/jpeg', 0.88);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 // ── CONTENT ───────────────────────────────────────────────────────────────
 // Map of Supabase key → input element id
 const CONTENT_FIELDS = {
@@ -726,13 +831,17 @@ const CONTENT_FIELDS = {
 async function loadContent() {
   if (!configured) return;
   const { data, error } = await sb.from('site_content').select('key,value');
-  if (error) return; // table might not exist yet
+  if (error) return; // table might not exist yet — silently skip
   (data || []).forEach(row => {
     const elId = CONTENT_FIELDS[row.key];
     if (elId) {
       const el = document.getElementById(elId);
       if (el) el.value = row.value;
     }
+    // Hero images
+    if (row.key === 'hero_img1' && row.value) showHeroPreview(1, row.value);
+    if (row.key === 'hero_img2' && row.value) showHeroPreview(2, row.value);
+    if (row.key === 'hero_img3' && row.value) showHeroPreview(3, row.value);
   });
 }
 
@@ -741,16 +850,49 @@ async function saveContent() {
   const btn = document.getElementById('saveContentBtn');
   btn.disabled = true; btn.textContent = 'Saving…';
 
+  // Upload any newly selected hero images
+  const heroUrls = {};
+  for (const [slot, blob] of Object.entries(pendingHeroBlobs)) {
+    btn.textContent = `Uploading hero photo ${slot}…`;
+    document.getElementById('heroUploadStatus').textContent = `Uploading photo ${slot}…`;
+    const filename = `hero${slot}-${Date.now()}.jpg`;
+    const { error: upErr } = await sb.storage
+      .from('product-images')
+      .upload(filename, blob, { contentType: 'image/jpeg', upsert: false });
+    if (upErr) {
+      const hint = upErr.message?.includes('policy') ? ' — run the storage SQL in supabase-setup.sql first' : '';
+      showToast('Upload failed: ' + upErr.message + hint);
+      btn.disabled = false; btn.textContent = 'Save Content Changes';
+      return;
+    }
+    heroUrls[slot] = sb.storage.from('product-images').getPublicUrl(filename).data.publicUrl;
+    delete pendingHeroBlobs[slot];
+  }
+  document.getElementById('heroUploadStatus').textContent = '';
+
+  // Build rows for all text fields
   const rows = Object.entries(CONTENT_FIELDS).map(([key, elId]) => ({
     key,
     value: document.getElementById(elId)?.value?.trim() || '',
     updated_at: new Date().toISOString(),
   }));
 
+  // Add/update hero image rows
+  [1, 2, 3].forEach(slot => {
+    const area = document.getElementById(`heroArea${slot}`);
+    const key = `hero_img${slot}`;
+    if (heroUrls[slot]) {
+      rows.push({ key, value: heroUrls[slot], updated_at: new Date().toISOString() });
+    } else if (area?.dataset.cleared === 'true') {
+      rows.push({ key, value: '', updated_at: new Date().toISOString() });
+      delete area.dataset.cleared;
+    }
+  });
+
   const { error } = await sb.from('site_content').upsert(rows, { onConflict: 'key' });
   btn.disabled = false; btn.textContent = 'Save Content Changes';
   if (error) { showToast('Error saving: ' + error.message); return; }
-  showToast('✓ Content saved — changes will appear on the site');
+  showToast('✓ Content saved — changes live on the site');
 }
 
 // ── INIT ─────────────────────────────────────────────────────────────────
