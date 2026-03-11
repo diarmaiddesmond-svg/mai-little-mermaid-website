@@ -51,6 +51,66 @@ insert into public.products (name, type, price, metal, colour, grad, available, 
   ('Coral Stone Earrings',   'Earrings', 72,  'Gold Fill',       'Coral Pink',  'g8', true,  false);
 
 -- ============================================================
+-- MIGRATION: add extra_images column (run if table already exists)
+-- ============================================================
+alter table public.products
+  add column if not exists extra_images text not null default '[]';
+
+-- ============================================================
+-- 4. SITE CONTENT TABLE (for admin Content editor)
+-- ============================================================
+
+create table public.site_content (
+  key        text primary key,
+  value      text not null default '',
+  updated_at timestamptz not null default now()
+);
+
+alter table public.site_content enable row level security;
+
+-- Anyone can read (needed for index.html to load content)
+create policy "Public read content"
+  on public.site_content for select
+  using (true);
+
+-- Only signed-in admin can edit
+create policy "Auth upsert content"
+  on public.site_content for insert
+  with check (auth.role() = 'authenticated');
+
+create policy "Auth update content"
+  on public.site_content for update
+  using (auth.role() = 'authenticated');
+
+-- 5. PHOTO STORAGE BUCKET + POLICIES
+-- Run this in SQL Editor — it creates the bucket AND the upload permission
+
+insert into storage.buckets (id, name, public)
+  values ('product-images', 'product-images', true)
+  on conflict (id) do update set public = true;
+
+-- Let authenticated admin upload files
+create policy "Authenticated can upload product-images"
+  on storage.objects for insert
+  with check (
+    bucket_id = 'product-images'
+    and auth.role() = 'authenticated'
+  );
+
+-- Let the public read / view all images
+create policy "Public can read product-images"
+  on storage.objects for select
+  using (bucket_id = 'product-images');
+
+-- Let authenticated admin delete files
+create policy "Authenticated can delete product-images"
+  on storage.objects for delete
+  using (
+    bucket_id = 'product-images'
+    and auth.role() = 'authenticated'
+  );
+
+-- ============================================================
 -- AFTER RUNNING THIS:
 -- 1. Go to Authentication → Users → Add User
 --    Create Maile's login email + password

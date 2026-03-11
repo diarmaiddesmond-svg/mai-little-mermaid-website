@@ -70,6 +70,13 @@
   #uploadPreview { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; display: none; }
   .upload-clear { position: absolute; top: 0.4rem; right: 0.4rem; background: rgba(0,0,0,0.55); color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 0.75rem; cursor: pointer; display: none; align-items: center; justify-content: center; line-height: 1; }
   .upload-status { font-size: 0.7rem; color: var(--driftwood); margin-top: 0.4rem; letter-spacing: 0.06em; min-height: 1.1em; }
+  /* Hero mini upload slots */
+  .hero-upload-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.8rem; margin-top: 0.5rem; }
+  .hero-slot label { display: block; font-size: 0.63rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--driftwood); margin-bottom: 0.3rem; }
+  .upload-area.mini { max-width: none; aspect-ratio: 1/1; }
+  .upload-area.mini .upload-icon { font-size: 1.4rem; }
+  .upload-area.mini .upload-hint { font-size: 0.6rem; }
+  .hero-preview { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; display: none; }
 
   .grad-picker { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.5rem; }
   .grad-swatch { width: 38px; height: 38px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: border-color 0.15s; flex-shrink: 0; }
@@ -80,6 +87,24 @@
   .btn-save:disabled { opacity: 0.5; cursor: default; }
   .btn-cancel { padding: 0.85rem 1.5rem; background: none; border: 1px solid var(--sand-dark); font-family: 'Jost', sans-serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--driftwood); cursor: pointer; transition: all 0.2s; }
   .btn-cancel:hover { border-color: var(--coral); color: var(--coral); }
+
+  /* TABS */
+  .admin-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--sand-dark); margin-bottom: 1.5rem; }
+  .tab-btn { background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -2px; padding: 0.7rem 1.4rem; font-family: 'Jost', sans-serif; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--driftwood); cursor: pointer; transition: all 0.2s; }
+  .tab-btn.active { color: var(--ocean-deep); border-bottom-color: var(--ocean-deep); }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* CONTENT EDITOR */
+  .content-section { background: #fff; border: 1px solid var(--sand-dark); padding: 2rem; margin-bottom: 1.5rem; }
+  .content-section-title { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 300; color: var(--ink); margin-bottom: 1rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--sand); }
+  .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+  .content-grid .full { grid-column: 1 / -1; }
+  .field textarea { width: 100%; padding: 0.75rem; border: 1px solid var(--sand-dark); font-family: 'Jost', sans-serif; font-size: 0.88rem; color: var(--ink); background: var(--cream); outline: none; transition: border-color 0.2s; resize: vertical; min-height: 90px; }
+  .field textarea:focus { border-color: var(--ocean); }
+  .btn-save-content { padding: 0.8rem 2rem; background: var(--ocean-deep); color: #fff; border: none; font-family: 'Jost', sans-serif; font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+  .btn-save-content:hover { background: var(--ocean); }
+  .btn-save-content:disabled { opacity: 0.5; cursor: default; }
 
   /* PRODUCT LIST */
   .list-header { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--driftwood); margin-bottom: 1rem; }
@@ -155,12 +180,20 @@
 
   <div class="admin-body">
 
+    <div class="admin-tabs">
+      <button class="tab-btn active" onclick="switchTab('products')">Products</button>
+      <button class="tab-btn" onclick="switchTab('content')">Site Content</button>
+    </div>
+
     <div class="setup-warn" id="setupWarn" style="display:none">
       <strong>⚠ Supabase not configured yet</strong>
       Open <code>admin.html</code> and <code>shop.html</code>, replace <code>YOUR_SUPABASE_URL</code>
       and <code>YOUR_SUPABASE_ANON_KEY</code> with your project values from
       <strong>Supabase → Project Settings → API</strong>.
     </div>
+
+    <!-- PRODUCTS TAB -->
+    <div class="tab-pane active" id="tabProducts">
 
     <!-- ADD / EDIT FORM -->
     <div id="productForm">
@@ -219,6 +252,36 @@
           <input type="hidden" id="fImage">
         </div>
         <div class="field full">
+          <label>More photos <span style="font-weight:300;text-transform:none;letter-spacing:0">(optional — up to 3 extra angles)</span></label>
+          <div class="hero-upload-grid">
+            <div class="hero-slot">
+              <label>Photo 2</label>
+              <div class="upload-area mini" id="extraArea1" onclick="document.getElementById('extraFile1').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');handleExtraSelect(1,event.dataTransfer.files[0])">
+                <div class="upload-placeholder" id="extraPlaceholder1"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
+                <img class="hero-preview" id="extraPreview1" alt=""><button class="upload-clear" id="extraClear1" onclick="clearExtraImage(event,1)" title="Remove">✕</button>
+              </div>
+              <input type="file" id="extraFile1" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleExtraSelect(1,this.files[0]);this.value=''">
+            </div>
+            <div class="hero-slot">
+              <label>Photo 3</label>
+              <div class="upload-area mini" id="extraArea2" onclick="document.getElementById('extraFile2').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');handleExtraSelect(2,event.dataTransfer.files[0])">
+                <div class="upload-placeholder" id="extraPlaceholder2"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
+                <img class="hero-preview" id="extraPreview2" alt=""><button class="upload-clear" id="extraClear2" onclick="clearExtraImage(event,2)" title="Remove">✕</button>
+              </div>
+              <input type="file" id="extraFile2" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleExtraSelect(2,this.files[0]);this.value=''">
+            </div>
+            <div class="hero-slot">
+              <label>Photo 4</label>
+              <div class="upload-area mini" id="extraArea3" onclick="document.getElementById('extraFile3').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');handleExtraSelect(3,event.dataTransfer.files[0])">
+                <div class="upload-placeholder" id="extraPlaceholder3"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
+                <img class="hero-preview" id="extraPreview3" alt=""><button class="upload-clear" id="extraClear3" onclick="clearExtraImage(event,3)" title="Remove">✕</button>
+              </div>
+              <input type="file" id="extraFile3" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleExtraSelect(3,this.files[0]);this.value=''">
+            </div>
+          </div>
+          <div class="upload-status" id="extraUploadStatus"></div>
+        </div>
+        <div class="field full">
           <label>Colour Swatch <span style="font-weight:300;text-transform:none;letter-spacing:0">(shown if no photo)</span></label>
           <div class="grad-picker" id="gradPicker"></div>
           <input type="hidden" id="fGrad" value="g1">
@@ -246,6 +309,148 @@
 
     <div class="list-header" id="listHeader"></div>
     <div id="productsList"><div class="loading">Loading…</div></div>
+
+    </div><!-- /tabProducts -->
+
+    <!-- CONTENT TAB -->
+    <div class="tab-pane" id="tabContent">
+
+      <!-- HERO -->
+      <div class="content-section">
+        <div class="content-section-title">Hero Section</div>
+        <div class="content-grid">
+          <div class="field">
+            <label>Eyebrow text</label>
+            <input type="text" id="cHeroEyebrow" placeholder="Handmade · Newport, Rhode Island">
+          </div>
+          <div class="field full">
+            <label>Subtitle</label>
+            <textarea id="cHeroSub" placeholder="Each piece begins with a walk along the shore…"></textarea>
+          </div>
+          <div class="field full">
+            <label>Hero photos <span style="font-weight:300;text-transform:none;letter-spacing:0">(3-panel grid on homepage, auto-cropped to square)</span></label>
+            <div class="hero-upload-grid">
+              <div class="hero-slot">
+                <label>Top left</label>
+                <div class="upload-area mini" id="heroArea1" onclick="document.getElementById('heroFile1').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');handleHeroSelect(1,event.dataTransfer.files[0])">
+                  <div class="upload-placeholder" id="heroPlaceholder1"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
+                  <img class="hero-preview" id="heroPreview1" alt="">
+                  <button class="upload-clear" id="heroClear1" onclick="clearHeroImage(event,1)" title="Remove">✕</button>
+                </div>
+                <input type="file" id="heroFile1" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleHeroSelect(1,this.files[0]);this.value=''">
+              </div>
+              <div class="hero-slot">
+                <label>Right (tall)</label>
+                <div class="upload-area mini" id="heroArea2" onclick="document.getElementById('heroFile2').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');handleHeroSelect(2,event.dataTransfer.files[0])">
+                  <div class="upload-placeholder" id="heroPlaceholder2"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
+                  <img class="hero-preview" id="heroPreview2" alt="">
+                  <button class="upload-clear" id="heroClear2" onclick="clearHeroImage(event,2)" title="Remove">✕</button>
+                </div>
+                <input type="file" id="heroFile2" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleHeroSelect(2,this.files[0]);this.value=''">
+              </div>
+              <div class="hero-slot">
+                <label>Bottom left</label>
+                <div class="upload-area mini" id="heroArea3" onclick="document.getElementById('heroFile3').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');handleHeroSelect(3,event.dataTransfer.files[0])">
+                  <div class="upload-placeholder" id="heroPlaceholder3"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
+                  <img class="hero-preview" id="heroPreview3" alt="">
+                  <button class="upload-clear" id="heroClear3" onclick="clearHeroImage(event,3)" title="Remove">✕</button>
+                </div>
+                <input type="file" id="heroFile3" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleHeroSelect(3,this.files[0]);this.value=''">
+              </div>
+            </div>
+            <div class="upload-status" id="heroUploadStatus"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABOUT -->
+      <div class="content-section">
+        <div class="content-section-title">About Section</div>
+        <div class="content-grid">
+          <div class="field">
+            <label>Pieces crafted (number)</label>
+            <input type="number" id="cAboutCount" placeholder="43" min="0">
+          </div>
+          <div class="field">
+            <label>Photo <span style="font-weight:300;text-transform:none;letter-spacing:0">(replaces the gradient panel)</span></label>
+            <div class="upload-area mini" id="aboutArea" onclick="document.getElementById('aboutFile').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');handleAboutSelect(event.dataTransfer.files[0])">
+              <div class="upload-placeholder" id="aboutPlaceholder"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
+              <img class="hero-preview" id="aboutPreview" alt="">
+              <button class="upload-clear" id="aboutClear" onclick="clearAboutImage(event)" title="Remove">✕</button>
+            </div>
+            <input type="file" id="aboutFile" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleAboutSelect(this.files[0]);this.value=''">
+            <div class="upload-status" id="aboutUploadStatus"></div>
+          </div>
+          <div class="field full">
+            <label>Bio — paragraph 1</label>
+            <textarea id="cAboutBio1" style="min-height:110px" placeholder="Maile started this business…"></textarea>
+          </div>
+          <div class="field full">
+            <label>Bio — paragraph 2</label>
+            <textarea id="cAboutBio2" placeholder="Custom orders are always welcome…"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- STUDIO NOTES / NEWS -->
+      <div class="content-section">
+        <div class="content-section-title">From the Studio <span style="font-family:'Jost',sans-serif;font-size:0.65rem;font-style:normal;font-weight:300;color:var(--driftwood);letter-spacing:0.06em;text-transform:none;margin-left:0.5rem">— appears on homepage when at least one card has a title</span></div>
+        <div class="content-grid">
+          <div class="field"><label>Card 1 — date / label</label><input type="text" id="cNews1Date" placeholder="e.g. March 2026 · Upcoming"></div>
+          <div class="field"><label>Card 1 — title</label><input type="text" id="cNews1Title" placeholder="Spring Collection Preview"></div>
+          <div class="field full"><label>Card 1 — body</label><textarea id="cNews1Body" placeholder="A short update…"></textarea></div>
+          <div class="field"><label>Card 2 — date / label</label><input type="text" id="cNews2Date" placeholder="e.g. Feb 2026 · Event"></div>
+          <div class="field"><label>Card 2 — title</label><input type="text" id="cNews2Title" placeholder="Custom Orders Open"></div>
+          <div class="field full"><label>Card 2 — body</label><textarea id="cNews2Body"></textarea></div>
+          <div class="field"><label>Card 3 — date / label</label><input type="text" id="cNews3Date" placeholder="e.g. Jan 2026 · Market"></div>
+          <div class="field"><label>Card 3 — title</label><input type="text" id="cNews3Title" placeholder="Newport Market Season"></div>
+          <div class="field full"><label>Card 3 — body</label><textarea id="cNews3Body"></textarea></div>
+        </div>
+      </div>
+
+      <!-- PROCESS -->
+      <div class="content-section">
+        <div class="content-section-title">Process Steps</div>
+        <div class="content-grid">
+          <div class="field">
+            <label>Step 1 title</label>
+            <input type="text" id="cStep1Title" placeholder="Beach Walk">
+          </div>
+          <div class="field">
+            <label>Step 1 description</label>
+            <textarea id="cStep1Desc"></textarea>
+          </div>
+          <div class="field">
+            <label>Step 2 title</label>
+            <input type="text" id="cStep2Title" placeholder="Selection">
+          </div>
+          <div class="field">
+            <label>Step 2 description</label>
+            <textarea id="cStep2Desc"></textarea>
+          </div>
+          <div class="field">
+            <label>Step 3 title</label>
+            <input type="text" id="cStep3Title" placeholder="Handcrafting">
+          </div>
+          <div class="field">
+            <label>Step 3 description</label>
+            <textarea id="cStep3Desc"></textarea>
+          </div>
+          <div class="field">
+            <label>Step 4 title</label>
+            <input type="text" id="cStep4Title" placeholder="To You">
+          </div>
+          <div class="field">
+            <label>Step 4 description</label>
+            <textarea id="cStep4Desc"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-save-content" id="saveContentBtn" onclick="saveContent()">Save Content Changes</button>
+
+    </div><!-- /tabContent -->
+
   </div>
 </div>
 
@@ -275,10 +480,12 @@ if (configured) {
 let pendingImageBlob = null; // resized blob waiting to be uploaded on save
 
 function resizeImage(file) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Could not read file'));
     reader.onload = (e) => {
       const img = new Image();
+      img.onerror = () => reject(new Error('Could not decode image'));
       img.onload = () => {
         const W = 800, H = 1067; // 3:4 ratio
         const canvas = document.createElement('canvas');
@@ -296,7 +503,10 @@ function resizeImage(file) {
           sx = 0; sy = (img.height - sh) / 2;
         }
         ctx.drawImage(img, sx, sy, sw, sh, 0, 0, W, H);
-        canvas.toBlob(resolve, 'image/jpeg', 0.88);
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error('Canvas export failed'));
+        }, 'image/jpeg', 0.88);
       };
       img.src = e.target.result;
     };
@@ -307,7 +517,13 @@ function resizeImage(file) {
 async function handleImageSelect(file) {
   if (!file) return;
   document.getElementById('uploadStatus').textContent = 'Resizing…';
-  const blob = await resizeImage(file);
+  let blob;
+  try {
+    blob = await resizeImage(file);
+  } catch (err) {
+    document.getElementById('uploadStatus').textContent = 'Error: ' + err.message;
+    return;
+  }
   pendingImageBlob = blob;
   // Show preview
   const url = URL.createObjectURL(blob);
@@ -346,10 +562,16 @@ function clearImage(e) {
 async function uploadPendingImage() {
   if (!pendingImageBlob) return null;
   const filename = `${Date.now()}.jpg`;
-  const { error } = await sb.storage
+  const { data: upData, error } = await sb.storage
     .from('product-images')
     .upload(filename, pendingImageBlob, { contentType: 'image/jpeg', upsert: false });
-  if (error) { showToast('Image upload failed: ' + error.message); return false; }
+  if (error) {
+    const hint = error.message?.includes('Bucket') || error.statusCode === 404
+      ? ' — create a public bucket called "product-images" in Supabase Storage first'
+      : '';
+    showToast('Upload failed: ' + error.message + hint);
+    return false;
+  }
   const { data } = sb.storage.from('product-images').getPublicUrl(filename);
   return data.publicUrl;
 }
@@ -422,6 +644,7 @@ function enterAdmin() {
   document.getElementById('adminUser').textContent = currentUser?.email || '';
   buildGradPicker('g1');
   loadProducts();
+  loadContent();
 }
 
 // ── PRODUCTS ─────────────────────────────────────────────────────────────
@@ -433,9 +656,10 @@ async function loadProducts() {
 }
 
 function renderList(rows) {
-  const avail = rows.filter(p => p.available).length;
+  const avail  = rows.filter(p => p.available).length;
+  const photos = rows.filter(p => p.image_url).length;
   document.getElementById('listHeader').textContent =
-    `${rows.length} product${rows.length !== 1 ? 's' : ''} · ${avail} available · ${rows.length - avail} sold`;
+    `${rows.length} product${rows.length !== 1 ? 's' : ''} · ${avail} available · ${rows.length - avail} sold · ${photos} with photos`;
 
   if (!rows.length) {
     document.getElementById('productsList').innerHTML = '<div class="loading">No products yet — add your first one above.</div>';
@@ -486,7 +710,7 @@ function openForm(p) {
   document.getElementById('fAvailable').value = String(p?.available ?? true);
   document.getElementById('fNew').value       = String(p?.is_new ?? false);
   buildGradPicker(p?.grad || 'g1');
-  // Reset upload area
+  // Reset main upload area
   pendingImageBlob = null;
   document.getElementById('fImageFile').value = '';
   document.getElementById('uploadPreview').style.display = 'none';
@@ -495,6 +719,10 @@ function openForm(p) {
   document.getElementById('uploadClear').style.display = 'none';
   document.getElementById('uploadStatus').textContent = '';
   if (p?.image_url) showExistingPreview(p.image_url);
+  // Reset and load extra photos
+  resetExtraSlots();
+  const extras = JSON.parse(p?.extra_images || '[]');
+  if (extras.length) loadExtraSlots(extras);
   document.getElementById('productForm').style.display = 'block';
   document.getElementById('productForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -532,6 +760,23 @@ async function saveProduct() {
     if (uploadedUrl) { payload.image_url = uploadedUrl; pendingImageBlob = null; }
   }
 
+  // Upload extra photos and collect final list
+  const finalExtras = [];
+  for (let s = 1; s <= 3; s++) {
+    if (pendingExtraBlobs[s]) {
+      btn.textContent = `Uploading photo ${s + 1}…`;
+      const filename = `product-${Date.now()}-${s}.jpg`;
+      const { error: exErr } = await sb.storage.from('product-images')
+        .upload(filename, pendingExtraBlobs[s], { contentType: 'image/jpeg', upsert: false });
+      if (exErr) { showToast('Upload failed: ' + exErr.message); btn.disabled = false; btn.textContent = 'Save Product'; return; }
+      finalExtras.push(sb.storage.from('product-images').getPublicUrl(filename).data.publicUrl);
+      pendingExtraBlobs[s] = null;
+    } else if (extraSlotUrls[s]) {
+      finalExtras.push(extraSlotUrls[s]);
+    }
+  }
+  payload.extra_images = JSON.stringify(finalExtras);
+
   const op = editingId
     ? sb.from('products').update(payload).eq('id', editingId)
     : sb.from('products').insert(payload);
@@ -564,6 +809,278 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2800);
 }
 
+// ── TABS ─────────────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── EXTRA PRODUCT PHOTOS ─────────────────────────────────────────────────
+const extraSlotUrls   = {1: null, 2: null, 3: null}; // existing DB URLs per slot
+const pendingExtraBlobs = {1: null, 2: null, 3: null}; // new blobs awaiting upload
+
+function resetExtraSlots() {
+  for (let s = 1; s <= 3; s++) {
+    extraSlotUrls[s] = null; pendingExtraBlobs[s] = null;
+    document.getElementById(`extraPreview${s}`).style.display = 'none';
+    document.getElementById(`extraPreview${s}`).src = '';
+    document.getElementById(`extraPlaceholder${s}`).style.display = 'block';
+    document.getElementById(`extraClear${s}`).style.display = 'none';
+  }
+  document.getElementById('extraUploadStatus').textContent = '';
+}
+
+function loadExtraSlots(extras) {
+  extras.slice(0, 3).forEach((url, i) => {
+    const s = i + 1;
+    extraSlotUrls[s] = url;
+    const prev = document.getElementById(`extraPreview${s}`);
+    prev.src = url; prev.style.display = 'block';
+    document.getElementById(`extraPlaceholder${s}`).style.display = 'none';
+    document.getElementById(`extraClear${s}`).style.display = 'flex';
+  });
+}
+
+async function handleExtraSelect(slot, file) {
+  if (!file) return;
+  document.getElementById('extraUploadStatus').textContent = `Resizing photo ${slot + 1}…`;
+  let blob;
+  try { blob = await resizeImage(file); }
+  catch (err) { document.getElementById('extraUploadStatus').textContent = 'Error: ' + err.message; return; }
+  pendingExtraBlobs[slot] = blob;
+  const prev = document.getElementById(`extraPreview${slot}`);
+  prev.src = URL.createObjectURL(blob); prev.style.display = 'block';
+  document.getElementById(`extraPlaceholder${slot}`).style.display = 'none';
+  document.getElementById(`extraClear${slot}`).style.display = 'flex';
+  document.getElementById('extraUploadStatus').textContent = 'Ready — will upload on Save';
+}
+
+function clearExtraImage(e, slot) {
+  e.stopPropagation();
+  extraSlotUrls[slot] = null; pendingExtraBlobs[slot] = null;
+  document.getElementById(`extraPreview${slot}`).src = '';
+  document.getElementById(`extraPreview${slot}`).style.display = 'none';
+  document.getElementById(`extraPlaceholder${slot}`).style.display = 'block';
+  document.getElementById(`extraClear${slot}`).style.display = 'none';
+  document.getElementById('extraUploadStatus').textContent = '';
+}
+
+// ── HERO IMAGE UPLOADS ────────────────────────────────────────────────────
+const pendingHeroBlobs = {}; // slot (1/2/3) → Blob
+
+async function handleHeroSelect(slot, file) {
+  if (!file) return;
+  document.getElementById('heroUploadStatus').textContent = `Resizing photo ${slot}…`;
+  let blob;
+  try { blob = await resizeSquare(file); }
+  catch (err) { document.getElementById('heroUploadStatus').textContent = 'Error: ' + err.message; return; }
+  pendingHeroBlobs[slot] = blob;
+  const url = URL.createObjectURL(blob);
+  const preview = document.getElementById(`heroPreview${slot}`);
+  preview.src = url; preview.style.display = 'block';
+  document.getElementById(`heroPlaceholder${slot}`).style.display = 'none';
+  document.getElementById(`heroClear${slot}`).style.display = 'flex';
+  document.getElementById('heroUploadStatus').textContent = 'Ready — will upload on Save';
+}
+
+function showHeroPreview(slot, url) {
+  if (!url) return;
+  const preview = document.getElementById(`heroPreview${slot}`);
+  preview.src = url; preview.style.display = 'block';
+  document.getElementById(`heroPlaceholder${slot}`).style.display = 'none';
+  document.getElementById(`heroClear${slot}`).style.display = 'flex';
+}
+
+function clearHeroImage(e, slot) {
+  e.stopPropagation();
+  delete pendingHeroBlobs[slot];
+  const preview = document.getElementById(`heroPreview${slot}`);
+  preview.src = ''; preview.style.display = 'none';
+  document.getElementById(`heroPlaceholder${slot}`).style.display = 'block';
+  document.getElementById(`heroClear${slot}`).style.display = 'none';
+  // Mark for removal in site_content on next save
+  document.getElementById(`heroArea${slot}`).dataset.cleared = 'true';
+}
+
+// Resize to 800×800 square (cover-crop) for hero blocks
+function resizeSquare(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Could not read file'));
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('Could not decode image'));
+      img.onload = () => {
+        const S = 800;
+        const canvas = document.createElement('canvas');
+        canvas.width = S; canvas.height = S;
+        const ctx = canvas.getContext('2d');
+        const side = Math.min(img.width, img.height);
+        const sx = (img.width - side) / 2, sy = (img.height - side) / 2;
+        ctx.drawImage(img, sx, sy, side, side, 0, 0, S, S);
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error('Canvas export failed'));
+        }, 'image/jpeg', 0.88);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// ── ABOUT PHOTO ──────────────────────────────────────────────────────────
+let pendingAboutBlob = null;
+
+async function handleAboutSelect(file) {
+  if (!file) return;
+  document.getElementById('aboutUploadStatus').textContent = 'Resizing…';
+  let blob;
+  try { blob = await resizeImage(file); }
+  catch (err) { document.getElementById('aboutUploadStatus').textContent = 'Error: ' + err.message; return; }
+  pendingAboutBlob = blob;
+  const preview = document.getElementById('aboutPreview');
+  preview.src = URL.createObjectURL(blob); preview.style.display = 'block';
+  document.getElementById('aboutPlaceholder').style.display = 'none';
+  document.getElementById('aboutClear').style.display = 'flex';
+  document.getElementById('aboutUploadStatus').textContent = 'Ready — will upload on Save';
+}
+
+function clearAboutImage(e) {
+  e.stopPropagation();
+  pendingAboutBlob = null;
+  document.getElementById('aboutPreview').src = ''; document.getElementById('aboutPreview').style.display = 'none';
+  document.getElementById('aboutPlaceholder').style.display = 'block';
+  document.getElementById('aboutClear').style.display = 'none';
+  document.getElementById('aboutArea').dataset.cleared = 'true';
+  document.getElementById('aboutUploadStatus').textContent = 'Photo removed';
+}
+
+// ── CONTENT ───────────────────────────────────────────────────────────────
+// Map of Supabase key → input element id
+const CONTENT_FIELDS = {
+  hero_eyebrow: 'cHeroEyebrow',
+  hero_sub:     'cHeroSub',
+  about_count:  'cAboutCount',
+  about_bio1:   'cAboutBio1',
+  about_bio2:   'cAboutBio2',
+  step1_title:  'cStep1Title',
+  step1_desc:   'cStep1Desc',
+  step2_title:  'cStep2Title',
+  step2_desc:   'cStep2Desc',
+  step3_title:  'cStep3Title',
+  step3_desc:   'cStep3Desc',
+  step4_title:  'cStep4Title',
+  step4_desc:   'cStep4Desc',
+  news_1_date:  'cNews1Date',
+  news_1_title: 'cNews1Title',
+  news_1_body:  'cNews1Body',
+  news_2_date:  'cNews2Date',
+  news_2_title: 'cNews2Title',
+  news_2_body:  'cNews2Body',
+  news_3_date:  'cNews3Date',
+  news_3_title: 'cNews3Title',
+  news_3_body:  'cNews3Body',
+};
+
+async function loadContent() {
+  if (!configured) return;
+  const { data, error } = await sb.from('site_content').select('key,value');
+  if (error) return; // table might not exist yet — silently skip
+  (data || []).forEach(row => {
+    const elId = CONTENT_FIELDS[row.key];
+    if (elId) {
+      const el = document.getElementById(elId);
+      if (el) el.value = row.value;
+    }
+    // Hero images
+    if (row.key === 'hero_img1' && row.value) showHeroPreview(1, row.value);
+    if (row.key === 'hero_img2' && row.value) showHeroPreview(2, row.value);
+    if (row.key === 'hero_img3' && row.value) showHeroPreview(3, row.value);
+    // About photo
+    if (row.key === 'about_img' && row.value) {
+      const p = document.getElementById('aboutPreview');
+      p.src = row.value; p.style.display = 'block';
+      document.getElementById('aboutPlaceholder').style.display = 'none';
+      document.getElementById('aboutClear').style.display = 'flex';
+    }
+  });
+}
+
+async function saveContent() {
+  if (!configured) { showToast('Supabase not configured'); return; }
+  const btn = document.getElementById('saveContentBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  // Upload any newly selected hero images
+  const heroUrls = {};
+  for (const [slot, blob] of Object.entries(pendingHeroBlobs)) {
+    btn.textContent = `Uploading hero photo ${slot}…`;
+    document.getElementById('heroUploadStatus').textContent = `Uploading photo ${slot}…`;
+    const filename = `hero${slot}-${Date.now()}.jpg`;
+    const { error: upErr } = await sb.storage
+      .from('product-images')
+      .upload(filename, blob, { contentType: 'image/jpeg', upsert: false });
+    if (upErr) {
+      const hint = upErr.message?.includes('policy') ? ' — run the storage SQL in supabase-setup.sql first' : '';
+      showToast('Upload failed: ' + upErr.message + hint);
+      btn.disabled = false; btn.textContent = 'Save Content Changes';
+      return;
+    }
+    heroUrls[slot] = sb.storage.from('product-images').getPublicUrl(filename).data.publicUrl;
+    delete pendingHeroBlobs[slot];
+  }
+  document.getElementById('heroUploadStatus').textContent = '';
+
+  // Upload about photo if pending
+  if (pendingAboutBlob) {
+    btn.textContent = 'Uploading about photo…';
+    document.getElementById('aboutUploadStatus').textContent = 'Uploading…';
+    const filename = `about-${Date.now()}.jpg`;
+    const { error: abErr } = await sb.storage
+      .from('product-images')
+      .upload(filename, pendingAboutBlob, { contentType: 'image/jpeg', upsert: false });
+    if (abErr) {
+      showToast('Upload failed: ' + abErr.message);
+      btn.disabled = false; btn.textContent = 'Save Content Changes'; return;
+    }
+    const aboutUrl = sb.storage.from('product-images').getPublicUrl(filename).data.publicUrl;
+    document.getElementById('aboutUploadStatus').textContent = '';
+    pendingAboutBlob = null;
+    rows.push({ key: 'about_img', value: aboutUrl, updated_at: new Date().toISOString() });
+  } else if (document.getElementById('aboutArea')?.dataset.cleared === 'true') {
+    rows.push({ key: 'about_img', value: '', updated_at: new Date().toISOString() });
+    delete document.getElementById('aboutArea').dataset.cleared;
+  }
+
+  // Build rows for all text fields
+  const rows = Object.entries(CONTENT_FIELDS).map(([key, elId]) => ({
+    key,
+    value: document.getElementById(elId)?.value?.trim() || '',
+    updated_at: new Date().toISOString(),
+  }));
+
+  // Add/update hero image rows
+  [1, 2, 3].forEach(slot => {
+    const area = document.getElementById(`heroArea${slot}`);
+    const key = `hero_img${slot}`;
+    if (heroUrls[slot]) {
+      rows.push({ key, value: heroUrls[slot], updated_at: new Date().toISOString() });
+    } else if (area?.dataset.cleared === 'true') {
+      rows.push({ key, value: '', updated_at: new Date().toISOString() });
+      delete area.dataset.cleared;
+    }
+  });
+
+  const { error } = await sb.from('site_content').upsert(rows, { onConflict: 'key' });
+  btn.disabled = false; btn.textContent = 'Save Content Changes';
+  if (error) { showToast('Error saving: ' + error.message); return; }
+  showToast('✓ Content saved — changes live on the site');
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────
 document.getElementById('loginPassword').addEventListener('keydown', e => {
   if (e.key === 'Enter') signIn();
 });

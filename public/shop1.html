@@ -947,20 +947,7 @@
 
   <!-- GALLERY -->
   <div class="gallery">
-    <div class="gallery-thumbs">
-      <div class="thumb active" onclick="switchImage(this, 'linear-gradient(145deg,#c9b99a,#8b7355)')">
-        <div class="thumb-inner t1"></div>
-      </div>
-      <div class="thumb" onclick="switchImage(this, 'linear-gradient(145deg,#a8c5bc,#4a7c8e)')">
-        <div class="thumb-inner t2"></div>
-      </div>
-      <div class="thumb" onclick="switchImage(this, 'linear-gradient(145deg,#d9cdb8,#b8943f)')">
-        <div class="thumb-inner t3"></div>
-      </div>
-      <div class="thumb" onclick="switchImage(this, 'linear-gradient(145deg,#ddd0c0,#8b7355)')">
-        <div class="thumb-inner t4"></div>
-      </div>
-    </div>
+    <div class="gallery-thumbs" id="galleryThumbs" style="display:none"></div>
 
     <div class="gallery-main">
       <div class="main-image">
@@ -1190,7 +1177,7 @@
     // Try Supabase, fallback to hardcoded
     if (SUPABASE_URL.startsWith('https://')) {
       try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${productId}&limit=1`, {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${productId}&limit=1&select=*`, {
           headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
         });
         if (res.ok) {
@@ -1210,24 +1197,40 @@
     document.querySelector('.breadcrumb a:last-of-type').textContent = product.type + 's';
     document.title = product.name + ' — Mai Little Mermaid';
 
-    // Image: real photo or gradient
-    const mainImg = document.getElementById('mainImg');
-    const baseStyle = product.image_url
-      ? `url('${product.image_url}') center/cover`
-      : GRADS[product.grad] || GRADS.g1;
-    mainImg.style.background = baseStyle;
+    // Build image list: main + extras
+    const extras = JSON.parse(product.extra_images || '[]');
+    const allImages = [product.image_url, ...extras].filter(Boolean);
+    const grad = GRADS[product.grad] || GRADS.g1;
 
-    // Gallery thumbs
-    const angles = ['145deg','160deg','130deg','120deg'];
-    document.querySelectorAll('.thumb-inner').forEach((el, i) => {
-      el.style.background = product.image_url ? baseStyle
-        : (GRADS[product.grad] || GRADS.g1).replace('145deg', angles[i] || '145deg');
-    });
-    document.querySelectorAll('.thumb').forEach((thumb, i) => {
-      const g = product.image_url ? baseStyle
-        : (GRADS[product.grad] || GRADS.g1).replace('145deg', angles[i] || '145deg');
-      thumb.setAttribute('onclick', `switchImage(this, '${g}')`);
-    });
+    // Set main image
+    const mainImg = document.getElementById('mainImg');
+    mainImg.style.background = allImages.length
+      ? `url('${allImages[0]}') center/cover`
+      : grad;
+
+    // Build thumbnail strip — only show if more than 1 image
+    const thumbsEl = document.getElementById('galleryThumbs');
+    if (allImages.length > 1) {
+      const angles = ['145deg','160deg','130deg','120deg'];
+      thumbsEl.innerHTML = allImages.map((url, i) => {
+        const bg = `url('${url}') center/cover`;
+        return `<div class="thumb ${i === 0 ? 'active' : ''}" onclick="switchImage(this, '${bg}')">
+          <div class="thumb-inner" style="background:${bg}"></div>
+        </div>`;
+      }).join('');
+      thumbsEl.style.display = '';
+    } else if (allImages.length === 0) {
+      // Gradient placeholders — 4 angle variants
+      const angles = ['145deg','160deg','130deg','120deg'];
+      thumbsEl.innerHTML = angles.map((a, i) => {
+        const bg = grad.replace('145deg', a);
+        return `<div class="thumb ${i === 0 ? 'active' : ''}" onclick="switchImage(this, '${bg}')">
+          <div class="thumb-inner" style="background:${bg}"></div>
+        </div>`;
+      }).join('');
+      thumbsEl.style.display = '';
+    }
+    // 1 real image → thumbs stay hidden (already display:none)
 
     // Chain length: only for necklaces
     if (product.type !== 'Necklace') {
