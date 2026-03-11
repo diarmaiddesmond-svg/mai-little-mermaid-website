@@ -25,7 +25,7 @@ module.exports = async function handler(req, res) {
   // Build Stripe line items from cart
   const lineItems = items.map(item => ({
     price_data: {
-      currency: 'eur',
+      currency: 'usd',
       product_data: {
         name: item.name,
         description: [
@@ -51,7 +51,7 @@ module.exports = async function handler(req, res) {
   if (promoDiscount > 0) {
     const coupon = await stripe.coupons.create({
       amount_off: promoDiscount * 100, // cents
-      currency: 'eur',
+      currency: 'usd',
       duration: 'once',
       name: 'OCEAN10',
     });
