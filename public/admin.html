@@ -81,6 +81,24 @@
   .btn-cancel { padding: 0.85rem 1.5rem; background: none; border: 1px solid var(--sand-dark); font-family: 'Jost', sans-serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--driftwood); cursor: pointer; transition: all 0.2s; }
   .btn-cancel:hover { border-color: var(--coral); color: var(--coral); }
 
+  /* TABS */
+  .admin-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--sand-dark); margin-bottom: 1.5rem; }
+  .tab-btn { background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -2px; padding: 0.7rem 1.4rem; font-family: 'Jost', sans-serif; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--driftwood); cursor: pointer; transition: all 0.2s; }
+  .tab-btn.active { color: var(--ocean-deep); border-bottom-color: var(--ocean-deep); }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* CONTENT EDITOR */
+  .content-section { background: #fff; border: 1px solid var(--sand-dark); padding: 2rem; margin-bottom: 1.5rem; }
+  .content-section-title { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 300; color: var(--ink); margin-bottom: 1rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--sand); }
+  .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+  .content-grid .full { grid-column: 1 / -1; }
+  .field textarea { width: 100%; padding: 0.75rem; border: 1px solid var(--sand-dark); font-family: 'Jost', sans-serif; font-size: 0.88rem; color: var(--ink); background: var(--cream); outline: none; transition: border-color 0.2s; resize: vertical; min-height: 90px; }
+  .field textarea:focus { border-color: var(--ocean); }
+  .btn-save-content { padding: 0.8rem 2rem; background: var(--ocean-deep); color: #fff; border: none; font-family: 'Jost', sans-serif; font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+  .btn-save-content:hover { background: var(--ocean); }
+  .btn-save-content:disabled { opacity: 0.5; cursor: default; }
+
   /* PRODUCT LIST */
   .list-header { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--driftwood); margin-bottom: 1rem; }
   #productsList { display: flex; flex-direction: column; gap: 0.7rem; }
@@ -155,12 +173,25 @@
 
   <div class="admin-body">
 
+    <div class="admin-tabs">
+      <button class="tab-btn active" onclick="switchTab('products')">Products</button>
+      <button class="tab-btn" onclick="switchTab('content')">Site Content</button>
+    </div>
+
     <div class="setup-warn" id="setupWarn" style="display:none">
       <strong>⚠ Supabase not configured yet</strong>
       Open <code>admin.html</code> and <code>shop.html</code>, replace <code>YOUR_SUPABASE_URL</code>
       and <code>YOUR_SUPABASE_ANON_KEY</code> with your project values from
       <strong>Supabase → Project Settings → API</strong>.
     </div>
+    <div class="setup-warn" id="storageWarn" style="display:none">
+      <strong>⚠ Photo uploads need a Storage bucket</strong>
+      In Supabase go to <strong>Storage → New bucket</strong>, name it <code>product-images</code>, tick <strong>Public bucket</strong>, then save.
+      Also run the SQL in <code>supabase-setup.sql</code> to add the site_content table for the Content editor.
+    </div>
+
+    <!-- PRODUCTS TAB -->
+    <div class="tab-pane active" id="tabProducts">
 
     <!-- ADD / EDIT FORM -->
     <div id="productForm">
@@ -246,6 +277,89 @@
 
     <div class="list-header" id="listHeader"></div>
     <div id="productsList"><div class="loading">Loading…</div></div>
+
+    </div><!-- /tabProducts -->
+
+    <!-- CONTENT TAB -->
+    <div class="tab-pane" id="tabContent">
+
+      <!-- HERO -->
+      <div class="content-section">
+        <div class="content-section-title">Hero Section</div>
+        <div class="content-grid">
+          <div class="field">
+            <label>Eyebrow text</label>
+            <input type="text" id="cHeroEyebrow" placeholder="Handmade · Newport, Rhode Island">
+          </div>
+          <div class="field full">
+            <label>Subtitle</label>
+            <textarea id="cHeroSub" placeholder="Each piece begins with a walk along the shore…"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABOUT -->
+      <div class="content-section">
+        <div class="content-section-title">About Section</div>
+        <div class="content-grid">
+          <div class="field">
+            <label>Pieces crafted (number)</label>
+            <input type="number" id="cAboutCount" placeholder="43" min="0">
+          </div>
+          <div class="field full">
+            <label>Bio — paragraph 1</label>
+            <textarea id="cAboutBio1" style="min-height:110px" placeholder="Maile started this business…"></textarea>
+          </div>
+          <div class="field full">
+            <label>Bio — paragraph 2</label>
+            <textarea id="cAboutBio2" placeholder="Custom orders are always welcome…"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROCESS -->
+      <div class="content-section">
+        <div class="content-section-title">Process Steps</div>
+        <div class="content-grid">
+          <div class="field">
+            <label>Step 1 title</label>
+            <input type="text" id="cStep1Title" placeholder="Beach Walk">
+          </div>
+          <div class="field">
+            <label>Step 1 description</label>
+            <textarea id="cStep1Desc"></textarea>
+          </div>
+          <div class="field">
+            <label>Step 2 title</label>
+            <input type="text" id="cStep2Title" placeholder="Selection">
+          </div>
+          <div class="field">
+            <label>Step 2 description</label>
+            <textarea id="cStep2Desc"></textarea>
+          </div>
+          <div class="field">
+            <label>Step 3 title</label>
+            <input type="text" id="cStep3Title" placeholder="Handcrafting">
+          </div>
+          <div class="field">
+            <label>Step 3 description</label>
+            <textarea id="cStep3Desc"></textarea>
+          </div>
+          <div class="field">
+            <label>Step 4 title</label>
+            <input type="text" id="cStep4Title" placeholder="To You">
+          </div>
+          <div class="field">
+            <label>Step 4 description</label>
+            <textarea id="cStep4Desc"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-save-content" id="saveContentBtn" onclick="saveContent()">Save Content Changes</button>
+
+    </div><!-- /tabContent -->
+
   </div>
 </div>
 
@@ -275,10 +389,12 @@ if (configured) {
 let pendingImageBlob = null; // resized blob waiting to be uploaded on save
 
 function resizeImage(file) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Could not read file'));
     reader.onload = (e) => {
       const img = new Image();
+      img.onerror = () => reject(new Error('Could not decode image'));
       img.onload = () => {
         const W = 800, H = 1067; // 3:4 ratio
         const canvas = document.createElement('canvas');
@@ -296,7 +412,10 @@ function resizeImage(file) {
           sx = 0; sy = (img.height - sh) / 2;
         }
         ctx.drawImage(img, sx, sy, sw, sh, 0, 0, W, H);
-        canvas.toBlob(resolve, 'image/jpeg', 0.88);
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error('Canvas export failed'));
+        }, 'image/jpeg', 0.88);
       };
       img.src = e.target.result;
     };
@@ -307,7 +426,13 @@ function resizeImage(file) {
 async function handleImageSelect(file) {
   if (!file) return;
   document.getElementById('uploadStatus').textContent = 'Resizing…';
-  const blob = await resizeImage(file);
+  let blob;
+  try {
+    blob = await resizeImage(file);
+  } catch (err) {
+    document.getElementById('uploadStatus').textContent = 'Error: ' + err.message;
+    return;
+  }
   pendingImageBlob = blob;
   // Show preview
   const url = URL.createObjectURL(blob);
@@ -346,10 +471,16 @@ function clearImage(e) {
 async function uploadPendingImage() {
   if (!pendingImageBlob) return null;
   const filename = `${Date.now()}.jpg`;
-  const { error } = await sb.storage
+  const { data: upData, error } = await sb.storage
     .from('product-images')
     .upload(filename, pendingImageBlob, { contentType: 'image/jpeg', upsert: false });
-  if (error) { showToast('Image upload failed: ' + error.message); return false; }
+  if (error) {
+    const hint = error.message?.includes('Bucket') || error.statusCode === 404
+      ? ' — create a public bucket called "product-images" in Supabase Storage first'
+      : '';
+    showToast('Upload failed: ' + error.message + hint);
+    return false;
+  }
   const { data } = sb.storage.from('product-images').getPublicUrl(filename);
   return data.publicUrl;
 }
@@ -420,8 +551,10 @@ function enterAdmin() {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('adminScreen').style.display = 'block';
   document.getElementById('adminUser').textContent = currentUser?.email || '';
+  document.getElementById('storageWarn').style.display = 'block';
   buildGradPicker('g1');
   loadProducts();
+  loadContent();
 }
 
 // ── PRODUCTS ─────────────────────────────────────────────────────────────
@@ -564,6 +697,63 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2800);
 }
 
+// ── TABS ─────────────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── CONTENT ───────────────────────────────────────────────────────────────
+// Map of Supabase key → input element id
+const CONTENT_FIELDS = {
+  hero_eyebrow: 'cHeroEyebrow',
+  hero_sub:     'cHeroSub',
+  about_count:  'cAboutCount',
+  about_bio1:   'cAboutBio1',
+  about_bio2:   'cAboutBio2',
+  step1_title:  'cStep1Title',
+  step1_desc:   'cStep1Desc',
+  step2_title:  'cStep2Title',
+  step2_desc:   'cStep2Desc',
+  step3_title:  'cStep3Title',
+  step3_desc:   'cStep3Desc',
+  step4_title:  'cStep4Title',
+  step4_desc:   'cStep4Desc',
+};
+
+async function loadContent() {
+  if (!configured) return;
+  const { data, error } = await sb.from('site_content').select('key,value');
+  if (error) return; // table might not exist yet
+  (data || []).forEach(row => {
+    const elId = CONTENT_FIELDS[row.key];
+    if (elId) {
+      const el = document.getElementById(elId);
+      if (el) el.value = row.value;
+    }
+  });
+}
+
+async function saveContent() {
+  if (!configured) { showToast('Supabase not configured'); return; }
+  const btn = document.getElementById('saveContentBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  const rows = Object.entries(CONTENT_FIELDS).map(([key, elId]) => ({
+    key,
+    value: document.getElementById(elId)?.value?.trim() || '',
+    updated_at: new Date().toISOString(),
+  }));
+
+  const { error } = await sb.from('site_content').upsert(rows, { onConflict: 'key' });
+  btn.disabled = false; btn.textContent = 'Save Content Changes';
+  if (error) { showToast('Error saving: ' + error.message); return; }
+  showToast('✓ Content saved — changes will appear on the site');
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────
 document.getElementById('loginPassword').addEventListener('keydown', e => {
   if (e.key === 'Enter') signIn();
 });

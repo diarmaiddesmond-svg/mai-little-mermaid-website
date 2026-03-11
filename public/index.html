@@ -10,6 +10,7 @@
 <meta property="og:type" content="website">
 <meta property="og:image" content="/og-image.jpg">
 <link rel="canonical" href="https://mailittlemermaid.com/">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
@@ -957,9 +958,9 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-left">
-    <p class="hero-eyebrow">Handmade · Newport, Rhode Island</p>
+    <p class="hero-eyebrow" id="heroEyebrow">Handmade · Newport, Rhode Island</p>
     <h1 class="hero-title">Beach treasures<br>turned into <em>art</em></h1>
-    <p class="hero-sub">Each piece begins with a walk along the shore — sea glass, driftwood, shells — reclaimed by the tide and reimagined into jewellery you'll wear forever.</p>
+    <p class="hero-sub" id="heroSub">Each piece begins with a walk along the shore — sea glass, driftwood, shells — reclaimed by the tide and reimagined into jewellery you'll wear forever.</p>
     <div class="hero-cta">
       <a href="/shop.html" class="btn-primary">Shop Collection</a>
       <a href="#about" class="btn-secondary">Our Story</a>
@@ -1074,7 +1075,7 @@
       <span class="about-visual-text">Mai</span>
     </div>
     <div class="about-badge-corner">
-      <span class="about-badge-num">43</span>
+      <span class="about-badge-num" id="aboutCount">43</span>
       <span class="about-badge-label">pieces crafted</span>
     </div>
   </div>
@@ -1082,8 +1083,8 @@
   <div class="reveal" style="transition-delay:0.2s">
     <p class="about-eyebrow">The Story</p>
     <h2 class="about-title">Started with a <em>vision</em><br>and a walk on the beach</h2>
-    <p class="about-body">Maile started this business from scratch — jobless, hopeful, and armed with a love of the ocean and a belief that the sea's discarded treasures deserved a second life. Every piece in the collection is handcrafted from materials found along local shores: sea glass worn smooth by the tide, driftwood shaped by storms, shells and stones with histories we'll never fully know.</p>
-    <p class="about-body">Custom orders are always welcome — DM on Instagram or use the contact form below.</p>
+    <p class="about-body" id="aboutBio1">Maile started this business from scratch — jobless, hopeful, and armed with a love of the ocean and a belief that the sea's discarded treasures deserved a second life. Every piece in the collection is handcrafted from materials found along local shores: sea glass worn smooth by the tide, driftwood shaped by storms, shells and stones with histories we'll never fully know.</p>
+    <p class="about-body" id="aboutBio2">Custom orders are always welcome — DM on Instagram or use the contact form below.</p>
     <a href="#contact" class="btn-primary">Get in Touch</a>
   </div>
 </div>
@@ -1094,23 +1095,23 @@
   <div class="process-steps">
     <div class="process-step reveal">
       <div class="step-num">01</div>
-      <p class="step-title">Beach Walk</p>
-      <p class="step-desc">Every piece starts with Maile combing local beaches for sea glass, shells, driftwood and other treasures.</p>
+      <p class="step-title" id="step1Title">Beach Walk</p>
+      <p class="step-desc" id="step1Desc">Every piece starts with Maile combing local beaches for sea glass, shells, driftwood and other treasures.</p>
     </div>
     <div class="process-step reveal" style="transition-delay:0.1s">
       <div class="step-num">02</div>
-      <p class="step-title">Selection</p>
-      <p class="step-desc">Only the most beautiful, unusual pieces make it into the collection — colour, texture, and character all matter.</p>
+      <p class="step-title" id="step2Title">Selection</p>
+      <p class="step-desc" id="step2Desc">Only the most beautiful, unusual pieces make it into the collection — colour, texture, and character all matter.</p>
     </div>
     <div class="process-step reveal" style="transition-delay:0.2s">
       <div class="step-num">03</div>
-      <p class="step-title">Handcrafting</p>
-      <p class="step-desc">Each piece is hand-set, wired, or assembled with care. No two are exactly alike.</p>
+      <p class="step-title" id="step3Title">Handcrafting</p>
+      <p class="step-desc" id="step3Desc">Each piece is hand-set, wired, or assembled with care. No two are exactly alike.</p>
     </div>
     <div class="process-step reveal" style="transition-delay:0.3s">
       <div class="step-num">04</div>
-      <p class="step-title">To You</p>
-      <p class="step-desc">Packaged with love and shipped directly — or available as a custom personal order.</p>
+      <p class="step-title" id="step4Title">To You</p>
+      <p class="step-desc" id="step4Desc">Packaged with love and shipped directly — or available as a custom personal order.</p>
     </div>
   </div>
 </section>
@@ -1210,6 +1211,46 @@
   window.addEventListener('scroll', () => {
     nav.style.boxShadow = window.scrollY > 50 ? '0 2px 20px rgba(0,0,0,0.08)' : 'none';
   });
+</script>
+
+<script>
+  // ── Load editable site content from Supabase ──────────────────────────
+  (async () => {
+    const SUPABASE_URL      = 'https://istjxzspjqftrnztosiy.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzdGp4enNwanFmdHJuenRvc2l5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMjM2MjIsImV4cCI6MjA4ODc5OTYyMn0.vvKfN168Pgz_-VedCn4fGYJqzBt8KYkFicrmrc6UiHU';
+
+    // Map: supabase key → element id
+    const FIELDS = {
+      hero_eyebrow: 'heroEyebrow',
+      hero_sub:     'heroSub',
+      about_count:  'aboutCount',
+      about_bio1:   'aboutBio1',
+      about_bio2:   'aboutBio2',
+      step1_title:  'step1Title',
+      step1_desc:   'step1Desc',
+      step2_title:  'step2Title',
+      step2_desc:   'step2Desc',
+      step3_title:  'step3Title',
+      step3_desc:   'step3Desc',
+      step4_title:  'step4Title',
+      step4_desc:   'step4Desc',
+    };
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/site_content?select=key,value`, {
+        headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }
+      });
+      if (!res.ok) return;
+      const rows = await res.json();
+      rows.forEach(({ key, value }) => {
+        const elId = FIELDS[key];
+        if (elId && value) {
+          const el = document.getElementById(elId);
+          if (el) el.textContent = value;
+        }
+      });
+    } catch { /* silently skip — page shows hardcoded defaults */ }
+  })();
 </script>
 </body>
 </html>

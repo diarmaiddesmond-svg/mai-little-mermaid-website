@@ -51,6 +51,35 @@ insert into public.products (name, type, price, metal, colour, grad, available, 
   ('Coral Stone Earrings',   'Earrings', 72,  'Gold Fill',       'Coral Pink',  'g8', true,  false);
 
 -- ============================================================
+-- 4. SITE CONTENT TABLE (for admin Content editor)
+-- ============================================================
+
+create table public.site_content (
+  key        text primary key,
+  value      text not null default '',
+  updated_at timestamptz not null default now()
+);
+
+alter table public.site_content enable row level security;
+
+-- Anyone can read (needed for index.html to load content)
+create policy "Public read content"
+  on public.site_content for select
+  using (true);
+
+-- Only signed-in admin can edit
+create policy "Auth upsert content"
+  on public.site_content for insert
+  with check (auth.role() = 'authenticated');
+
+create policy "Auth update content"
+  on public.site_content for update
+  using (auth.role() = 'authenticated');
+
+-- 5. PHOTO UPLOADS
+-- Go to Storage → New bucket → name: product-images → tick Public bucket → Save
+
+-- ============================================================
 -- AFTER RUNNING THIS:
 -- 1. Go to Authentication → Users → Add User
 --    Create Maile's login email + password
@@ -58,4 +87,6 @@ insert into public.products (name, type, price, metal, colour, grad, available, 
 --    Project Settings → API
 -- 3. Paste both into admin.html and shop.html
 --    where it says YOUR_SUPABASE_URL / YOUR_SUPABASE_ANON_KEY
+-- 4. Create the Storage bucket: Storage → New bucket
+--    Name: product-images   ·  Public bucket: YES
 -- ============================================================
