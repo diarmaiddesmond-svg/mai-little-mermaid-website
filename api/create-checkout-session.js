@@ -11,7 +11,7 @@
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
   // Build Stripe line items from cart
   const lineItems = items.map(item => ({
     price_data: {
-      currency: 'usd',
+      currency: 'eur',
       product_data: {
         name: item.name,
         description: [
@@ -51,7 +51,7 @@ export default async function handler(req, res) {
   if (promoDiscount > 0) {
     const coupon = await stripe.coupons.create({
       amount_off: promoDiscount * 100, // cents
-      currency: 'usd',
+      currency: 'eur',
       duration: 'once',
       name: 'OCEAN10',
     });
