@@ -509,6 +509,54 @@
 
   .btn-promo:hover { border-color: var(--ocean); color: var(--ocean); }
 
+  .notes-field {
+    margin: 0.2rem 0 1.2rem;
+  }
+
+  .notes-label {
+    display: block;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--driftwood);
+    margin-bottom: 0.4rem;
+  }
+
+  .notes-label span {
+    font-size: 0.62rem;
+    text-transform: none;
+    letter-spacing: 0;
+    opacity: 0.6;
+    font-style: italic;
+  }
+
+  .notes-textarea {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--sand-dark);
+    padding: 0.65rem 0.8rem;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.82rem;
+    color: var(--ink);
+    outline: none;
+    resize: vertical;
+    min-height: 72px;
+    max-height: 160px;
+    line-height: 1.55;
+    transition: border-color 0.3s;
+  }
+
+  .notes-textarea:focus { border-color: var(--ocean); }
+  .notes-textarea::placeholder { color: var(--sand-dark); font-size: 0.78rem; }
+
+  .notes-count {
+    font-size: 0.6rem;
+    color: var(--driftwood);
+    text-align: right;
+    margin-top: 0.25rem;
+    opacity: 0.5;
+  }
+
   .btn-checkout {
     width: 100%;
     padding: 1rem;
@@ -785,6 +833,12 @@
       <button class="btn-promo" onclick="applyPromo()">Apply</button>
     </div>
 
+    <div class="notes-field">
+      <label class="notes-label" for="orderNotes">Order notes <span>(optional — gift messages, allergies, special requests)</span></label>
+      <textarea class="notes-textarea" id="orderNotes" maxlength="500" placeholder="e.g. Please gift wrap · Allergic to nickel · For a birthday on March 20th"></textarea>
+      <p class="notes-count"><span id="notesCount">0</span> / 500</p>
+    </div>
+
     <div class="summary-row total">
       <span>Total</span>
       <span class="summary-val" id="summaryTotal">$0</span>
@@ -1039,6 +1093,8 @@ async function checkout() {
   // Save cart so order-success.html can mark items sold
   localStorage.setItem('mai_pending_cart', JSON.stringify(cart));
 
+  const orderNotes = document.getElementById('orderNotes').value.trim();
+
   try {
     const res = await fetch('/api/create-checkout-session', {
       method: 'POST',
@@ -1046,6 +1102,7 @@ async function checkout() {
       body: JSON.stringify({
         items: cart,
         promoDiscount,
+        orderNotes,
         successUrl: window.location.origin + '/order-success.html',
         cancelUrl: window.location.origin + '/cart.html',
       }),
@@ -1078,6 +1135,10 @@ mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
 window.addEventListener('scroll', () => {
   document.getElementById('mainNav').style.boxShadow =
     window.scrollY > 50 ? '0 2px 20px rgba(0,0,0,0.08)' : 'none';
+});
+
+document.getElementById('orderNotes').addEventListener('input', function() {
+  document.getElementById('notesCount').textContent = this.value.length;
 });
 
 renderCart();

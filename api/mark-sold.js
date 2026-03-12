@@ -63,6 +63,23 @@ module.exports = async function handler(req, res) {
     );
   }
 
+  // Create order record in Supabase for admin orders view
+  if (supabaseUrl && serviceKey) {
+    await fetch(`${supabaseUrl}/rest/v1/orders`, {
+      method: 'POST',
+      headers: {
+        'apikey': serviceKey,
+        'Authorization': `Bearer ${serviceKey}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=ignore-duplicates',
+      },
+      body: JSON.stringify({
+        stripe_session_id: sessionId,
+        status: 'new',
+      }),
+    }).catch(e => console.error('Orders insert error:', e));
+  }
+
   // Send order confirmation email via Resend
   const resendKey = process.env.RESEND_API_KEY;
   const customerEmail = session.customer_details?.email;

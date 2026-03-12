@@ -153,6 +153,37 @@ $$;
 -- Grant execute to all roles (the service role key calls this)
 grant execute on function public.reserve_product(bigint) to anon, authenticated, service_role;
 
+-- Orders table — stores fulfillment status per Stripe session.
+-- Created automatically by mark-sold.js when a payment is confirmed.
+-- Updated by admin.html when Maile marks orders packed / shipped.
+create table if not exists public.orders (
+  id                 uuid primary key default gen_random_uuid(),
+  stripe_session_id  text unique not null,
+  status             text not null default 'new'
+                       check (status in ('new', 'packed', 'shipped')),
+  fulfillment_note   text,
+  shipped_at         timestamptz,
+  created_at         timestamptz not null default now(),
+  updated_at         timestamptz not null default now()
+);
+
+-- Auto-update updated_at on any change
+create or replace function public.set_updated_at()
+returns trigger language plpgsql as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
+create trigger orders_updated_at
+  before update on public.orders
+  for each row execute function public.set_updated_at();
+
+-- Service role key has full access; anon/authenticated have no direct access
+-- (all writes go through serverless functions that use the service role key)
+alter table public.orders enable row level security;
+
 -- ============================================================
 -- AFTER RUNNING THIS:
 -- 1. Go to Authentication → Users → Add User

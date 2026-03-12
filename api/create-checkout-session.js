@@ -16,7 +16,7 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { items, promoDiscount = 0, successUrl, cancelUrl } = req.body;
+  const { items, promoDiscount = 0, orderNotes = '', successUrl, cancelUrl } = req.body;
 
   if (!items || items.length === 0) {
     return res.status(400).json({ error: 'No items in cart' });
@@ -98,6 +98,8 @@ module.exports = async function handler(req, res) {
         hasMTO: items.some(i => i.isMTO) ? 'true' : 'false',
         // RTS product IDs so mark-sold.js can update Supabase after payment
         rts_ids: JSON.stringify(items.filter(i => i.isRTS).map(i => i.id)),
+        // Customer-supplied order notes (gift messages, allergies, etc.)
+        order_notes: orderNotes.slice(0, 500),
       },
       // Optional: collect customer email for order confirmation
       customer_creation: 'always',
