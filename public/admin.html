@@ -284,6 +284,53 @@
 
   .orders-loading { text-align: center; padding: 3rem; color: var(--driftwood); font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; }
 
+  /* ── ENQUIRY CARDS ─────────────────────────────────── */
+  .enquiry-card {
+    background: #fff;
+    border: 1px solid var(--sand-dark);
+    margin-bottom: 1rem;
+    transition: border-color 0.2s;
+  }
+  .enquiry-card:hover { border-color: var(--ocean); }
+
+  .enquiry-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.2rem;
+    flex-wrap: wrap;
+  }
+  .enquiry-name  { font-size: 0.92rem; font-weight: 500; color: var(--ink); }
+  .enquiry-email { font-size: 0.75rem; color: var(--driftwood); }
+  .enquiry-date  { font-size: 0.7rem; color: var(--driftwood); margin-left: auto; white-space: nowrap; }
+
+  .eq-status-new      { background: #fff3cd; color: #856404; }
+  .eq-status-replied  { background: #d1e7dd; color: #0f5132; }
+  .eq-status-declined { background: #f8d7da; color: #842029; }
+
+  .enquiry-body {
+    padding: 0 1.2rem 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem 1.5rem;
+    font-size: 0.78rem;
+    color: var(--ink);
+  }
+  .enquiry-body .eq-full { grid-column: 1 / -1; }
+  .enquiry-field-label { font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--driftwood); display: block; margin-bottom: 0.15rem; font-weight: 500; }
+  .enquiry-field-value { line-height: 1.55; }
+
+  .enquiry-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.75rem 1.2rem;
+    border-top: 1px solid var(--sand);
+    background: #fafaf8;
+    flex-wrap: wrap;
+  }
+  .enquiry-id { font-size: 0.6rem; color: var(--driftwood); font-family: monospace; opacity: 0.6; margin-right: auto; }
+
   @media (max-width: 600px) {
     .admin-body { padding: 1rem; }
     .form-grid { grid-template-columns: 1fr; }
@@ -292,6 +339,8 @@
     .product-row { flex-wrap: wrap; }
     .order-body { grid-template-columns: 1fr; }
     .order-items { border-right: none; border-bottom: 1px solid var(--sand); }
+    .enquiry-body { grid-template-columns: 1fr; }
+    .enquiry-body .eq-full { grid-column: 1; }
   }
 </style>
 </head>
@@ -332,6 +381,7 @@
     <div class="admin-tabs">
       <button class="tab-btn active" onclick="switchTab('products')">Products</button>
       <button class="tab-btn" onclick="switchTab('orders')">Orders</button>
+      <button class="tab-btn" onclick="switchTab('enquiries')">Enquiries</button>
       <button class="tab-btn" onclick="switchTab('content')">Site Content</button>
     </div>
 
@@ -479,6 +529,24 @@
       <div id="ordersList"><div class="orders-loading">Loading orders…</div></div>
 
     </div><!-- /tabOrders -->
+
+    <!-- ENQUIRIES TAB -->
+    <div class="tab-pane" id="tabEnquiries">
+
+      <div class="orders-toolbar">
+        <div class="orders-filter">
+          <button class="filter-btn active" onclick="filterEnquiries('all', this)">All</button>
+          <button class="filter-btn" onclick="filterEnquiries('new', this)">New</button>
+          <button class="filter-btn" onclick="filterEnquiries('replied', this)">Replied</button>
+          <button class="filter-btn" onclick="filterEnquiries('declined', this)">Declined</button>
+        </div>
+        <span class="orders-count" id="enquiriesCount"></span>
+        <button class="btn-add" style="margin-left:auto" onclick="loadEnquiries()">↻ Refresh</button>
+      </div>
+
+      <div id="enquiriesList"><div class="orders-loading">Loading enquiries…</div></div>
+
+    </div><!-- /tabEnquiries -->
 
     <!-- CONTENT TAB -->
     <div class="tab-pane" id="tabContent">
@@ -984,6 +1052,7 @@ function switchTab(name) {
   document.getElementById('tab' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
   event.target.classList.add('active');
   if (name === 'orders') loadOrders();
+  if (name === 'enquiries') loadEnquiries();
 }
 
 // ── ORDERS ────────────────────────────────────────────────────────────────
@@ -1166,6 +1235,127 @@ async function setOrderStatus(sessionId, status, btn) {
   } catch {
     btn.disabled = false;
     showToast('Error updating order');
+  }
+}
+
+// ── ENQUIRIES ─────────────────────────────────────────────────────────────
+let allEnquiries = [];
+let currentEnquiryFilter = 'all';
+
+async function loadEnquiries() {
+  const listEl = document.getElementById('enquiriesList');
+  listEl.innerHTML = '<div class="orders-loading">Loading enquiries…</div>';
+
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { listEl.innerHTML = '<div class="orders-loading">Not authenticated.</div>'; return; }
+
+  try {
+    const res = await fetch('/api/list-enquiries', {
+      headers: { 'Authorization': 'Bearer ' + session.access_token },
+    });
+    if (!res.ok) throw new Error('Status ' + res.status);
+    allEnquiries = await res.json();
+    renderEnquiries();
+  } catch (e) {
+    listEl.innerHTML = `<div class="orders-empty">Could not load enquiries: ${e.message}</div>`;
+  }
+}
+
+function filterEnquiries(filter, btn) {
+  currentEnquiryFilter = filter;
+  document.querySelectorAll('#tabEnquiries .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderEnquiries();
+}
+
+function renderEnquiries() {
+  const filtered = currentEnquiryFilter === 'all'
+    ? allEnquiries
+    : allEnquiries.filter(e => e.status === currentEnquiryFilter);
+
+  document.getElementById('enquiriesCount').textContent =
+    filtered.length === 0 ? 'No enquiries' :
+    filtered.length === 1 ? '1 enquiry' : `${filtered.length} enquiries`;
+
+  if (filtered.length === 0) {
+    document.getElementById('enquiriesList').innerHTML =
+      `<div class="orders-empty">No ${currentEnquiryFilter === 'all' ? '' : currentEnquiryFilter + ' '}enquiries yet.</div>`;
+    return;
+  }
+
+  document.getElementById('enquiriesList').innerHTML = filtered.map(e => renderEnquiryCard(e)).join('');
+}
+
+function renderEnquiryCard(e) {
+  const date = new Date(e.created_at).toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric',
+  });
+  const time = new Date(e.created_at).toLocaleTimeString('en-US', {
+    hour: '2-digit', minute: '2-digit',
+  });
+
+  const statusLabel = { new: 'New', replied: 'Replied', declined: 'Declined' }[e.status] || 'New';
+  const statusClass = 'eq-status-' + (e.status || 'new');
+
+  const repliedDisabled  = e.status === 'replied'  ? 'disabled' : '';
+  const declinedDisabled = e.status === 'declined' ? 'disabled' : '';
+
+  return `
+  <div class="enquiry-card" id="enquiry-${e.id}">
+    <div class="enquiry-header">
+      <span class="order-status-badge ${statusClass}">${statusLabel}</span>
+      <div>
+        <div class="enquiry-name">${escHtml(e.name || '—')}</div>
+        <div class="enquiry-email">${escHtml(e.email || '')}</div>
+      </div>
+      <span class="enquiry-date">${date} · ${time}</span>
+    </div>
+
+    <div class="enquiry-body">
+      ${e.piece_type ? `<div><span class="enquiry-field-label">Piece type</span><span class="enquiry-field-value">${escHtml(e.piece_type)}</span></div>` : ''}
+      ${e.metals    ? `<div><span class="enquiry-field-label">Preferred metal</span><span class="enquiry-field-value">${escHtml(e.metals)}</span></div>` : ''}
+      ${e.materials ? `<div class="eq-full"><span class="enquiry-field-label">Materials sending in</span><span class="enquiry-field-value">${escHtml(e.materials)}</span></div>` : ''}
+      ${e.message   ? `<div class="eq-full"><span class="enquiry-field-label">Message</span><span class="enquiry-field-value">${escHtml(e.message)}</span></div>` : ''}
+    </div>
+
+    <div class="enquiry-footer">
+      <span class="enquiry-id">${e.id}</span>
+      <a href="mailto:${escHtml(e.email)}" class="btn-status" style="text-decoration:none">✉ Reply via email</a>
+      <button class="btn-status" ${repliedDisabled}
+        onclick="setEnquiryStatus('${e.id}', 'replied', this)">
+        ✓ Mark Replied
+      </button>
+      <button class="btn-status" ${declinedDisabled}
+        onclick="setEnquiryStatus('${e.id}', 'declined', this)">
+        ✕ Decline
+      </button>
+    </div>
+  </div>`;
+}
+
+async function setEnquiryStatus(enquiryId, status, btn) {
+  btn.disabled = true;
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return;
+
+  try {
+    const res = await fetch('/api/update-enquiry-status', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + session.access_token,
+      },
+      body: JSON.stringify({ enquiryId, status }),
+    });
+    if (!res.ok) throw new Error('Failed');
+
+    const enquiry = allEnquiries.find(e => e.id === enquiryId);
+    if (enquiry) enquiry.status = status;
+    renderEnquiries();
+    showToast(status === 'replied' ? 'Marked as replied ✓' : 'Marked as declined ✓');
+  } catch {
+    btn.disabled = false;
+    showToast('Error updating enquiry');
   }
 }
 
