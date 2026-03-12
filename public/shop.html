@@ -1636,6 +1636,7 @@
     <li><a href="/shipping.html">Shipping &amp; Returns</a></li>
     <li><a href="/index.html#contact">Contact</a></li>
     <li><a href="https://www.instagram.com/mai.little.mermaid" target="_blank">Instagram</a></li>
+    <li><a href="/admin.html">Mai's secret login</a></li>
   </ul>
   <div class="footer-copy">© 2025 Mai Little Mermaid</div>
 </footer>
@@ -1694,6 +1695,7 @@ function renderRTS(products) {
     return true;
   }).length;
   document.getElementById('availableCount').textContent = `${available} pieces`;
+  document.getElementById('rtsCount').textContent = available;
 
   grid.innerHTML = products.map((p, i) => {
     const inCart = inCartIds.has(p.id);

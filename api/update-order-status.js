@@ -54,8 +54,8 @@ module.exports = async function handler(req, res) {
     ...(status === 'shipped' ? { shipped_at: new Date().toISOString() } : {}),
   };
 
-  // Upsert — creates the record if it doesn't exist yet
-  const sbRes = await fetch(`${supabaseUrl}/rest/v1/orders`, {
+  // Upsert — creates the record if it doesn't exist yet, merges on stripe_session_id
+  const sbRes = await fetch(`${supabaseUrl}/rest/v1/orders?on_conflict=stripe_session_id`, {
     method: 'POST',
     headers: {
       'apikey': serviceKey,
