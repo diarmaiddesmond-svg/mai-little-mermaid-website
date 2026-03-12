@@ -145,7 +145,38 @@ create policy "site_content: auth update"
 
 
 -- ============================================================
--- 5. STORAGE — product photos bucket
+-- 5. ENQUIRIES — custom order requests from shop.html
+--    Inserted by api/submit-enquiry.js (public, no auth required).
+--    Read and updated by admin.html via api/list-enquiries.js
+--    and api/update-enquiry-status.js (service_role key, auth-gated).
+-- ============================================================
+
+create table public.enquiries (
+  id         uuid        primary key default gen_random_uuid(),
+  name       text,
+  email      text        not null,
+  piece_type text,
+  metals     text,
+  materials  text,
+  message    text,
+  status     text        not null default 'new'
+               check (status in ('new', 'replied', 'declined')),
+  created_at timestamptz not null default now()
+);
+
+alter table public.enquiries enable row level security;
+
+-- Public (shop visitors) can submit enquiries — no login needed
+create policy "enquiries: public insert"
+  on public.enquiries for insert
+  with check (true);
+
+-- Reads and updates only go through serverless functions carrying
+-- the service_role key which bypasses RLS — no extra policies needed.
+
+
+-- ============================================================
+-- 6. STORAGE — product photos bucket
 -- ============================================================
 
 insert into storage.buckets (id, name, public)
