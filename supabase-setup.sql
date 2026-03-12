@@ -111,6 +111,49 @@ create policy "Authenticated can delete product-images"
   );
 
 -- ============================================================
+-- MIGRATIONS (run these after initial setup if upgrading)
+-- ============================================================
+
+-- Add extra_images column for multi-photo gallery
+alter table public.products
+  add column if not exists extra_images text not null default '[]';
+
+-- Add reserved_until for cart hold / 10-minute reservation
+alter table public.products
+  add column if not exists reserved_until timestamptz;
+
+-- RPC used by api/reserve-product.js to atomically claim a product.
+-- Returns the new reserved_until timestamp, or NULL if the product
+-- was unavailable / already held by someone else.
+create or replace function public.reserve_product(p_id bigint)
+returns timestamptz
+language plpgsql
+security definer
+as $$
+declare
+  v_until timestamptz := now() + interval '10 minutes';
+  v_updated int;
+begin
+  update public.products
+  set reserved_until = v_until
+  where id = p_id
+    and available = true
+    and (reserved_until is null or reserved_until < now());
+
+  get diagnostics v_updated = row_count;
+
+  if v_updated = 0 then
+    return null;
+  end if;
+
+  return v_until;
+end;
+$$;
+
+-- Grant execute to all roles (the service role key calls this)
+grant execute on function public.reserve_product(bigint) to anon, authenticated, service_role;
+
+-- ============================================================
 -- AFTER RUNNING THIS:
 -- 1. Go to Authentication → Users → Add User
 --    Create Maile's login email + password
@@ -118,4 +161,6 @@ create policy "Authenticated can delete product-images"
 --    Project Settings → API
 -- 3. Paste both into admin.html and shop.html
 --    where it says YOUR_SUPABASE_URL / YOUR_SUPABASE_ANON_KEY
+-- 4. Add RESEND_API_KEY to Vercel environment variables
+--    (get a free key at resend.com)
 -- ============================================================
