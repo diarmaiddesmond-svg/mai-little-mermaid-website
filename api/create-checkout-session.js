@@ -22,6 +22,39 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'No items in cart' });
   }
 
+  // ── AVAILABILITY GUARD ──────────────────────────────────────────────────
+  // Before touching Stripe, verify every RTS item is still available in
+  // Supabase. This blocks checkout if someone else bought the item since it
+  // was added to cart (e.g. reservation expired and another person checked
+  // out first).
+  const rtsItems = items.filter(i => i.isRTS);
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceKey  = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (rtsItems.length > 0 && supabaseUrl && serviceKey) {
+    const ids = rtsItems.map(i => i.id).join(',');
+    const sbRes = await fetch(
+      `${supabaseUrl}/rest/v1/products?id=in.(${ids})&select=id,name,available`,
+      {
+        headers: {
+          'apikey': serviceKey,
+          'Authorization': `Bearer ${serviceKey}`,
+        },
+      }
+    );
+    if (sbRes.ok) {
+      const rows = await sbRes.json();
+      const unavailable = rows.filter(r => !r.available).map(r => r.name);
+      if (unavailable.length > 0) {
+        return res.status(409).json({
+          error: 'items_unavailable',
+          unavailable,
+        });
+      }
+    }
+  }
+  // ────────────────────────────────────────────────────────────────────────
+
   // Build Stripe line items from cart
   const lineItems = items.map(item => ({
     price_data: {
