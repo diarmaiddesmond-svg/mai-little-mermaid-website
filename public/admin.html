@@ -1386,6 +1386,13 @@ async function saveContent() {
   }
   document.getElementById('heroUploadStatus').textContent = '';
 
+  // Build rows for all text fields
+  const rows = Object.entries(CONTENT_FIELDS).map(([key, elId]) => ({
+    key,
+    value: document.getElementById(elId)?.value?.trim() || '',
+    updated_at: new Date().toISOString(),
+  }));
+
   // Upload about photo if pending
   if (pendingAboutBlob) {
     btn.textContent = 'Uploading about photo…';
@@ -1406,13 +1413,6 @@ async function saveContent() {
     rows.push({ key: 'about_img', value: '', updated_at: new Date().toISOString() });
     delete document.getElementById('aboutArea').dataset.cleared;
   }
-
-  // Build rows for all text fields
-  const rows = Object.entries(CONTENT_FIELDS).map(([key, elId]) => ({
-    key,
-    value: document.getElementById(elId)?.value?.trim() || '',
-    updated_at: new Date().toISOString(),
-  }));
 
   // Add/update hero image rows
   [1, 2, 3].forEach(slot => {

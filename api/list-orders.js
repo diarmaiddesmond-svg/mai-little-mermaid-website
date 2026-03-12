@@ -9,12 +9,15 @@
 //   SUPABASE_URL
 //   SUPABASE_SERVICE_ROLE_KEY
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
+
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return res.status(500).json({ error: 'Stripe not configured — add STRIPE_SECRET_KEY to Vercel environment variables' });
+  }
+  const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
   // Auth: validate the Supabase JWT sent from admin.html
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
