@@ -1684,22 +1684,31 @@ function renderRTS(products) {
   const grid = document.getElementById('rtsGrid');
   const cart = JSON.parse(localStorage.getItem('mai_cart') || '[]');
   const inCartIds = new Set(cart.filter(i => !i.isMTO).map(i => i.id));
+  const now = Date.now();
 
-  const available = products.filter(p => p.available && !inCartIds.has(p.id)).length;
+  const available = products.filter(p => {
+    if (!p.available) return false;
+    if (inCartIds.has(p.id)) return false;
+    if (p.reserved_until && new Date(p.reserved_until) > now) return false;
+    return true;
+  }).length;
   document.getElementById('availableCount').textContent = `${available} pieces`;
 
   grid.innerHTML = products.map((p, i) => {
     const inCart = inCartIds.has(p.id);
     const soldOut = !p.available;
+    const reserved = !soldOut && !inCart && p.reserved_until && new Date(p.reserved_until) > now;
     const isNew = p.is_new || p.new;
-    const cardClass = soldOut ? 'sold-out' : inCart ? 'in-bag' : '';
-    const badgeClass = soldOut ? 'badge-soldout' : inCart ? 'badge-inbag' : isNew ? 'badge-new' : 'badge-available';
-    const badgeText = soldOut ? 'Sold Out' : inCart ? 'In Your Bag' : isNew ? 'New' : '1 Left';
+    const cardClass = soldOut ? 'sold-out' : (inCart || reserved) ? 'in-bag' : '';
+    const badgeClass = soldOut ? 'badge-soldout' : inCart ? 'badge-inbag' : reserved ? 'badge-soldout' : isNew ? 'badge-new' : 'badge-available';
+    const badgeText = soldOut ? 'Sold Out' : inCart ? 'In Your Bag' : reserved ? 'Reserved' : isNew ? 'New' : '1 Left';
     const bottomRight = soldOut
       ? `<span class="rts-sold-label">Sold out</span>`
-      : inCart
-        ? `<span class="rts-inbag-label">In Bag ✓</span>`
-        : `<button class="rts-wish" onclick="event.stopPropagation();toggleWish(this)">♡</button>`;
+      : reserved
+        ? `<span class="rts-sold-label">Reserved</span>`
+        : inCart
+          ? `<span class="rts-inbag-label">In Bag ✓</span>`
+          : `<button class="rts-wish" onclick="event.stopPropagation();toggleWish(this)">♡</button>`;
 
     return `
     <div class="rts-card ${cardClass}"

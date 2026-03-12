@@ -342,6 +342,24 @@
 
   .btn-remove:hover { opacity: 1; color: var(--coral); }
 
+  .reservation-timer {
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    color: var(--ocean);
+    margin-top: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .reservation-timer.expiring {
+    color: var(--coral);
+  }
+
+  .reservation-timer svg {
+    flex-shrink: 0;
+  }
+
   .cart-item-price {
     text-align: right;
     white-space: nowrap;
@@ -906,6 +924,7 @@ function renderCart() {
         <p class="cart-item-name">${item.name}</p>
         <p class="cart-item-meta">${item.metal} · ${item.colour}</p>
         ${item.isMTO ? '<p style="font-size:0.7rem;color:var(--ocean);margin-top:0.3rem;font-style:italic;">~1 week lead time · Maile will confirm your order</p>' : ''}
+        ${item.isRTS && item.reservedUntil ? `<div class="reservation-timer" id="timer-${item.id}" data-until="${item.reservedUntil}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Held for you — <span class="timer-countdown"></span></span></div>` : ''}
         <div class="cart-item-actions">
           ${item.isMTO ? '' : `
           <div class="qty-control">
@@ -957,7 +976,17 @@ function changeQty(id, delta) {
 }
 
 function removeItem(id) {
-  saveCart(loadCart().filter(i => i.id !== id));
+  const cart = loadCart();
+  const item = cart.find(i => i.id === id);
+  // Release the reservation in the background for RTS items
+  if (item && item.isRTS && item.reservedUntil) {
+    fetch('/api/release-product', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId: id }),
+    }).catch(() => {});
+  }
+  saveCart(cart.filter(i => i.id !== id));
   renderCart();
 }
 
@@ -975,6 +1004,28 @@ function applyPromo() {
     setTimeout(() => { input.style.borderColor = ''; }, 1500);
   }
 }
+
+// ── RESERVATION COUNTDOWN ──
+function tickTimers() {
+  document.querySelectorAll('.reservation-timer[data-until]').forEach(el => {
+    const msLeft = new Date(el.dataset.until) - Date.now();
+    const countdown = el.querySelector('.timer-countdown');
+    if (!countdown) return;
+    if (msLeft <= 0) {
+      // Reservation expired — auto-remove item and release
+      const itemId = el.id.replace('timer-', '');
+      // Try to parse as number if numeric
+      const parsedId = isNaN(itemId) ? itemId : Number(itemId);
+      removeItem(parsedId);
+    } else {
+      const mins = Math.floor(msLeft / 60000);
+      const secs = Math.floor((msLeft % 60000) / 1000);
+      countdown.textContent = `${mins}:${secs.toString().padStart(2, '0')} left`;
+      el.classList.toggle('expiring', mins < 2);
+    }
+  });
+}
+setInterval(tickTimers, 1000);
 
 async function checkout() {
   const cart = loadCart();

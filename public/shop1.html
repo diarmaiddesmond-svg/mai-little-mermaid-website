@@ -1300,12 +1300,37 @@
     }
   } catch {}
 
-  function addToCart() {
+  async function addToCart() {
     if (!product || !product.available) return;
 
     // Prevent double-add — each piece is one of a kind
     const cart = loadCart();
     if (cart.some(i => i.id === product.id)) return;
+
+    const btn = document.getElementById('atcBtn');
+    btn.disabled = true;
+    btn.textContent = 'Reserving…';
+
+    // Reserve the product for 10 minutes before adding to cart
+    let reservedUntil = null;
+    try {
+      const r = await fetch('/api/reserve-product', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: product.id }),
+      });
+      if (r.status === 409) {
+        btn.textContent = 'Just taken — check back soon';
+        btn.style.opacity = '0.5';
+        return;
+      }
+      if (r.ok) {
+        const data = await r.json();
+        reservedUntil = data.reservedUntil;
+      }
+    } catch {
+      // Network issue — proceed without reservation (graceful degradation)
+    }
 
     const item = {
       id: product.id,
@@ -1316,14 +1341,14 @@
       colour: product.colour,
       grad: product.grad,
       qty: qty,
-      isRTS: true
+      isRTS: true,
+      reservedUntil,
     };
 
     cart.push(item);
     localStorage.setItem('mai_cart', JSON.stringify(cart));
     cartCount = cart.reduce((s, i) => s + i.qty, 0);
 
-    const btn = document.getElementById('atcBtn');
     btn.classList.add('added');
     const countEl = document.getElementById('cartCount');
     countEl.textContent = cartCount;
