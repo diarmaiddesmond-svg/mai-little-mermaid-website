@@ -48,7 +48,7 @@ module.exports = async function handler(req, res) {
   if (supabaseUrl && serviceKey && rtsIds.length > 0) {
     const ids = rtsIds.join(',');
     // Mark sold AND clear reservation in one PATCH
-    await fetch(
+    const patchRes = await fetch(
       `${supabaseUrl}/rest/v1/products?id=in.(${ids})`,
       {
         method: 'PATCH',
@@ -61,11 +61,15 @@ module.exports = async function handler(req, res) {
         body: JSON.stringify({ available: false, reserved_until: null }),
       }
     );
+    if (!patchRes.ok) {
+      const errText = await patchRes.text();
+      console.error('mark-sold: products PATCH failed', patchRes.status, errText);
+    }
   }
 
   // Create order record in Supabase for admin orders view
   if (supabaseUrl && serviceKey) {
-    await fetch(`${supabaseUrl}/rest/v1/orders`, {
+    const insertRes = await fetch(`${supabaseUrl}/rest/v1/orders`, {
       method: 'POST',
       headers: {
         'apikey': serviceKey,
@@ -77,7 +81,17 @@ module.exports = async function handler(req, res) {
         stripe_session_id: sessionId,
         status: 'new',
       }),
-    }).catch(e => console.error('Orders insert error:', e));
+    });
+    if (!insertRes.ok) {
+      const errText = await insertRes.text();
+      console.error('mark-sold: orders INSERT failed', insertRes.status, errText);
+      // Return the actual Supabase error so we can see it in the browser and Vercel logs
+      return res.status(500).json({
+        error: 'Order save failed',
+        detail: errText,
+        supabaseStatus: insertRes.status,
+      });
+    }
   }
 
   // Send order confirmation email via Resend
@@ -124,7 +138,7 @@ module.exports = async function handler(req, res) {
             <p style="margin:0 0 6px;font-family:'Georgia',serif;font-size:13px;letter-spacing:0.15em;text-transform:uppercase;color:#8b7355;">Order Confirmation</p>
             <h2 style="margin:0 0 24px;font-family:'Georgia',serif;font-size:22px;font-weight:400;color:#1a1410;">Thank you, ${customerName} ✨</h2>
             <p style="margin:0 0 28px;font-size:15px;line-height:1.7;color:#3a3028;">
-              Your order has been received and ${hasMTO ? 'I'll start crafting your piece — expect about a week before it ships.' : 'I\'ll have it packed and on its way within 2–3 days.'}
+              Your order has been received and ${hasMTO ? 'I\'ll start crafting your piece — expect about a week before it ships.' : 'I\'ll have it packed and on its way within 2–3 days.'}
               I handcraft every piece myself from beach-found treasures, so please know each one is made with a lot of love.
             </p>
 

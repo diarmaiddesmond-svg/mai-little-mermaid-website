@@ -184,8 +184,16 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId }),
-    }).then(r => {
-      if (!r.ok) r.text().then(t => console.error('mark-sold failed:', r.status, t));
+    }).then(async r => {
+      if (!r.ok) {
+        const body = await r.json().catch(() => ({}));
+        console.error('mark-sold failed:', r.status, body);
+        // Show a small debug banner — remove this once everything is working
+        const banner = document.createElement('p');
+        banner.style.cssText = 'position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);background:#c4715a;color:#fff;padding:0.6rem 1.2rem;font-size:0.75rem;font-family:monospace;z-index:9999;max-width:90vw;word-break:break-all;';
+        banner.textContent = 'mark-sold error ' + r.status + ': ' + (body.detail || body.error || 'check Vercel logs');
+        document.body.appendChild(banner);
+      }
     }).catch(e => console.error('mark-sold network error:', e));
   }
   localStorage.removeItem('mai_pending_cart');
