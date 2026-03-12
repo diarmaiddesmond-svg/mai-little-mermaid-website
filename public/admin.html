@@ -137,12 +137,161 @@
   .setup-warn strong { display: block; margin-bottom: 0.3rem; font-size: 0.85rem; }
   .setup-warn code { background: rgba(0,0,0,0.07); padding: 0.1rem 0.4rem; font-size: 0.78rem; }
 
+  /* ORDERS TAB */
+  .orders-toolbar { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .orders-filter { display: flex; gap: 0; border: 1px solid var(--sand-dark); }
+  .filter-btn { background: none; border: none; border-right: 1px solid var(--sand-dark); padding: 0.5rem 1rem; font-family: 'Jost', sans-serif; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--driftwood); cursor: pointer; transition: all 0.2s; }
+  .filter-btn:last-child { border-right: none; }
+  .filter-btn.active { background: var(--ocean-deep); color: #fff; }
+  .orders-count { font-size: 0.72rem; color: var(--driftwood); margin-left: auto; }
+
+  .order-card {
+    background: #fff;
+    border: 1px solid var(--sand-dark);
+    margin-bottom: 1rem;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .order-card:hover { border-color: var(--ocean); }
+
+  .order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.9rem 1.2rem;
+    background: var(--sand);
+    border-bottom: 1px solid var(--sand-dark);
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .order-header-left { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+
+  .order-status-badge {
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+    font-weight: 500;
+  }
+  .status-new      { background: #fff3cd; color: #856404; }
+  .status-packed   { background: #cff4fc; color: #0c5460; }
+  .status-shipped  { background: #d1e7dd; color: #0a3622; }
+
+  .order-name { font-size: 0.88rem; font-weight: 500; color: var(--ink); }
+  .order-email { font-size: 0.75rem; color: var(--driftwood); }
+  .order-date { font-size: 0.7rem; color: var(--driftwood); white-space: nowrap; }
+  .order-total { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; color: var(--ink); white-space: nowrap; }
+
+  .order-mto-flag {
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: var(--ocean-deep);
+    color: #fff;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .order-body {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    gap: 0;
+  }
+
+  .order-items { padding: 1rem 1.2rem; border-right: 1px solid var(--sand); }
+  .order-meta  { padding: 1rem 1.2rem; background: var(--cream); }
+
+  .order-section-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ocean);
+    margin-bottom: 0.55rem;
+    display: block;
+  }
+
+  .order-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--sand);
+  }
+  .order-item-row:last-child { border-bottom: none; }
+
+  .item-pill {
+    display: inline-block;
+    font-size: 0.58rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.45rem;
+    margin-left: 0.4rem;
+    vertical-align: middle;
+  }
+  .pill-rts { background: var(--seafoam); color: var(--ocean-deep); }
+  .pill-mto { background: var(--ocean-deep); color: #fff; }
+
+  .order-item-name { font-size: 0.84rem; color: var(--ink); font-weight: 500; }
+  .order-item-meta { font-size: 0.72rem; color: var(--driftwood); margin-top: 0.15rem; }
+  .order-item-price { font-size: 0.82rem; color: var(--ink); white-space: nowrap; }
+
+  .order-notes-box {
+    margin-top: 0.8rem;
+    background: #fffde7;
+    border-left: 3px solid var(--gold);
+    padding: 0.6rem 0.8rem;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: #5a4a00;
+    font-style: italic;
+  }
+  .order-notes-label { font-style: normal; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 0.3rem; font-weight: 500; }
+
+  .order-meta p { font-size: 0.78rem; line-height: 1.6; color: var(--ink); margin-bottom: 0.15rem; }
+  .order-meta .meta-dim { color: var(--driftwood); font-size: 0.72rem; }
+
+  .order-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.75rem 1.2rem;
+    border-top: 1px solid var(--sand);
+    background: #fafaf8;
+    flex-wrap: wrap;
+  }
+
+  .order-id { font-size: 0.62rem; color: var(--driftwood); font-family: monospace; opacity: 0.6; margin-right: auto; }
+
+  .btn-status {
+    padding: 0.45rem 1rem;
+    border: 1px solid var(--sand-dark);
+    background: none;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--driftwood);
+  }
+  .btn-status:hover { border-color: var(--ocean); color: var(--ocean); }
+  .btn-status.packed  { border-color: #0c5460; color: #0c5460; }
+  .btn-status.shipped { background: var(--ocean-deep); border-color: var(--ocean-deep); color: #fff; }
+  .btn-status:disabled { opacity: 0.35; cursor: default; }
+
+  .orders-empty { text-align: center; padding: 4rem 2rem; color: var(--driftwood); font-size: 0.9rem; }
+
+  .orders-loading { text-align: center; padding: 3rem; color: var(--driftwood); font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; }
+
   @media (max-width: 600px) {
     .admin-body { padding: 1rem; }
     .form-grid { grid-template-columns: 1fr; }
     .form-grid .full { grid-column: 1; }
     .p-price { display: none; }
     .product-row { flex-wrap: wrap; }
+    .order-body { grid-template-columns: 1fr; }
+    .order-items { border-right: none; border-bottom: 1px solid var(--sand); }
   }
 </style>
 </head>
@@ -182,6 +331,7 @@
 
     <div class="admin-tabs">
       <button class="tab-btn active" onclick="switchTab('products')">Products</button>
+      <button class="tab-btn" onclick="switchTab('orders')">Orders</button>
       <button class="tab-btn" onclick="switchTab('content')">Site Content</button>
     </div>
 
@@ -311,6 +461,24 @@
     <div id="productsList"><div class="loading">Loading…</div></div>
 
     </div><!-- /tabProducts -->
+
+    <!-- ORDERS TAB -->
+    <div class="tab-pane" id="tabOrders">
+
+      <div class="orders-toolbar">
+        <div class="orders-filter">
+          <button class="filter-btn active" onclick="filterOrders('all', this)">All</button>
+          <button class="filter-btn" onclick="filterOrders('new', this)">New</button>
+          <button class="filter-btn" onclick="filterOrders('packed', this)">Packed</button>
+          <button class="filter-btn" onclick="filterOrders('shipped', this)">Shipped</button>
+        </div>
+        <span class="orders-count" id="ordersCount"></span>
+        <button class="btn-add" style="margin-left:auto" onclick="loadOrders()">↻ Refresh</button>
+      </div>
+
+      <div id="ordersList"><div class="orders-loading">Loading orders…</div></div>
+
+    </div><!-- /tabOrders -->
 
     <!-- CONTENT TAB -->
     <div class="tab-pane" id="tabContent">
@@ -815,6 +983,190 @@ function switchTab(name) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
   event.target.classList.add('active');
+  if (name === 'orders') loadOrders();
+}
+
+// ── ORDERS ────────────────────────────────────────────────────────────────
+let allOrders = [];
+let currentFilter = 'all';
+
+async function loadOrders() {
+  const listEl = document.getElementById('ordersList');
+  listEl.innerHTML = '<div class="orders-loading">Loading orders…</div>';
+
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { listEl.innerHTML = '<div class="orders-loading">Not authenticated.</div>'; return; }
+
+  try {
+    const res = await fetch('/api/list-orders', {
+      headers: { 'Authorization': 'Bearer ' + session.access_token },
+    });
+    if (!res.ok) throw new Error('Status ' + res.status);
+    allOrders = await res.json();
+    renderOrders();
+  } catch (e) {
+    listEl.innerHTML = `<div class="orders-empty">Could not load orders: ${e.message}</div>`;
+  }
+}
+
+function filterOrders(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderOrders();
+}
+
+function renderOrders() {
+  const filtered = currentFilter === 'all'
+    ? allOrders
+    : allOrders.filter(o => o.status === currentFilter);
+
+  document.getElementById('ordersCount').textContent =
+    filtered.length === 0 ? 'No orders' :
+    filtered.length === 1 ? '1 order' : `${filtered.length} orders`;
+
+  if (filtered.length === 0) {
+    document.getElementById('ordersList').innerHTML =
+      `<div class="orders-empty">No ${currentFilter === 'all' ? '' : currentFilter + ' '}orders yet.</div>`;
+    return;
+  }
+
+  document.getElementById('ordersList').innerHTML = filtered.map(o => renderOrderCard(o)).join('');
+}
+
+function renderOrderCard(o) {
+  const date = new Date(o.created * 1000).toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric',
+  });
+  const time = new Date(o.created * 1000).toLocaleTimeString('en-US', {
+    hour: '2-digit', minute: '2-digit',
+  });
+
+  const total = ((o.amountTotal || 0) / 100).toFixed(2);
+  const currency = (o.currency || 'usd').toUpperCase();
+
+  const name = o.customer.name || '—';
+  const email = o.customer.email || '';
+
+  const addr = o.shipping?.address;
+  const addrHtml = addr
+    ? `<p>${addr.line1}${addr.line2 ? '<br>' + addr.line2 : ''}</p>
+       <p>${addr.city}, ${addr.state || ''} ${addr.postal_code || ''}</p>
+       <p class="meta-dim">${addr.country || ''}</p>`
+    : '<p class="meta-dim">No address collected</p>';
+
+  const statusLabel = { new: 'New', packed: 'Packed', shipped: 'Shipped' }[o.status] || 'New';
+  const statusClass = 'status-' + (o.status || 'new');
+
+  const itemsHtml = o.lineItems.map(li => {
+    const isRTS = o.rtsIds && o.rtsIds.length > 0;
+    const isMTO = o.hasMTO;
+    const pillHtml = li.metadata?.isMTO === 'true'
+      ? '<span class="item-pill pill-mto">Made to Order</span>'
+      : '<span class="item-pill pill-rts">Ready to Ship</span>';
+    const meta = [li.metadata?.metal, li.metadata?.colour].filter(Boolean).join(' · ');
+    return `<div class="order-item-row">
+      <div>
+        <div class="order-item-name">${li.name} ${pillHtml}</div>
+        ${meta ? `<div class="order-item-meta">${meta}</div>` : ''}
+      </div>
+      <div class="order-item-price">$${((li.amount || 0) / 100).toFixed(2)}</div>
+    </div>`;
+  }).join('');
+
+  const notesHtml = o.orderNotes
+    ? `<div class="order-notes-box"><span class="order-notes-label">Customer note</span>${escHtml(o.orderNotes)}</div>`
+    : '';
+
+  // Action buttons
+  const packedDisabled  = o.status === 'packed' || o.status === 'shipped' ? 'disabled' : '';
+  const shippedDisabled = o.status === 'shipped' ? 'disabled' : '';
+  const packedClass     = o.status === 'packed'  ? 'packed'  : '';
+  const shippedClass    = o.status === 'shipped' ? 'shipped' : '';
+
+  const shortId = o.id.replace('cs_', '').slice(0, 24) + '…';
+
+  return `
+  <div class="order-card" id="order-${o.id}">
+    <div class="order-header">
+      <div class="order-header-left">
+        <span class="order-status-badge ${statusClass}">${statusLabel}</span>
+        ${o.hasMTO ? '<span class="order-mto-flag">Made to Order</span>' : ''}
+        <div>
+          <div class="order-name">${escHtml(name)}</div>
+          <div class="order-email">${escHtml(email)}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;">
+        <span class="order-total">${currency} $${total}</span>
+        <span class="order-date">${date} · ${time}</span>
+      </div>
+    </div>
+
+    <div class="order-body">
+      <div class="order-items">
+        <span class="order-section-label">Items ordered</span>
+        ${itemsHtml}
+        ${notesHtml}
+      </div>
+      <div class="order-meta">
+        <span class="order-section-label">Ship to</span>
+        ${addrHtml}
+        ${o.shippedAt ? `<p class="meta-dim" style="margin-top:0.8rem;">Shipped ${new Date(o.shippedAt).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</p>` : ''}
+        ${o.fulfillmentNote ? `<p class="meta-dim" style="margin-top:0.4rem;font-style:italic;">${escHtml(o.fulfillmentNote)}</p>` : ''}
+      </div>
+    </div>
+
+    <div class="order-footer">
+      <span class="order-id">${o.id}</span>
+      <button class="btn-status ${packedClass}" ${packedDisabled}
+        onclick="setOrderStatus('${o.id}', 'packed', this)">
+        ✓ Mark Packed
+      </button>
+      <button class="btn-status ${shippedClass}" ${shippedDisabled}
+        onclick="setOrderStatus('${o.id}', 'shipped', this)">
+        ↗ Mark Shipped
+      </button>
+    </div>
+  </div>`;
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+async function setOrderStatus(sessionId, status, btn) {
+  btn.disabled = true;
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return;
+
+  try {
+    const res = await fetch('/api/update-order-status', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + session.access_token,
+      },
+      body: JSON.stringify({ stripeSessionId: sessionId, status }),
+    });
+    if (!res.ok) throw new Error('Failed');
+
+    // Update local data and re-render
+    const order = allOrders.find(o => o.id === sessionId);
+    if (order) {
+      order.status = status;
+      if (status === 'shipped') order.shippedAt = new Date().toISOString();
+    }
+    renderOrders();
+    showToast(status === 'shipped' ? 'Marked as shipped ✓' : 'Marked as packed ✓');
+  } catch {
+    btn.disabled = false;
+    showToast('Error updating order');
+  }
 }
 
 // ── EXTRA PRODUCT PHOTOS ─────────────────────────────────────────────────
@@ -1034,6 +1386,13 @@ async function saveContent() {
   }
   document.getElementById('heroUploadStatus').textContent = '';
 
+  // Build rows for all text fields
+  const rows = Object.entries(CONTENT_FIELDS).map(([key, elId]) => ({
+    key,
+    value: document.getElementById(elId)?.value?.trim() || '',
+    updated_at: new Date().toISOString(),
+  }));
+
   // Upload about photo if pending
   if (pendingAboutBlob) {
     btn.textContent = 'Uploading about photo…';
@@ -1054,13 +1413,6 @@ async function saveContent() {
     rows.push({ key: 'about_img', value: '', updated_at: new Date().toISOString() });
     delete document.getElementById('aboutArea').dataset.cleared;
   }
-
-  // Build rows for all text fields
-  const rows = Object.entries(CONTENT_FIELDS).map(([key, elId]) => ({
-    key,
-    value: document.getElementById(elId)?.value?.trim() || '',
-    updated_at: new Date().toISOString(),
-  }));
 
   // Add/update hero image rows
   [1, 2, 3].forEach(slot => {
