@@ -1103,7 +1103,7 @@ async function checkout() {
         items: cart,
         promoDiscount,
         orderNotes,
-        successUrl: window.location.origin + '/order-success.html',
+        successUrl: window.location.origin + '/order-success.html?session_id={CHECKOUT_SESSION_ID}',
         cancelUrl: window.location.origin + '/cart.html',
       }),
     });
