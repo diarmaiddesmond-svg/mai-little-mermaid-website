@@ -1110,6 +1110,22 @@ async function checkout() {
     });
 
     const data = await res.json();
+
+    // One or more RTS items were sold to someone else — remove them from cart
+    if (res.status === 409 && data.error === 'items_unavailable') {
+      const gone = new Set(data.unavailable || []);
+      const cart = loadCart();
+      saveCart(cart.filter(i => !gone.has(i.name)));
+      renderCart();
+      btn.disabled = false;
+      btn.textContent = 'Proceed to Checkout';
+      const errEl = document.getElementById('checkoutError');
+      errEl.style.display = 'block';
+      errEl.style.color = 'var(--coral)';
+      errEl.textContent = `Sorry — ${[...gone].join(', ')} ${gone.size === 1 ? 'was' : 'were'} just sold to someone else and ${gone.size === 1 ? 'has' : 'have'} been removed from your bag.`;
+      return;
+    }
+
     if (!res.ok) throw new Error(data.error || 'Server error');
     window.location = data.url;
   } catch (err) {
