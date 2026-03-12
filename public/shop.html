@@ -1694,6 +1694,7 @@ function renderRTS(products) {
     return true;
   }).length;
   document.getElementById('availableCount').textContent = `${available} pieces`;
+  document.getElementById('rtsCount').textContent = available;
 
   grid.innerHTML = products.map((p, i) => {
     const inCart = inCartIds.has(p.id);
