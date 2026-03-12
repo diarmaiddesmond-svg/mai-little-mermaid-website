@@ -285,6 +285,34 @@
     margin: 0 -1.5rem;
   }
 
+  /* ── ANNOUNCEMENT BANNER ── */
+  .announcement-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 101;
+    background: var(--ocean-deep);
+    color: #fff;
+    padding: 0.55rem 3rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-align: center;
+    display: none;
+  }
+
+  .announcement-bar .bar-dot {
+    opacity: 0.45;
+    margin: 0 0.4em;
+  }
+
+  body.has-announcement nav {
+    top: 32px;
+  }
+
+  body.has-announcement .hero {
+    padding-top: calc(70px + 32px);
+  }
+
   /* ── COLLECTION ── */
   .section {
     padding: 6rem 5rem;
@@ -954,6 +982,11 @@
 </head>
 <body>
 
+<!-- ANNOUNCEMENT BANNER -->
+<div class="announcement-bar" id="announcementBar">
+  <span id="bannerDate"></span><span class="bar-dot" id="bannerDot"> · </span><span id="bannerTitle"></span>
+</div>
+
 <!-- NAV -->
 <nav>
   <a href="/index.html" class="nav-logo">Mai Little Mermaid</a>
@@ -1311,6 +1344,28 @@
           const row = rows.find(r => r.key === `news_${n}_title`);
           if (!row || !row.value.trim()) document.getElementById(`newsCard${n}`).style.display = 'none';
         });
+      }
+
+      // Announcement banner — first news card with a title
+      const firstNews = [1, 2, 3].map(n => ({
+        title: (rows.find(r => r.key === `news_${n}_title`) || {}).value || '',
+        date:  (rows.find(r => r.key === `news_${n}_date`)  || {}).value || '',
+      })).find(c => c.title.trim());
+      if (firstNews) {
+        const bar = document.getElementById('announcementBar');
+        const dateEl = document.getElementById('bannerDate');
+        const dotEl = document.getElementById('bannerDot');
+        const titleEl = document.getElementById('bannerTitle');
+        titleEl.textContent = firstNews.title;
+        if (firstNews.date) {
+          dateEl.textContent = firstNews.date;
+          dotEl.style.display = '';
+        } else {
+          dateEl.textContent = '';
+          dotEl.style.display = 'none';
+        }
+        bar.style.display = 'block';
+        document.body.classList.add('has-announcement');
       }
     } catch { /* silently skip — page shows hardcoded defaults */ }
   })();
