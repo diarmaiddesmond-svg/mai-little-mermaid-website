@@ -184,7 +184,9 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId }),
-    }).catch(() => {}); // fire-and-forget; shop will update via Realtime
+    }).then(r => {
+      if (!r.ok) r.text().then(t => console.error('mark-sold failed:', r.status, t));
+    }).catch(e => console.error('mark-sold network error:', e));
   }
   localStorage.removeItem('mai_pending_cart');
 </script>
