@@ -117,6 +117,19 @@
     display: flex;
     align-items: center;
     gap: 0.4rem;
+    text-decoration: none;
+  }
+  .cart-bubble {
+    display: none;
+    background: var(--ocean);
+    color: #fff;
+    font-size: 0.6rem;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
   }
 
   /* ── HERO ── */
@@ -1024,10 +1037,11 @@
     <li><a href="#about">About</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
-  <div class="nav-cart">
+  <a href="/cart.html" class="nav-cart">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-    Bag (0)
-  </div>
+    Bag
+    <span class="cart-bubble" id="cartBubble">0</span>
+  </a>
   <button class="nav-hamburger" id="navToggle" aria-label="Open menu">
     <span></span><span></span><span></span>
   </button>
@@ -1252,15 +1266,15 @@
   <div class="reveal" style="transition-delay:0.2s">
     <div class="form-group">
       <label>Your Name</label>
-      <input type="text" placeholder="Maile">
+      <input id="contactName" type="text" placeholder="Maile">
     </div>
     <div class="form-group">
       <label>Email</label>
-      <input type="email" placeholder="hello@email.com">
+      <input id="contactEmail" type="email" placeholder="hello@email.com">
     </div>
     <div class="form-group">
       <label>I'm interested in</label>
-      <select>
+      <select id="contactPiece">
         <option>A custom necklace</option>
         <option>A custom bracelet</option>
         <option>Earrings</option>
@@ -1270,9 +1284,11 @@
     </div>
     <div class="form-group">
       <label>Message</label>
-      <textarea placeholder="Tell me what you have in mind..."></textarea>
+      <textarea id="contactMessage" placeholder="Tell me what you have in mind..."></textarea>
     </div>
-    <button class="btn-primary" style="width:100%; padding: 1rem; margin-top:0.5rem;">Send Message</button>
+    <button id="contactBtn" class="btn-primary" onclick="submitContact()" style="width:100%; padding: 1rem; margin-top:0.5rem;">Send Message</button>
+    <p id="contactSuccess" style="display:none; margin-top:1rem; color:var(--ocean); font-size:0.85rem; letter-spacing:0.05em;">Message sent — Maile will be in touch soon ✓</p>
+    <p id="contactError" style="display:none; margin-top:1rem; color:var(--coral); font-size:0.85rem;"></p>
   </div>
 </section>
 
@@ -1294,6 +1310,43 @@
 </footer>
 
 <script>
+  // Contact form
+  async function submitContact() {
+    const email = document.getElementById('contactEmail').value.trim();
+    if (!email || !email.includes('@')) {
+      const err = document.getElementById('contactError');
+      err.textContent = 'Please enter a valid email address.';
+      err.style.display = 'block';
+      return;
+    }
+    const btn = document.getElementById('contactBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    document.getElementById('contactError').style.display = 'none';
+
+    try {
+      const res = await fetch('/api/submit-enquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name:      document.getElementById('contactName').value.trim() || null,
+          email,
+          pieceType: document.getElementById('contactPiece').value || null,
+          message:   document.getElementById('contactMessage').value.trim() || null,
+        }),
+      });
+      if (!res.ok) throw new Error('Server error');
+      btn.style.display = 'none';
+      document.getElementById('contactSuccess').style.display = 'block';
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = 'Send Message';
+      const errEl = document.getElementById('contactError');
+      errEl.textContent = 'Something went wrong — DM @mai.little.mermaid on Instagram instead.';
+      errEl.style.display = 'block';
+    }
+  }
+
   // Scroll reveal
   const reveals = document.querySelectorAll('.reveal');
   const observer = new IntersectionObserver((entries) => {
@@ -1400,6 +1453,14 @@
       }
     } catch { /* silently skip — page shows hardcoded defaults */ }
   })();
+
+  // Cart bubble count
+  try {
+    const cart = JSON.parse(localStorage.getItem('mai_cart') || '[]');
+    const total = cart.reduce((n, i) => n + (i.qty || 1), 0);
+    const bubble = document.getElementById('cartBubble');
+    if (bubble) { bubble.textContent = total; bubble.style.display = total > 0 ? 'inline-flex' : 'none'; }
+  } catch {}
 </script>
 </body>
 </html>
