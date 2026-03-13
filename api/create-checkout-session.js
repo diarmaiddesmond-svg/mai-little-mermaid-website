@@ -16,7 +16,7 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { items, promoDiscount = 0, orderNotes = '', successUrl, cancelUrl } = req.body;
+  const { items, promoDiscount = 0, promoCode = '', orderNotes = '', successUrl, cancelUrl } = req.body;
 
   if (!items || items.length === 0) {
     return res.status(400).json({ error: 'No items in cart' });
@@ -79,14 +79,28 @@ module.exports = async function handler(req, res) {
     quantity: item.qty,
   }));
 
-  // Apply promo discount as a coupon if active
+  // Validate promo code server-side and apply discount
   const discounts = [];
-  if (promoDiscount > 0) {
+  let verifiedDiscount = 0;
+  if (promoCode && supabaseUrl && serviceKey) {
+    const promoRes = await fetch(
+      `${supabaseUrl}/rest/v1/promo_codes?code=eq.${encodeURIComponent(promoCode.toUpperCase())}&active=eq.true&select=code,discount_percent`,
+      { headers: { 'apikey': serviceKey, 'Authorization': `Bearer ${serviceKey}` } }
+    );
+    if (promoRes.ok) {
+      const promoRows = await promoRes.json();
+      if (promoRows.length > 0) {
+        const subtotal = lineItems.reduce((sum, li) => sum + li.price_data.unit_amount * li.quantity, 0);
+        verifiedDiscount = Math.round(subtotal * (promoRows[0].discount_percent / 100));
+      }
+    }
+  }
+  if (verifiedDiscount > 0) {
     const coupon = await stripe.coupons.create({
-      amount_off: promoDiscount * 100, // cents
+      amount_off: verifiedDiscount,
       currency: 'usd',
       duration: 'once',
-      name: 'OCEAN10',
+      name: promoCode.toUpperCase(),
     });
     discounts.push({ coupon: coupon.id });
   }

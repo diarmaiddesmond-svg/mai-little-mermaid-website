@@ -176,7 +176,29 @@ create policy "enquiries: public insert"
 
 
 -- ============================================================
--- 6. STORAGE — product photos bucket
+-- 6. PROMO CODES — discount codes for checkout
+--    Created/updated/deleted by admin.html via save-promo-code.js
+--    and delete-promo-code.js (service_role key, auth-gated).
+--    Validated at checkout by api/validate-promo.js (public endpoint)
+--    and server-side in api/create-checkout-session.js.
+-- ============================================================
+
+create table public.promo_codes (
+  id               uuid        primary key default gen_random_uuid(),
+  code             text        unique not null,
+  discount_percent integer     not null check (discount_percent between 1 and 100),
+  active           boolean     not null default true,
+  created_at       timestamptz not null default now()
+);
+
+alter table public.promo_codes enable row level security;
+
+-- All reads go through service_role key (bypasses RLS) — no select policy needed.
+-- No direct public access.
+
+
+-- ============================================================
+-- 7. STORAGE — product photos bucket
 -- ============================================================
 
 insert into storage.buckets (id, name, public)
