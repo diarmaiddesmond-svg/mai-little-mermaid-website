@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Keep checkout and admin pages out of search results
+Disallow: /cart.html
+Disallow: /admin.html
+Disallow: /order-success.html
+
+Sitemap: https://mailittlemermaid.com/sitemap.xml
