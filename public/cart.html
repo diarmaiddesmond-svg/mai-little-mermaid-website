@@ -1042,28 +1042,50 @@ function removeItem(id) {
   const item = cart.find(i => i.id === id);
   // Release the reservation in the background for RTS items
   if (item && item.isRTS && item.reservedUntil) {
-    fetch('/api/release-product', {
+    fetch('/api/product-reservation', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ productId: id }),
+      body: JSON.stringify({ action: 'release', productId: id }),
     }).catch(() => {});
   }
   saveCart(cart.filter(i => i.id !== id));
   renderCart();
 }
 
-function applyPromo() {
-  const code = document.getElementById('promoInput').value.trim().toUpperCase();
+async function applyPromo() {
   const input = document.getElementById('promoInput');
-  if (code === 'OCEAN10') {
-    promoDiscount = Math.round(getSubtotal(loadCart()) * 0.1);
-    input.style.borderColor = 'var(--ocean)';
-    input.value = 'OCEAN10 — 10% off applied';
-    input.readOnly = true;
-    renderCart();
-  } else {
-    input.style.borderColor = 'var(--coral)';
-    setTimeout(() => { input.style.borderColor = ''; }, 1500);
+  const code  = input.value.trim().toUpperCase();
+  const btn   = document.querySelector('.btn-promo');
+  if (!code) return;
+
+  btn.disabled = true;
+  btn.textContent = '…';
+
+  try {
+    const res  = await fetch('/api/validate-promo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code }),
+    });
+    const data = await res.json();
+
+    if (data.valid) {
+      const subtotal = getSubtotal(loadCart());
+      promoDiscount = Math.round(subtotal * (data.discountPercent / 100));
+      input.style.borderColor = 'var(--ocean)';
+      input.value = `${data.code} — ${data.discountPercent}% off applied`;
+      input.readOnly = true;
+      btn.style.display = 'none';
+      renderCart();
+    } else {
+      input.style.borderColor = 'var(--coral)';
+      setTimeout(() => { input.style.borderColor = ''; }, 1500);
+      btn.disabled = false;
+      btn.textContent = 'Apply';
+    }
+  } catch {
+    btn.disabled = false;
+    btn.textContent = 'Apply';
   }
 }
 
@@ -1109,6 +1131,9 @@ async function checkout() {
       body: JSON.stringify({
         items: cart,
         promoDiscount,
+        promoCode: document.getElementById('promoInput').readOnly
+          ? document.getElementById('promoInput').value.split(' — ')[0].trim()
+          : '',
         orderNotes,
         successUrl: window.location.origin + '/order-success.html?session_id={CHECKOUT_SESSION_ID}',
         cancelUrl: window.location.origin + '/cart.html',

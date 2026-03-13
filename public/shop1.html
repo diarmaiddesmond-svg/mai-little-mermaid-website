@@ -1349,10 +1349,10 @@
     // Reserve the product for 10 minutes before adding to cart
     let reservedUntil = null;
     try {
-      const r = await fetch('/api/reserve-product', {
+      const r = await fetch('/api/product-reservation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId: product.id }),
+        body: JSON.stringify({ action: 'reserve', productId: product.id }),
       });
       if (r.status === 409) {
         btn.textContent = 'Just taken — check back soon';

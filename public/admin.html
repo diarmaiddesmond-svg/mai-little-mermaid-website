@@ -331,6 +331,35 @@
   }
   .enquiry-id { font-size: 0.6rem; color: var(--driftwood); font-family: monospace; opacity: 0.6; margin-right: auto; }
 
+  /* ── PROMO CODES ────────────────────────────────────── */
+  .promo-form-wrap {
+    background: var(--sand);
+    border: 1px solid var(--sand-dark);
+    padding: 1.2rem 1.4rem;
+    margin-bottom: 1.5rem;
+  }
+  .promo-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1.2rem;
+    background: #fff;
+    border: 1px solid var(--sand-dark);
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .promo-code-text {
+    font-family: monospace;
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+  }
+  .promo-pct { font-size: 0.8rem; color: var(--ocean); font-weight: 500; }
+  .promo-inactive { opacity: 0.45; }
+  .promo-badge-active   { background: #d1e7dd; color: #0f5132; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; }
+  .promo-badge-inactive { background: #f8d7da; color: #842029; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; }
+
   @media (max-width: 600px) {
     .admin-body { padding: 1rem; }
     .form-grid { grid-template-columns: 1fr; }
@@ -341,6 +370,7 @@
     .order-items { border-right: none; border-bottom: 1px solid var(--sand); }
     .enquiry-body { grid-template-columns: 1fr; }
     .enquiry-body .eq-full { grid-column: 1; }
+    .promo-form-wrap > div { grid-template-columns: 1fr !important; }
   }
 </style>
 </head>
@@ -382,6 +412,7 @@
       <button class="tab-btn active" onclick="switchTab('products')">Products</button>
       <button class="tab-btn" onclick="switchTab('orders')">Orders</button>
       <button class="tab-btn" onclick="switchTab('enquiries')">Enquiries</button>
+      <button class="tab-btn" onclick="switchTab('promos')">Promo Codes</button>
       <button class="tab-btn" onclick="switchTab('content')">Site Content</button>
     </div>
 
@@ -547,6 +578,38 @@
       <div id="enquiriesList"><div class="orders-loading">Loading enquiries…</div></div>
 
     </div><!-- /tabEnquiries -->
+
+    <!-- PROMO CODES TAB -->
+    <div class="tab-pane" id="tabPromos">
+
+      <div class="orders-toolbar">
+        <span class="orders-count" id="promosCount"></span>
+        <button class="btn-add" style="margin-left:auto" onclick="loadPromos()">↻ Refresh</button>
+      </div>
+
+      <!-- Create / edit form -->
+      <div class="promo-form-wrap" id="promoFormWrap">
+        <div class="form-title">New Promo Code</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:1rem;align-items:end;margin-bottom:1rem;">
+          <div class="field">
+            <label>Code <span style="font-weight:300;color:var(--driftwood)">(letters &amp; numbers only)</span></label>
+            <input type="text" id="pCode" placeholder="e.g. SUMMER20" style="text-transform:uppercase">
+          </div>
+          <div class="field">
+            <label>Discount %</label>
+            <input type="number" id="pPercent" placeholder="e.g. 10" min="1" max="100">
+          </div>
+          <button class="btn-save" onclick="savePromo()" id="savePromoBtn" style="height:40px;padding:0 1.5rem">Save</button>
+        </div>
+        <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;cursor:pointer;margin-bottom:0.5rem">
+          <input type="checkbox" id="pActive" checked> Active (can be used at checkout)
+        </label>
+        <p id="promoFormError" style="display:none;color:var(--coral);font-size:0.78rem;margin-top:0.3rem"></p>
+      </div>
+
+      <div id="promosList"><div class="orders-loading">Loading promo codes…</div></div>
+
+    </div><!-- /tabPromos -->
 
     <!-- CONTENT TAB -->
     <div class="tab-pane" id="tabContent">
@@ -1053,6 +1116,7 @@ function switchTab(name) {
   event.target.classList.add('active');
   if (name === 'orders') loadOrders();
   if (name === 'enquiries') loadEnquiries();
+  if (name === 'promos') loadPromos();
 }
 
 // ── ORDERS ────────────────────────────────────────────────────────────────
@@ -1356,6 +1420,133 @@ async function setEnquiryStatus(enquiryId, status, btn) {
   } catch {
     btn.disabled = false;
     showToast('Error updating enquiry');
+  }
+}
+
+// ── PROMO CODES ───────────────────────────────────────────────────────────
+let allPromos = [];
+
+async function loadPromos() {
+  const listEl = document.getElementById('promosList');
+  listEl.innerHTML = '<div class="orders-loading">Loading promo codes…</div>';
+
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { listEl.innerHTML = '<div class="orders-loading">Not authenticated.</div>'; return; }
+
+  try {
+    const res = await fetch('/api/manage-promos', {
+      headers: { 'Authorization': 'Bearer ' + session.access_token },
+    });
+    if (!res.ok) throw new Error('Status ' + res.status);
+    allPromos = await res.json();
+    renderPromos();
+  } catch (e) {
+    listEl.innerHTML = `<div class="orders-empty">Could not load promo codes: ${e.message}</div>`;
+  }
+}
+
+function renderPromos() {
+  const count = allPromos.length;
+  document.getElementById('promosCount').textContent =
+    count === 0 ? 'No promo codes' : count === 1 ? '1 promo code' : `${count} promo codes`;
+
+  if (count === 0) {
+    document.getElementById('promosList').innerHTML =
+      '<div class="orders-empty">No promo codes yet — create one above.</div>';
+    return;
+  }
+
+  document.getElementById('promosList').innerHTML = allPromos.map(p => `
+    <div class="promo-row ${p.active ? '' : 'promo-inactive'}" id="promo-${p.id}">
+      <span class="promo-code-text">${escHtml(p.code)}</span>
+      <span class="promo-pct">${p.discount_percent}% off</span>
+      <span class="${p.active ? 'promo-badge-active' : 'promo-badge-inactive'}">${p.active ? 'Active' : 'Inactive'}</span>
+      <div style="margin-left:auto;display:flex;gap:0.6rem;flex-wrap:wrap;">
+        <button class="btn-status" onclick="togglePromo('${p.id}', ${!p.active}, this)">
+          ${p.active ? 'Disable' : 'Enable'}
+        </button>
+        <button class="btn-status" style="color:var(--coral);border-color:var(--coral)"
+          onclick="deletePromo('${p.id}', this)">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+async function savePromo() {
+  const code    = document.getElementById('pCode').value.trim();
+  const percent = document.getElementById('pPercent').value.trim();
+  const active  = document.getElementById('pActive').checked;
+  const errEl   = document.getElementById('promoFormError');
+  const btn     = document.getElementById('savePromoBtn');
+  errEl.style.display = 'none';
+
+  if (!code) { errEl.textContent = 'Enter a code.'; errEl.style.display = 'block'; return; }
+  if (!percent || isNaN(percent) || percent < 1 || percent > 100) {
+    errEl.textContent = 'Enter a discount between 1 and 100.'; errEl.style.display = 'block'; return;
+  }
+
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return;
+
+  try {
+    const res = await fetch('/api/manage-promos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+      body: JSON.stringify({ action: 'save', code, discountPercent: parseInt(percent), active }),
+    });
+    if (!res.ok) { const d = await res.json(); throw new Error(d.error || 'Failed'); }
+    document.getElementById('pCode').value = '';
+    document.getElementById('pPercent').value = '';
+    document.getElementById('pActive').checked = true;
+    loadPromos();
+    showToast('Promo code saved ✓');
+  } catch (e) {
+    errEl.textContent = e.message; errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Save';
+  }
+}
+
+async function togglePromo(id, active, btn) {
+  btn.disabled = true;
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return;
+  try {
+    const res = await fetch('/api/save-promo-code', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+      body: JSON.stringify({ action: 'save', code: allPromos.find(p => p.id === id)?.code, discountPercent: allPromos.find(p => p.id === id)?.discount_percent, active }),
+    });
+    if (!res.ok) throw new Error('Failed');
+    const promo = allPromos.find(p => p.id === id);
+    if (promo) promo.active = active;
+    renderPromos();
+    showToast(active ? 'Promo code enabled ✓' : 'Promo code disabled ✓');
+  } catch {
+    btn.disabled = false;
+    showToast('Error updating promo code');
+  }
+}
+
+async function deletePromo(id, btn) {
+  if (!confirm('Delete this promo code? This cannot be undone.')) return;
+  btn.disabled = true;
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return;
+  try {
+    const res = await fetch('/api/manage-promos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+      body: JSON.stringify({ action: 'delete', id }),
+    });
+    if (!res.ok) throw new Error('Failed');
+    allPromos = allPromos.filter(p => p.id !== id);
+    renderPromos();
+    showToast('Promo code deleted ✓');
+  } catch {
+    btn.disabled = false;
+    showToast('Error deleting promo code');
   }
 }
 
