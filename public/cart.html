@@ -1042,10 +1042,10 @@ function removeItem(id) {
   const item = cart.find(i => i.id === id);
   // Release the reservation in the background for RTS items
   if (item && item.isRTS && item.reservedUntil) {
-    fetch('/api/release-product', {
+    fetch('/api/product-reservation', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ productId: id }),
+      body: JSON.stringify({ action: 'release', productId: id }),
     }).catch(() => {});
   }
   saveCart(cart.filter(i => i.id !== id));

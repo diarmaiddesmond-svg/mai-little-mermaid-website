@@ -1434,7 +1434,7 @@ async function loadPromos() {
   if (!session) { listEl.innerHTML = '<div class="orders-loading">Not authenticated.</div>'; return; }
 
   try {
-    const res = await fetch('/api/list-promo-codes', {
+    const res = await fetch('/api/manage-promos', {
       headers: { 'Authorization': 'Bearer ' + session.access_token },
     });
     if (!res.ok) throw new Error('Status ' + res.status);
@@ -1490,10 +1490,10 @@ async function savePromo() {
   if (!session) return;
 
   try {
-    const res = await fetch('/api/save-promo-code', {
+    const res = await fetch('/api/manage-promos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
-      body: JSON.stringify({ code, discountPercent: parseInt(percent), active }),
+      body: JSON.stringify({ action: 'save', code, discountPercent: parseInt(percent), active }),
     });
     if (!res.ok) { const d = await res.json(); throw new Error(d.error || 'Failed'); }
     document.getElementById('pCode').value = '';
@@ -1516,7 +1516,7 @@ async function togglePromo(id, active, btn) {
     const res = await fetch('/api/save-promo-code', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
-      body: JSON.stringify({ code: allPromos.find(p => p.id === id)?.code, discountPercent: allPromos.find(p => p.id === id)?.discount_percent, active }),
+      body: JSON.stringify({ action: 'save', code: allPromos.find(p => p.id === id)?.code, discountPercent: allPromos.find(p => p.id === id)?.discount_percent, active }),
     });
     if (!res.ok) throw new Error('Failed');
     const promo = allPromos.find(p => p.id === id);
@@ -1535,10 +1535,10 @@ async function deletePromo(id, btn) {
   const { data: { session } } = await sb.auth.getSession();
   if (!session) return;
   try {
-    const res = await fetch('/api/delete-promo-code', {
+    const res = await fetch('/api/manage-promos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
-      body: JSON.stringify({ id }),
+      body: JSON.stringify({ action: 'delete', id }),
     });
     if (!res.ok) throw new Error('Failed');
     allPromos = allPromos.filter(p => p.id !== id);
