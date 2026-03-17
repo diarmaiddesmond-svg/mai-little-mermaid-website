@@ -904,6 +904,88 @@
         </div>
       </div>
 
+      <!-- MADE TO ORDER SECTION -->
+      <div class="content-section">
+        <div class="content-section-title">Made to Order <span style="font-family:'Jost',sans-serif;font-size:0.65rem;font-style:normal;font-weight:300;color:var(--driftwood);letter-spacing:0.06em;text-transform:none;margin-left:0.5rem">— configurator on shop page</span></div>
+        <div class="content-grid">
+          <div class="field full">
+            <label>Section heading <span style="font-weight:300;text-transform:none;letter-spacing:0">(supports &lt;em&gt; for italics)</span></label>
+            <input type="text" id="cMtoHeading" placeholder="Made to <em>Order</em>">
+          </div>
+          <div class="field full">
+            <label>Description paragraph</label>
+            <textarea id="cMtoDesc" placeholder="Choose your piece, your metal, your glass colour…"></textarea>
+          </div>
+          <div class="field">
+            <label>Lead time</label>
+            <input type="text" id="cMtoLeadTime" placeholder="~1 week">
+          </div>
+          <div class="field">
+            <label>Summary panel note</label>
+            <input type="text" id="cMtoSummaryNote" placeholder="Price includes metal &amp; handcrafting">
+          </div>
+        </div>
+
+        <!-- Piece options -->
+        <div style="margin-top:1.4rem;margin-bottom:0.6rem;font-size:0.67rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--driftwood)">Piece Options</div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:0.6rem;align-items:end;margin-bottom:0.5rem">
+          <div class="field" style="margin:0"><label>Name</label></div>
+          <div class="field" style="margin:0"><label>Silver price ($)</label></div>
+          <div class="field" style="margin:0"><label>Gold price ($)</label></div>
+          <div class="field" style="margin:0"><label>Note</label></div>
+        </div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:0.6rem;margin-bottom:0.5rem">
+          <input type="text" class="field" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP1Name" placeholder="Bracelet">
+          <input type="number" class="field" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP1Silver" placeholder="55">
+          <input type="number" class="field" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP1Gold" placeholder="92">
+          <input type="text" class="field" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP1Note" placeholder="Single sea glass charm">
+        </div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:0.6rem;margin-bottom:0.5rem">
+          <input type="text" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP2Name" placeholder="Earrings">
+          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP2Silver" placeholder="47">
+          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP2Gold" placeholder="72">
+          <input type="text" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP2Note" placeholder="Matched pair">
+        </div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:0.6rem;margin-bottom:0.5rem">
+          <input type="text" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP3Name" placeholder="Necklace">
+          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP3Silver" placeholder="75">
+          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP3Gold" placeholder="130">
+          <input type="text" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP3Note" placeholder="Single charm, choice of length">
+        </div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:0.6rem;margin-bottom:1.2rem">
+          <input type="text" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP4Name" placeholder="Multi Stone Necklace">
+          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP4Silver" placeholder="92">
+          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP4Gold" placeholder="158">
+          <input type="text" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP4Note" placeholder="3–5 stones on chain">
+        </div>
+
+        <!-- Metal options -->
+        <div style="margin-bottom:0.6rem;font-size:0.67rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--driftwood)">Metal Options</div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 2fr;gap:0.6rem;align-items:end;margin-bottom:0.5rem">
+          <div class="field" style="margin:0"><label>Name</label></div>
+          <div class="field" style="margin:0"><label>Extra price ($)</label></div>
+          <div class="field" style="margin:0"><label>Label shown</label></div>
+        </div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 2fr;gap:0.6rem;margin-bottom:0.5rem">
+          <input type="text" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoM1Name" placeholder="Sterling Silver">
+          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoM1Upcharge" placeholder="0">
+          <input type="text" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoM1Label" placeholder="included">
+        </div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 2fr;gap:0.6rem;margin-bottom:1.2rem">
+          <input type="text" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoM2Name" placeholder="Gold Fill">
+          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoM2Upcharge" placeholder="0">
+          <input type="text" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoM2Label" placeholder="gold fill pricing">
+        </div>
+
+        <!-- Glass colours -->
+        <div class="content-grid">
+          <div class="field full">
+            <label>Glass colours <span style="font-weight:300;text-transform:none;letter-spacing:0">— one per line: <code style="font-size:0.82em;background:var(--sand);padding:0.1em 0.3em">Name | #hex | Label</code></span></label>
+            <textarea id="cMtoGlassColours" style="min-height:160px;font-family:monospace;font-size:0.82rem" placeholder="Seafoam | #a8c5bc | Seafoam&#10;Cobalt Blue | #4a6fa5 | Cobalt&#10;Amber | #c4883a | Amber&#10;Sea Clear | #e8e8e8 | Clear&#10;Forest Green | #6aaa7a | Green&#10;Lavender | #b09cc0 | Lavender&#10;Coral Pink | #d4857a | Coral Pink&#10;Surprise Me | conic-gradient(#a8c5bc,#4a6fa5,#c4883a,#6aaa7a,#b09cc0,#a8c5bc) | Surprise Me"></textarea>
+          </div>
+        </div>
+      </div>
+
       <button class="btn-save-content" id="saveContentBtn" onclick="saveContent()">Save Content Changes</button>
 
     </div><!-- /tabContent -->
@@ -1938,6 +2020,34 @@ const CONTENT_FIELDS = {
   work_c4_tag:      'cWorkC4Tag',
   work_c4_name:     'cWorkC4Name',
   work_c4_material: 'cWorkC4Material',
+  // Made to Order
+  mto_heading:       'cMtoHeading',
+  mto_desc:          'cMtoDesc',
+  mto_lead_time:     'cMtoLeadTime',
+  mto_summary_note:  'cMtoSummaryNote',
+  mto_p1_name:       'cMtoP1Name',
+  mto_p1_silver:     'cMtoP1Silver',
+  mto_p1_gold:       'cMtoP1Gold',
+  mto_p1_note:       'cMtoP1Note',
+  mto_p2_name:       'cMtoP2Name',
+  mto_p2_silver:     'cMtoP2Silver',
+  mto_p2_gold:       'cMtoP2Gold',
+  mto_p2_note:       'cMtoP2Note',
+  mto_p3_name:       'cMtoP3Name',
+  mto_p3_silver:     'cMtoP3Silver',
+  mto_p3_gold:       'cMtoP3Gold',
+  mto_p3_note:       'cMtoP3Note',
+  mto_p4_name:       'cMtoP4Name',
+  mto_p4_silver:     'cMtoP4Silver',
+  mto_p4_gold:       'cMtoP4Gold',
+  mto_p4_note:       'cMtoP4Note',
+  mto_m1_name:       'cMtoM1Name',
+  mto_m1_upcharge:   'cMtoM1Upcharge',
+  mto_m1_label:      'cMtoM1Label',
+  mto_m2_name:       'cMtoM2Name',
+  mto_m2_upcharge:   'cMtoM2Upcharge',
+  mto_m2_label:      'cMtoM2Label',
+  mto_glass_colours: 'cMtoGlassColours',
 };
 
 async function loadContent() {

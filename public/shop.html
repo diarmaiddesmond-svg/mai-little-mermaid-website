@@ -1336,12 +1336,12 @@
 <section class="shop-section" id="section-mto">
   <div class="section-intro">
     <div>
-      <h2>Made to <em>Order</em></h2>
-      <p>Choose your piece, your metal, your glass colour. Maile makes it fresh for you. Every combination is unique. Ready in approximately 1 week.</p>
+      <h2 id="mtoHeading">Made to <em>Order</em></h2>
+      <p id="mtoDesc">Choose your piece, your metal, your glass colour. Maile makes it fresh for you. Every combination is unique. Ready in approximately 1 week.</p>
     </div>
     <div class="section-meta">
       <span class="section-meta-label">Lead time</span>
-      <span class="section-meta-value">~1 week</span>
+      <span class="section-meta-value" id="mtoLeadTime">~1 week</span>
     </div>
   </div>
 
@@ -1357,25 +1357,33 @@
             <div class="step-sublabel" id="sl1">Select from the options below</div>
           </div>
         </div>
-        <div class="piece-grid">
-          <button class="piece-option" onclick="selectPiece(this,'Bracelet',55,92)">
+        <div class="piece-grid" id="mtoPieceGrid">
+          <button class="piece-option" id="pieceBtn1"
+                  data-name="Bracelet" data-silver="55" data-gold="92" data-note="Single sea glass charm"
+                  onclick="selectPiece(this)">
             <span class="piece-option-name">Bracelet</span>
-            <span class="piece-option-price" id="pp-bracelet">from $55</span>
+            <span class="piece-option-price">from $55</span>
             <span class="piece-option-note">Single sea glass charm</span>
           </button>
-          <button class="piece-option" onclick="selectPiece(this,'Earrings',47,72)">
+          <button class="piece-option" id="pieceBtn2"
+                  data-name="Earrings" data-silver="47" data-gold="72" data-note="Matched pair"
+                  onclick="selectPiece(this)">
             <span class="piece-option-name">Earrings</span>
-            <span class="piece-option-price" id="pp-earrings">from $47</span>
+            <span class="piece-option-price">from $47</span>
             <span class="piece-option-note">Matched pair</span>
           </button>
-          <button class="piece-option" onclick="selectPiece(this,'Necklace',75,130)">
+          <button class="piece-option" id="pieceBtn3"
+                  data-name="Necklace" data-silver="75" data-gold="130" data-note="Single charm, choice of length"
+                  onclick="selectPiece(this)">
             <span class="piece-option-name">Necklace</span>
-            <span class="piece-option-price" id="pp-necklace">from $75</span>
+            <span class="piece-option-price">from $75</span>
             <span class="piece-option-note">Single charm, choice of length</span>
           </button>
-          <button class="piece-option" onclick="selectPiece(this,'Multi Stone Necklace',92,158)">
+          <button class="piece-option" id="pieceBtn4"
+                  data-name="Multi Stone Necklace" data-silver="92" data-gold="158" data-note="3–5 stones on chain"
+                  onclick="selectPiece(this)">
             <span class="piece-option-name">Multi Stone Necklace</span>
-            <span class="piece-option-price" id="pp-multi">from $92</span>
+            <span class="piece-option-price">from $92</span>
             <span class="piece-option-note">3–5 stones on chain</span>
           </button>
         </div>
@@ -1392,12 +1400,16 @@
           </div>
         </div>
         <div class="metal-options">
-          <button class="metal-btn metal-silver" onclick="selectMetal(this,'Sterling Silver',8)">
+          <button class="metal-btn metal-silver" id="metalBtn1"
+                  data-name="Sterling Silver" data-upcharge="0" data-label="included"
+                  onclick="selectMetal(this)">
             <div class="metal-icon">Ag</div>
             <span class="metal-name">Sterling Silver</span>
             <span class="metal-upcharge">included</span>
           </button>
-          <button class="metal-btn metal-gold" onclick="selectMetal(this,'Gold Fill',18)">
+          <button class="metal-btn metal-gold" id="metalBtn2"
+                  data-name="Gold Fill" data-upcharge="0" data-label="gold fill pricing"
+                  onclick="selectMetal(this)">
             <div class="metal-icon">Au</div>
             <span class="metal-name">Gold Fill</span>
             <span class="metal-upcharge">gold fill pricing</span>
@@ -1415,7 +1427,7 @@
             <div class="step-sublabel" id="sl3">Subject to availability — Maile will confirm</div>
           </div>
         </div>
-        <div class="glass-colours">
+        <div class="glass-colours" id="mtoGlassContainer">
           <div class="glass-swatch" onclick="selectGlass(this,'Seafoam')">
             <div class="glass-dot" style="background:#a8c5bc"></div>
             <span class="glass-label">Seafoam</span>
@@ -1472,14 +1484,14 @@
       </div>
       <div class="summary-row">
         <span class="summary-key">Lead Time</span>
-        <span class="summary-val">~1 week</span>
+        <span class="summary-val" id="mtoSummaryLeadTime">~1 week</span>
       </div>
 
       <div class="summary-total">
         <span class="total-label">Total</span>
         <span class="total-price" id="sum-total">$—</span>
       </div>
-      <p class="summary-lead">Price includes metal & handcrafting</p>
+      <p class="summary-lead" id="mtoSummaryNote">Price includes metal & handcrafting</p>
 
       <button class="btn-mto-checkout" id="mtoCheckout" onclick="addMTOToCart()">Add to Bag →</button>
 
@@ -1787,23 +1799,23 @@ let mtoState = { piece: null, basePriceSilver: 0, basePriceGold: 0, metal: null,
 
 const metalUpcharges = { 'Sterling Silver': 0, 'Gold Fill': 0 };
 
-function selectPiece(btn, name, baseSilver, baseGold) {
+function selectPiece(btn) {
   document.querySelectorAll('.piece-option').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
-  mtoState.piece = name;
-  mtoState.basePriceSilver = baseSilver;
-  mtoState.basePriceGold = baseGold;
-  document.getElementById('sl1').textContent = name + ' selected';
+  mtoState.piece          = btn.dataset.name;
+  mtoState.basePriceSilver = parseFloat(btn.dataset.silver) || 0;
+  mtoState.basePriceGold   = parseFloat(btn.dataset.gold)   || 0;
+  document.getElementById('sl1').textContent = mtoState.piece + ' selected';
   document.getElementById('next1').classList.add('enabled');
   updateSummary();
 }
 
-function selectMetal(btn, name, upcharge) {
+function selectMetal(btn) {
   document.querySelectorAll('.metal-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
-  mtoState.metal = name;
-  mtoState.metalUpcharge = upcharge;
-  document.getElementById('sl2').textContent = name + ' selected';
+  mtoState.metal        = btn.dataset.name;
+  mtoState.metalUpcharge = parseFloat(btn.dataset.upcharge) || 0;
+  document.getElementById('sl2').textContent = mtoState.metal + ' selected';
   document.getElementById('next2').classList.add('enabled');
   updateSummary();
 }
@@ -1866,6 +1878,69 @@ function checkMTOComplete() {
   if (mtoState.piece && mtoState.metal && mtoState.colour) {
     document.getElementById('mtoCheckout').classList.add('enabled');
   }
+}
+
+// ── MTO CONTENT LOADER ──
+async function loadMTOContent() {
+  if (!SUPABASE_URL.startsWith('https://')) return;
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/site_content?key=like.mto_%&select=key,value`,
+      { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+    );
+    if (!res.ok) return;
+    const rows = await res.json();
+    if (!rows.length) return;
+    const kv = {};
+    rows.forEach(r => { kv[r.key] = r.value; });
+
+    // Section text
+    if (kv.mto_heading)      document.getElementById('mtoHeading').innerHTML = kv.mto_heading;
+    if (kv.mto_desc)         document.getElementById('mtoDesc').textContent = kv.mto_desc;
+    if (kv.mto_lead_time) {
+      document.getElementById('mtoLeadTime').textContent = kv.mto_lead_time;
+      document.getElementById('mtoSummaryLeadTime').textContent = kv.mto_lead_time;
+    }
+    if (kv.mto_summary_note) document.getElementById('mtoSummaryNote').textContent = kv.mto_summary_note;
+
+    // Piece buttons
+    for (let n = 1; n <= 4; n++) {
+      const btn = document.getElementById(`pieceBtn${n}`);
+      if (!btn) continue;
+      if (kv[`mto_p${n}_name`])   { btn.dataset.name   = kv[`mto_p${n}_name`];   btn.querySelector('.piece-option-name').textContent  = kv[`mto_p${n}_name`]; }
+      if (kv[`mto_p${n}_silver`]) { btn.dataset.silver = kv[`mto_p${n}_silver`]; btn.querySelector('.piece-option-price').textContent = `from $${kv[`mto_p${n}_silver`]}`; }
+      if (kv[`mto_p${n}_gold`])   { btn.dataset.gold   = kv[`mto_p${n}_gold`]; }
+      if (kv[`mto_p${n}_note`])   { btn.dataset.note   = kv[`mto_p${n}_note`];   btn.querySelector('.piece-option-note').textContent  = kv[`mto_p${n}_note`]; }
+    }
+
+    // Metal buttons
+    for (let n = 1; n <= 2; n++) {
+      const btn = document.getElementById(`metalBtn${n}`);
+      if (!btn) continue;
+      if (kv[`mto_m${n}_name`])     { btn.dataset.name     = kv[`mto_m${n}_name`];     btn.querySelector('.metal-name').textContent     = kv[`mto_m${n}_name`]; }
+      if (kv[`mto_m${n}_upcharge`]) { btn.dataset.upcharge = kv[`mto_m${n}_upcharge`]; }
+      if (kv[`mto_m${n}_label`])    { btn.dataset.label    = kv[`mto_m${n}_label`];    btn.querySelector('.metal-upcharge').textContent = kv[`mto_m${n}_label`]; }
+    }
+
+    // Glass swatches — format: "Name | #hex | Label" one per line
+    if (kv.mto_glass_colours) {
+      const container = document.getElementById('mtoGlassContainer');
+      const lines = kv.mto_glass_colours.split('\n').map(l => l.trim()).filter(Boolean);
+      if (lines.length) {
+        container.innerHTML = lines.map(line => {
+          const parts = line.split('|').map(p => p.trim());
+          const name  = parts[0] || '';
+          const hex   = parts[1] || '#ccc';
+          const label = parts[2] || name;
+          const escapedName = name.replace(/'/g, "\\'");
+          return `<div class="glass-swatch" onclick="selectGlass(this,'${escapedName}')">
+            <div class="glass-dot" style="background:${hex}"></div>
+            <span class="glass-label">${label}</span>
+          </div>`;
+        }).join('');
+      }
+    }
+  } catch (e) { /* silently skip */ }
 }
 
 // ── FULL CUSTOM ──
@@ -1979,6 +2054,7 @@ document.getElementById('rtsGrid').innerHTML =
 
 fetchProducts().then(products => renderRTS(products));
 subscribeProducts();
+loadMTOContent();
 </script>
 </body>
 </html>

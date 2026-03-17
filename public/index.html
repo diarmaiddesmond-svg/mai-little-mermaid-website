@@ -1348,16 +1348,27 @@
       });
 
       // Studio notes — show section only if at least one card has a title
-      let anyNews = false;
+      let anyNews = false, activeCards = 0;
       ['1','2','3'].forEach(n => {
+        const card = document.getElementById(`newsCard${n}`);
         if (kv[`news_${n}_title`]) {
           anyNews = true;
+          activeCards++;
           document.getElementById(`news${n}Title`).textContent = kv[`news_${n}_title`];
           document.getElementById(`news${n}Date`).textContent  = kv[`news_${n}_date`]  || '';
           document.getElementById(`news${n}Body`).textContent  = kv[`news_${n}_body`]  || '';
+        } else if (card) {
+          card.style.display = 'none';
         }
       });
-      if (anyNews) document.getElementById('studioNotes').style.display = '';
+      if (anyNews) {
+        document.getElementById('studioNotes').style.display = '';
+        const grid = document.querySelector('.studio-grid');
+        if (grid) {
+          if      (activeCards === 1) grid.style.gridTemplateColumns = '1fr';
+          else if (activeCards === 2) grid.style.gridTemplateColumns = '1.4fr 1fr';
+        }
+      }
 
       // Instagram section
       if (kv.ig_title)      document.getElementById('igTitle').textContent           = kv.ig_title;
