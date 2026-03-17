@@ -1246,8 +1246,8 @@
 <!-- INSTAGRAM -->
 <div class="instagram-strip">
   <div class="ig-header">
-    <p class="ig-title">Follow the journey</p>
-    <a href="https://www.instagram.com/mai.little.mermaid" target="_blank" class="ig-handle">@mai.little.mermaid ↗</a>
+    <p class="ig-title" id="igTitle">Follow the journey</p>
+    <a href="https://www.instagram.com/mai.little.mermaid" target="_blank" class="ig-handle" id="igHandleLink">@mai.little.mermaid ↗</a>
   </div>
   <div class="ig-grid" id="igGrid">
     <div class="ig-tile"><div class="ig-tile-inner ig1"></div></div>
@@ -1261,8 +1261,8 @@
 <!-- CONTACT -->
 <section class="contact" id="contact">
   <div class="contact-left reveal">
-    <h2>Custom orders &<br><em>enquiries</em></h2>
-    <p>Want something made just for you? A gift, a specific colour sea glass, a custom size? Get in touch and Maile will get back to you personally.</p>
+    <h2 id="customHeading">Custom orders &<br><em>enquiries</em></h2>
+    <p id="customSub">Want something made just for you? A gift, a specific colour sea glass, a custom size? Get in touch and Maile will get back to you personally.</p>
     <a href="https://www.instagram.com/mai.little.mermaid" class="contact-detail" target="_blank">↗ @mai.little.mermaid</a>
   </div>
 
@@ -1313,6 +1313,65 @@
 </footer>
 
 <script>
+  // ── CONFIG — same values as shop.html / shop1.html ───────────────────
+  const SUPABASE_URL      = 'https://istjxzspjqftrnztosiy.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzdGp4enNwanFmdHJuenRvc2l5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMjM2MjIsImV4cCI6MjA4ODc5OTYyMn0.vvKfN168Pgz_-VedCn4fGYJqzBt8KYkFicrmrc6UiHU';
+  // ─────────────────────────────────────────────────────────────────────
+
+  // Load site content from Supabase and update dynamic elements
+  (async function loadSiteContent() {
+    if (!SUPABASE_URL.startsWith('https://')) return;
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/site_content?select=key,value`,
+        { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+      );
+      if (!res.ok) return;
+      const rows = await res.json();
+      const kv   = Object.fromEntries(rows.map(r => [r.key, r.value]));
+
+      // About section
+      if (kv.about_count) document.getElementById('aboutCount').textContent = kv.about_count;
+      if (kv.about_bio1)  document.getElementById('aboutBio1').textContent  = kv.about_bio1;
+      if (kv.about_bio2)  document.getElementById('aboutBio2').textContent  = kv.about_bio2;
+      if (kv.about_img) {
+        const vi = document.getElementById('aboutVisualInner');
+        if (vi) { vi.style.backgroundImage = `url('${kv.about_img}')`; vi.style.backgroundSize = 'cover'; vi.style.backgroundPosition = 'center'; }
+      }
+
+      // Process steps
+      ['1','2','3','4'].forEach(n => {
+        const tEl = document.getElementById(`step${n}Title`);
+        const dEl = document.getElementById(`step${n}Desc`);
+        if (kv[`step${n}_title`] && tEl) tEl.textContent = kv[`step${n}_title`];
+        if (kv[`step${n}_desc`]  && dEl) dEl.textContent = kv[`step${n}_desc`];
+      });
+
+      // Studio notes — show section only if at least one card has a title
+      let anyNews = false;
+      ['1','2','3'].forEach(n => {
+        if (kv[`news_${n}_title`]) {
+          anyNews = true;
+          document.getElementById(`news${n}Title`).textContent = kv[`news_${n}_title`];
+          document.getElementById(`news${n}Date`).textContent  = kv[`news_${n}_date`]  || '';
+          document.getElementById(`news${n}Body`).textContent  = kv[`news_${n}_body`]  || '';
+        }
+      });
+      if (anyNews) document.getElementById('studioNotes').style.display = '';
+
+      // Instagram section
+      if (kv.ig_title)      document.getElementById('igTitle').textContent           = kv.ig_title;
+      if (kv.ig_handle)     document.getElementById('igHandleLink').textContent       = kv.ig_handle + ' ↗';
+      if (kv.ig_handle_url) document.getElementById('igHandleLink').href              = kv.ig_handle_url;
+
+      // Custom orders section
+      if (kv.custom_heading) document.getElementById('customHeading').innerHTML = kv.custom_heading;
+      if (kv.custom_sub)     document.getElementById('customSub').textContent    = kv.custom_sub;
+    } catch (_) {
+      // network error — hardcoded fallbacks remain
+    }
+  })();
+
   // Contact form
   async function submitContact() {
     const email = document.getElementById('contactEmail').value.trim();

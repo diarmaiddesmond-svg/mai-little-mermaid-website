@@ -517,6 +517,21 @@
           <div class="grad-picker" id="gradPicker"></div>
           <input type="hidden" id="fGrad" value="g1">
         </div>
+        <div class="field full">
+          <label>Description <span style="font-weight:300;text-transform:none;letter-spacing:0">(shown on product page, below the price)</span></label>
+          <textarea id="fDesc" style="min-height:100px" placeholder="Each piece starts with a walk along the shore…"></textarea>
+        </div>
+        <div class="field full">
+          <label>Details & Materials <span style="font-weight:300;text-transform:none;letter-spacing:0">(one item per line — shown in the Details accordion)</span></label>
+          <textarea id="fMaterials" style="min-height:90px" placeholder="14k gold-fill chain&#10;Locally found sea glass&#10;Handcrafted in Newport, RI"></textarea>
+        </div>
+        <div class="field">
+          <label>Fulfilment</label>
+          <select id="fIsMTO">
+            <option value="false">Ready to Ship</option>
+            <option value="true">Made to Order (~1 week lead time)</option>
+          </select>
+        </div>
         <div class="field">
           <label>Status</label>
           <select id="fAvailable">
@@ -742,6 +757,40 @@
           <div class="field">
             <label>Step 4 description</label>
             <textarea id="cStep4Desc"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- INSTAGRAM SECTION -->
+      <div class="content-section">
+        <div class="content-section-title">Instagram Strip</div>
+        <div class="content-grid">
+          <div class="field">
+            <label>Section title</label>
+            <input type="text" id="cIgTitle" placeholder="Follow the journey">
+          </div>
+          <div class="field">
+            <label>Handle display text</label>
+            <input type="text" id="cIgHandle" placeholder="@mai.little.mermaid">
+          </div>
+          <div class="field full">
+            <label>Handle URL</label>
+            <input type="url" id="cIgUrl" placeholder="https://www.instagram.com/mai.little.mermaid">
+          </div>
+        </div>
+      </div>
+
+      <!-- CUSTOM ORDERS SECTION -->
+      <div class="content-section">
+        <div class="content-section-title">Custom Orders Section</div>
+        <div class="content-grid">
+          <div class="field full">
+            <label>Heading <span style="font-weight:300;text-transform:none;letter-spacing:0">(supports &lt;em&gt; for italics)</span></label>
+            <input type="text" id="cCustomHeading" placeholder="Custom orders &amp; enquiries">
+          </div>
+          <div class="field full">
+            <label>Subtext paragraph</label>
+            <textarea id="cCustomSub" placeholder="Want something made just for you?…"></textarea>
           </div>
         </div>
       </div>
@@ -1004,10 +1053,13 @@ function openForm(p) {
   document.getElementById('fPrice').value     = p?.price     || '';
   document.getElementById('fMetal').value     = p?.metal     || '';
   document.getElementById('fColour').value    = p?.colour    || '';
-  document.getElementById('fImage').value     = p?.image_url || '';
-  document.getElementById('fGrad').value      = p?.grad      || 'g1';
+  document.getElementById('fImage').value     = p?.image_url    || '';
+  document.getElementById('fGrad').value      = p?.grad          || 'g1';
+  document.getElementById('fDesc').value      = p?.description   || '';
+  document.getElementById('fMaterials').value = p?.materials     || '';
+  document.getElementById('fIsMTO').value     = String(p?.is_mto  ?? false);
   document.getElementById('fAvailable').value = String(p?.available ?? true);
-  document.getElementById('fNew').value       = String(p?.is_new ?? false);
+  document.getElementById('fNew').value       = String(p?.is_new    ?? false);
   buildGradPicker(p?.grad || 'g1');
   // Reset main upload area
   pendingImageBlob = null;
@@ -1040,11 +1092,14 @@ async function saveProduct() {
 
   const payload = {
     name, type, price, metal,
-    colour:    document.getElementById('fColour').value.trim() || null,
-    image_url: document.getElementById('fImage').value.trim()  || null,
-    grad:      document.getElementById('fGrad').value,
-    available: document.getElementById('fAvailable').value === 'true',
-    is_new:    document.getElementById('fNew').value === 'true',
+    colour:      document.getElementById('fColour').value.trim()    || null,
+    image_url:   document.getElementById('fImage').value.trim()     || null,
+    grad:        document.getElementById('fGrad').value,
+    description: document.getElementById('fDesc').value.trim()      || null,
+    materials:   document.getElementById('fMaterials').value.trim() || null,
+    is_mto:      document.getElementById('fIsMTO').value === 'true',
+    available:   document.getElementById('fAvailable').value === 'true',
+    is_new:      document.getElementById('fNew').value === 'true',
   };
 
   const btn = document.getElementById('saveBtn');
@@ -1716,6 +1771,11 @@ const CONTENT_FIELDS = {
   news_3_date:  'cNews3Date',
   news_3_title: 'cNews3Title',
   news_3_body:  'cNews3Body',
+  ig_title:       'cIgTitle',
+  ig_handle:      'cIgHandle',
+  ig_handle_url:  'cIgUrl',
+  custom_heading: 'cCustomHeading',
+  custom_sub:     'cCustomSub',
 };
 
 async function loadContent() {

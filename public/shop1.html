@@ -247,6 +247,33 @@
 
   .img-active { background: linear-gradient(145deg, #c9b99a 0%, #8b7355 60%, #6b5a42 100%); }
 
+  /* Prev / next gallery arrows */
+  .gallery-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(250,246,240,0.88);
+    border: 1px solid var(--sand-dark);
+    color: var(--ink);
+    font-size: 1rem;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 5;
+    transition: background 0.2s, opacity 0.2s;
+    opacity: 0;
+    user-select: none;
+    line-height: 1;
+  }
+  .gallery-main:hover .gallery-arrow { opacity: 1; }
+  .gallery-arrow:hover { background: var(--cream); }
+  .gallery-arrow.prev { left: 0.8rem; }
+  .gallery-arrow.next { right: 0.8rem; }
+  .gallery-arrow:disabled { opacity: 0 !important; pointer-events: none; }
+
   /* Zoom hint */
   .zoom-hint {
     position: absolute;
@@ -986,6 +1013,8 @@
       <div class="main-image">
         <div class="main-image-inner img-active" id="mainImg"></div>
       </div>
+      <button class="gallery-arrow prev" id="galleryPrev" onclick="stepGallery(-1)" aria-label="Previous photo" style="display:none">‹</button>
+      <button class="gallery-arrow next" id="galleryNext" onclick="stepGallery(1)"  aria-label="Next photo"     style="display:none">›</button>
       <div class="img-badge">One of a Kind</div>
       <div class="zoom-hint">↔ Hover to zoom</div>
     </div>
@@ -1007,7 +1036,7 @@
       <span class="price-note">Free shipping on orders over $75</span>
     </div>
 
-    <p class="product-desc-short">
+    <p class="product-desc-short" id="productDesc">
       Each piece starts with a walk along the shore. This sea glass charm was locally found, worn smooth by the tides over years, and set by hand onto a delicate gold-fill chain. No two are exactly alike — the glass you receive will be uniquely yours.
     </p>
 
@@ -1044,11 +1073,11 @@
 
     <!-- Trust -->
     <div class="trust-row">
-      <div class="trust-item">
+      <div class="trust-item" id="trustFulfilment">
         <span class="trust-icon">✦</span>
         Handmade to order
       </div>
-      <div class="trust-item">
+      <div class="trust-item" id="trustShipping">
         <span class="trust-icon">✦</span>
         Ships in 3–5 days
       </div>
@@ -1067,7 +1096,7 @@
           <span class="accordion-arrow">+</span>
         </button>
         <div class="accordion-body">
-          <div class="accordion-inner">
+          <div class="accordion-inner" id="materialsAccordionInner">
             <ul>
               <li>Genuine locally-found sea glass</li>
               <li>14k gold-fill chain (tarnish resistant)</li>
@@ -1206,7 +1235,9 @@
   const productId = parseInt(new URLSearchParams(window.location.search).get('id'));
   if (!productId) { window.location = '/shop.html'; }
 
-  let product = null; // set after async load
+  let product    = null; // set after async load
+  let allImages  = [];   // module-level — used by gallery navigation
+  let currentIdx = 0;    // current gallery index
 
   async function loadAndRender() {
     // Try Supabase, fallback to hardcoded
@@ -1232,9 +1263,33 @@
     document.querySelector('.breadcrumb a:last-of-type').textContent = product.type + 's';
     document.title = product.name + ' — Mai Little Mermaid';
 
+    // Description
+    if (product.description) {
+      document.getElementById('productDesc').textContent = product.description;
+    }
+
+    // Materials accordion
+    if (product.materials) {
+      const lines = product.materials.split('\n').map(l => l.trim()).filter(Boolean);
+      if (lines.length) {
+        document.getElementById('materialsAccordionInner').innerHTML =
+          '<ul>' + lines.map(l => `<li>${l}</li>`).join('') + '</ul>';
+      }
+    }
+
+    // Trust items — MTO vs RTS
+    if (product.is_mto) {
+      document.getElementById('trustFulfilment').innerHTML = '<span class="trust-icon">✦</span> Made to order';
+      document.getElementById('trustShipping').innerHTML   = '<span class="trust-icon">✦</span> Ships in ~1 week';
+    } else {
+      document.getElementById('trustFulfilment').innerHTML = '<span class="trust-icon">✦</span> Ready to ship';
+      document.getElementById('trustShipping').innerHTML   = '<span class="trust-icon">✦</span> Ships in 2–3 days';
+    }
+
     // Build image list: main + extras
     const extras = JSON.parse(product.extra_images || '[]');
-    const allImages = [product.image_url, ...extras].filter(Boolean);
+    allImages = [product.image_url, ...extras].filter(Boolean);
+    currentIdx = 0;
     const grad = GRADS[product.grad] || GRADS.g1;
 
     // Set main image
@@ -1243,27 +1298,34 @@
       ? `url('${allImages[0]}') center/cover`
       : grad;
 
-    // Build thumbnail strip — only show if more than 1 image
+    // Build thumbnail strip + show arrows — only when more than 1 image
     const thumbsEl = document.getElementById('galleryThumbs');
     if (allImages.length > 1) {
-      const angles = ['145deg','160deg','130deg','120deg'];
       thumbsEl.innerHTML = allImages.map((url, i) => {
         const bg = `url('${url}') center/cover`;
-        return `<div class="thumb ${i === 0 ? 'active' : ''}" onclick="switchImage(this, '${bg}')">
+        return `<div class="thumb ${i === 0 ? 'active' : ''}" data-idx="${i}" onclick="switchToImg(${i})">
           <div class="thumb-inner" style="background:${bg}"></div>
         </div>`;
       }).join('');
       thumbsEl.style.display = '';
+      document.getElementById('galleryPrev').style.display = '';
+      document.getElementById('galleryNext').style.display = '';
+      updateArrows();
     } else if (allImages.length === 0) {
       // Gradient placeholders — 4 angle variants
       const angles = ['145deg','160deg','130deg','120deg'];
       thumbsEl.innerHTML = angles.map((a, i) => {
         const bg = grad.replace('145deg', a);
-        return `<div class="thumb ${i === 0 ? 'active' : ''}" onclick="switchImage(this, '${bg}')">
+        return `<div class="thumb ${i === 0 ? 'active' : ''}" data-idx="${i}" onclick="switchToImg(${i})">
           <div class="thumb-inner" style="background:${bg}"></div>
         </div>`;
       }).join('');
       thumbsEl.style.display = '';
+      // Build a virtual allImages from gradient variants for step navigation
+      allImages = angles.map(a => null); // signal to switchToImg to use grad
+      document.getElementById('galleryPrev').style.display = '';
+      document.getElementById('galleryNext').style.display = '';
+      updateArrows();
     }
     // 1 real image → thumbs stay hidden (already display:none)
 
@@ -1292,16 +1354,31 @@
   loadAndRender();
 
   // ── IMAGE SWITCHER ──
-  function switchImage(thumb, gradient) {
-    document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
-    thumb.classList.add('active');
+  function switchToImg(idx) {
+    const thumbs = document.querySelectorAll('.thumb');
+    thumbs.forEach((t, i) => t.classList.toggle('active', i === idx));
+    currentIdx = idx;
     const main = document.getElementById('mainImg');
+    const grad = GRADS[product?.grad] || GRADS.g1;
+    const bg   = allImages[idx] ? `url('${allImages[idx]}') center/cover` : grad.replace('145deg', ['145deg','160deg','130deg','120deg'][idx] || '145deg');
     main.style.opacity = '0';
     setTimeout(() => {
-      main.style.background = gradient;
-      main.style.opacity = '1';
-      main.style.transition = 'opacity 0.3s';
+      main.style.background = bg;
+      main.style.transition  = 'opacity 0.3s';
+      main.style.opacity     = '1';
     }, 150);
+    updateArrows();
+  }
+
+  function stepGallery(dir) {
+    const total = document.querySelectorAll('.thumb').length;
+    switchToImg((currentIdx + dir + total) % total);
+  }
+
+  function updateArrows() {
+    const total = document.querySelectorAll('.thumb').length;
+    document.getElementById('galleryPrev').disabled = total <= 1;
+    document.getElementById('galleryNext').disabled = total <= 1;
   }
 
   // ── LENGTH SELECTOR ──
