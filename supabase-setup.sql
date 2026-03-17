@@ -19,6 +19,9 @@ create table public.products (
   grad           text        not null default 'g1',
   image_url      text,
   extra_images   text        not null default '[]',
+  description    text,
+  materials      text,
+  is_mto         boolean     not null default false,
   available      boolean     not null default true,
   is_new         boolean     not null default false,
   reserved_until timestamptz,
@@ -243,6 +246,13 @@ values
   ('Coral Stone Earrings',   'Earrings', 72,  'Gold Fill',       'Coral Pink',  'g8', true,  false);
 
 
+-- ============================================================
+-- MIGRATION — run these if you already have the products table:
+--
+--   alter table public.products add column if not exists description text;
+--   alter table public.products add column if not exists materials   text;
+--   alter table public.products add column if not exists is_mto      boolean not null default false;
+--
 -- ============================================================
 -- DONE. Next steps:
 --
