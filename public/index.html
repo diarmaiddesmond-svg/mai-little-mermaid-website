@@ -712,10 +712,13 @@
     width: 100%;
     height: 100%;
     transition: transform 0.4s;
+    background-size: cover;
+    background-position: center;
   }
 
   .ig-tile:hover .ig-tile-inner { transform: scale(1.06); }
 
+  /* Placeholder gradients shown while the real feed loads */
   .ig1 { background: linear-gradient(135deg, #8b7355, #5c4a2e); }
   .ig2 { background: linear-gradient(135deg, #4a7c8e, #2d5a6b); }
   .ig3 { background: linear-gradient(135deg, #c4715a, #8b3f2c); }
@@ -1246,7 +1249,7 @@
     <p class="ig-title">Follow the journey</p>
     <a href="https://www.instagram.com/mai.little.mermaid" target="_blank" class="ig-handle">@mai.little.mermaid ↗</a>
   </div>
-  <div class="ig-grid">
+  <div class="ig-grid" id="igGrid">
     <div class="ig-tile"><div class="ig-tile-inner ig1"></div></div>
     <div class="ig-tile"><div class="ig-tile-inner ig2"></div></div>
     <div class="ig-tile"><div class="ig-tile-inner ig3"></div></div>
@@ -1346,6 +1349,27 @@
       errEl.style.display = 'block';
     }
   }
+
+  // Instagram feed
+  (async function loadIgFeed() {
+    const placeholderClasses = ['ig1','ig2','ig3','ig4','ig5'];
+    try {
+      const res = await fetch('/api/instagram-feed');
+      if (!res.ok) return; // silently keep placeholders on error
+      const posts = await res.json();
+      const grid  = document.getElementById('igGrid');
+      if (!grid || !Array.isArray(posts) || posts.length === 0) return;
+
+      grid.innerHTML = posts.map((p, i) =>
+        `<a class="ig-tile" href="${p.permalink}" target="_blank" rel="noopener noreferrer" aria-label="View post on Instagram">
+          <div class="ig-tile-inner ${placeholderClasses[i] || ''}"
+               style="background-image:url('${p.url}')"></div>
+        </a>`
+      ).join('');
+    } catch (_) {
+      // network error — placeholders remain
+    }
+  })();
 
   // Scroll reveal
   const reveals = document.querySelectorAll('.reveal');
