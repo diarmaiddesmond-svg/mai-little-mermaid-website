@@ -414,6 +414,7 @@
       <button class="tab-btn" onclick="switchTab('enquiries')">Enquiries</button>
       <button class="tab-btn" onclick="switchTab('promos')">Promo Codes</button>
       <button class="tab-btn" onclick="switchTab('content')">Site Content</button>
+      <button class="tab-btn" onclick="switchTab('mto')">Made to Order</button>
     </div>
 
     <div class="setup-warn" id="setupWarn" style="display:none">
@@ -904,16 +905,23 @@
         </div>
       </div>
 
-      <!-- MADE TO ORDER SECTION -->
+      <button class="btn-save-content" id="saveContentBtn" onclick="saveContent()">Save Content Changes</button>
+
+    </div><!-- /tabContent -->
+
+    <!-- MADE TO ORDER TAB -->
+    <div class="tab-pane" id="tabMto">
+
+      <!-- Section text -->
       <div class="content-section">
-        <div class="content-section-title">Made to Order <span style="font-family:'Jost',sans-serif;font-size:0.65rem;font-style:normal;font-weight:300;color:var(--driftwood);letter-spacing:0.06em;text-transform:none;margin-left:0.5rem">— configurator on shop page</span></div>
+        <div class="content-section-title">Section Text</div>
         <div class="content-grid">
           <div class="field full">
-            <label>Section heading <span style="font-weight:300;text-transform:none;letter-spacing:0">(supports &lt;em&gt; for italics)</span></label>
-            <input type="text" id="cMtoHeading" placeholder="Made to <em>Order</em>">
+            <label>Heading <span style="font-weight:300;text-transform:none;letter-spacing:0">(supports &lt;em&gt; for italics, e.g. Made to &lt;em&gt;Order&lt;/em&gt;)</span></label>
+            <input type="text" id="cMtoHeading" placeholder="Made to &lt;em&gt;Order&lt;/em&gt;">
           </div>
           <div class="field full">
-            <label>Description paragraph</label>
+            <label>Description</label>
             <textarea id="cMtoDesc" placeholder="Choose your piece, your metal, your glass colour…"></textarea>
           </div>
           <div class="field">
@@ -925,70 +933,77 @@
             <input type="text" id="cMtoSummaryNote" placeholder="Price includes metal &amp; handcrafting">
           </div>
         </div>
+      </div>
 
-        <!-- Piece options -->
-        <div style="margin-top:1.4rem;margin-bottom:0.6rem;font-size:0.67rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--driftwood)">Piece Options</div>
-        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:0.6rem;align-items:end;margin-bottom:0.5rem">
+      <!-- Piece options -->
+      <div class="content-section">
+        <div class="content-section-title">Piece Options</div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:0.6rem;align-items:end;margin-bottom:0.6rem">
           <div class="field" style="margin:0"><label>Name</label></div>
           <div class="field" style="margin:0"><label>Silver price ($)</label></div>
           <div class="field" style="margin:0"><label>Gold price ($)</label></div>
-          <div class="field" style="margin:0"><label>Note</label></div>
+          <div class="field" style="margin:0"><label>Subtitle note</label></div>
         </div>
         <div style="display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:0.6rem;margin-bottom:0.5rem">
-          <input type="text" class="field" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP1Name" placeholder="Bracelet">
-          <input type="number" class="field" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP1Silver" placeholder="55">
-          <input type="number" class="field" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP1Gold" placeholder="92">
-          <input type="text" class="field" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP1Note" placeholder="Single sea glass charm">
+          <input type="text"   style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoP1Name"   placeholder="Bracelet">
+          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoP1Silver" placeholder="55">
+          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoP1Gold"   placeholder="92">
+          <input type="text"   style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoP1Note"   placeholder="Single sea glass charm">
         </div>
         <div style="display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:0.6rem;margin-bottom:0.5rem">
-          <input type="text" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP2Name" placeholder="Earrings">
-          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP2Silver" placeholder="47">
-          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP2Gold" placeholder="72">
-          <input type="text" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP2Note" placeholder="Matched pair">
+          <input type="text"   style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoP2Name"   placeholder="Earrings">
+          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoP2Silver" placeholder="47">
+          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoP2Gold"   placeholder="72">
+          <input type="text"   style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoP2Note"   placeholder="Matched pair">
         </div>
         <div style="display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:0.6rem;margin-bottom:0.5rem">
-          <input type="text" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP3Name" placeholder="Necklace">
-          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP3Silver" placeholder="75">
-          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP3Gold" placeholder="130">
-          <input type="text" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP3Note" placeholder="Single charm, choice of length">
+          <input type="text"   style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoP3Name"   placeholder="Necklace">
+          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoP3Silver" placeholder="75">
+          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoP3Gold"   placeholder="130">
+          <input type="text"   style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoP3Note"   placeholder="Single charm, choice of length">
         </div>
-        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:0.6rem;margin-bottom:1.2rem">
-          <input type="text" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP4Name" placeholder="Multi Stone Necklace">
-          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP4Silver" placeholder="92">
-          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP4Gold" placeholder="158">
-          <input type="text" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoP4Note" placeholder="3–5 stones on chain">
-        </div>
-
-        <!-- Metal options -->
-        <div style="margin-bottom:0.6rem;font-size:0.67rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--driftwood)">Metal Options</div>
-        <div style="display:grid;grid-template-columns:2fr 1fr 2fr;gap:0.6rem;align-items:end;margin-bottom:0.5rem">
-          <div class="field" style="margin:0"><label>Name</label></div>
-          <div class="field" style="margin:0"><label>Extra price ($)</label></div>
-          <div class="field" style="margin:0"><label>Label shown</label></div>
-        </div>
-        <div style="display:grid;grid-template-columns:2fr 1fr 2fr;gap:0.6rem;margin-bottom:0.5rem">
-          <input type="text" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoM1Name" placeholder="Sterling Silver">
-          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoM1Upcharge" placeholder="0">
-          <input type="text" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoM1Label" placeholder="included">
-        </div>
-        <div style="display:grid;grid-template-columns:2fr 1fr 2fr;gap:0.6rem;margin-bottom:1.2rem">
-          <input type="text" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoM2Name" placeholder="Gold Fill">
-          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoM2Upcharge" placeholder="0">
-          <input type="text" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none" id="cMtoM2Label" placeholder="gold fill pricing">
-        </div>
-
-        <!-- Glass colours -->
-        <div class="content-grid">
-          <div class="field full">
-            <label>Glass colours <span style="font-weight:300;text-transform:none;letter-spacing:0">— one per line: <code style="font-size:0.82em;background:var(--sand);padding:0.1em 0.3em">Name | #hex | Label</code></span></label>
-            <textarea id="cMtoGlassColours" style="min-height:160px;font-family:monospace;font-size:0.82rem" placeholder="Seafoam | #a8c5bc | Seafoam&#10;Cobalt Blue | #4a6fa5 | Cobalt&#10;Amber | #c4883a | Amber&#10;Sea Clear | #e8e8e8 | Clear&#10;Forest Green | #6aaa7a | Green&#10;Lavender | #b09cc0 | Lavender&#10;Coral Pink | #d4857a | Coral Pink&#10;Surprise Me | conic-gradient(#a8c5bc,#4a6fa5,#c4883a,#6aaa7a,#b09cc0,#a8c5bc) | Surprise Me"></textarea>
-          </div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:0.6rem">
+          <input type="text"   style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoP4Name"   placeholder="Multi Stone Necklace">
+          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoP4Silver" placeholder="92">
+          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoP4Gold"   placeholder="158">
+          <input type="text"   style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoP4Note"   placeholder="3–5 stones on chain">
         </div>
       </div>
 
-      <button class="btn-save-content" id="saveContentBtn" onclick="saveContent()">Save Content Changes</button>
+      <!-- Metal options -->
+      <div class="content-section">
+        <div class="content-section-title">Metal Options</div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 2fr;gap:0.6rem;align-items:end;margin-bottom:0.6rem">
+          <div class="field" style="margin:0"><label>Name</label></div>
+          <div class="field" style="margin:0"><label>Extra price ($, 0 = none)</label></div>
+          <div class="field" style="margin:0"><label>Label shown under name</label></div>
+        </div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 2fr;gap:0.6rem;margin-bottom:0.5rem">
+          <input type="text"   style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoM1Name"     placeholder="Sterling Silver">
+          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoM1Upcharge" placeholder="0">
+          <input type="text"   style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoM1Label"    placeholder="included">
+        </div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 2fr;gap:0.6rem">
+          <input type="text"   style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoM2Name"     placeholder="Gold Fill">
+          <input type="number" style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoM2Upcharge" placeholder="0">
+          <input type="text"   style="padding:0.65rem;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.85rem;background:var(--cream);outline:none;width:100%" id="cMtoM2Label"    placeholder="gold fill pricing">
+        </div>
+      </div>
 
-    </div><!-- /tabContent -->
+      <!-- Glass colours -->
+      <div class="content-section">
+        <div class="content-section-title">Glass Colours</div>
+        <div class="field">
+          <label>One swatch per line — format: <code style="font-size:0.82em;background:var(--sand);padding:0.1em 0.4em;font-family:monospace">Name | #hex | Label</code></label>
+          <textarea id="cMtoGlassColours" style="min-height:180px;font-family:monospace;font-size:0.82rem" placeholder="Seafoam | #a8c5bc | Seafoam&#10;Cobalt Blue | #4a6fa5 | Cobalt&#10;Amber | #c4883a | Amber&#10;Sea Clear | #e8e8e8 | Clear&#10;Forest Green | #6aaa7a | Green&#10;Lavender | #b09cc0 | Lavender&#10;Coral Pink | #d4857a | Coral Pink&#10;Surprise Me | conic-gradient(#a8c5bc,#4a6fa5,#c4883a,#6aaa7a,#b09cc0,#a8c5bc) | Surprise Me"></textarea>
+        </div>
+        <div id="mtoSwatchPreview" style="display:flex;flex-wrap:wrap;gap:0.8rem;margin-top:1rem"></div>
+        <p style="font-size:0.7rem;color:var(--driftwood);letter-spacing:0.06em;margin-top:0.5rem">Preview updates on save. The hex or CSS value sets the dot colour.</p>
+      </div>
+
+      <button class="btn-save-content" id="saveMtoBtn" onclick="saveMTOContent()">Save Made to Order</button>
+
+    </div><!-- /tabMto -->
 
   </div>
 </div>
@@ -2076,6 +2091,7 @@ async function loadContent() {
       if (row.key === `work_c${s}_img` && row.value) showWorkPreview(s, row.value);
     }
   });
+  renderMTOSwatchPreview();
 }
 
 async function saveContent() {
@@ -2176,10 +2192,59 @@ async function saveContent() {
   showToast('✓ Content saved — changes live on the site');
 }
 
+// ── MTO CONTENT ──────────────────────────────────────────────────────────
+const MTO_KEYS = [
+  'mto_heading','mto_desc','mto_lead_time','mto_summary_note',
+  'mto_p1_name','mto_p1_silver','mto_p1_gold','mto_p1_note',
+  'mto_p2_name','mto_p2_silver','mto_p2_gold','mto_p2_note',
+  'mto_p3_name','mto_p3_silver','mto_p3_gold','mto_p3_note',
+  'mto_p4_name','mto_p4_silver','mto_p4_gold','mto_p4_note',
+  'mto_m1_name','mto_m1_upcharge','mto_m1_label',
+  'mto_m2_name','mto_m2_upcharge','mto_m2_label',
+  'mto_glass_colours',
+];
+
+async function saveMTOContent() {
+  if (!configured) { showToast('Supabase not configured'); return; }
+  const btn = document.getElementById('saveMtoBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  const rows = MTO_KEYS.map(key => ({
+    key,
+    value: document.getElementById(CONTENT_FIELDS[key])?.value?.trim() || '',
+    updated_at: new Date().toISOString(),
+  }));
+
+  const { error } = await sb.from('site_content').upsert(rows, { onConflict: 'key' });
+  btn.disabled = false; btn.textContent = 'Save Made to Order';
+  if (error) { showToast('Error saving: ' + error.message); return; }
+  showToast('✓ Made to Order saved — changes live on the shop page');
+  renderMTOSwatchPreview();
+}
+
+function renderMTOSwatchPreview() {
+  const preview = document.getElementById('mtoSwatchPreview');
+  if (!preview) return;
+  const raw = document.getElementById('cMtoGlassColours')?.value || '';
+  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+  preview.innerHTML = lines.map(line => {
+    const parts = line.split('|').map(p => p.trim());
+    const label = parts[2] || parts[0] || '';
+    const bg    = parts[1] || '#ccc';
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:0.3rem">
+      <div style="width:36px;height:36px;border-radius:50%;background:${bg};border:1px solid var(--sand-dark)"></div>
+      <span style="font-size:0.65rem;letter-spacing:0.06em;color:var(--driftwood)">${label}</span>
+    </div>`;
+  }).join('');
+}
+
 // ── INIT ─────────────────────────────────────────────────────────────────
 document.getElementById('loginPassword').addEventListener('keydown', e => {
   if (e.key === 'Enter') signIn();
 });
+
+// Live swatch preview while typing glass colours
+document.getElementById('cMtoGlassColours').addEventListener('input', renderMTOSwatchPreview);
 
 checkSession();
 </script>
