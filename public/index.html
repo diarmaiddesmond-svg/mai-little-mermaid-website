@@ -1113,58 +1113,58 @@
 <section class="section" id="shop">
   <div class="section-header reveal">
     <h2 class="section-title">The <em>Work</em></h2>
-    <span class="section-link" style="cursor:default; border-bottom:none;">Past pieces — a glimpse of what Maile makes</span>
+    <span class="section-link" id="workSubtitle" style="cursor:default; border-bottom:none;">Past pieces — a glimpse of what Maile makes</span>
   </div>
   <div class="product-grid">
     <div class="product-card reveal">
       <div class="product-image">
         <div class="product-image-inner">
-          <div class="product-placeholder p3"></div>
+          <div class="product-placeholder p3" id="workCard1Img"></div>
         </div>
-        <span class="product-tag">Bracelets</span>
+        <span class="product-tag" id="workCard1Tag">Bracelets</span>
       </div>
-      <p class="product-name">Beaded Stone Bracelet</p>
-      <p class="product-material">River stones · sterling silver wire</p>
+      <p class="product-name" id="workCard1Name">Beaded Stone Bracelet</p>
+      <p class="product-material" id="workCard1Material">River stones · sterling silver wire</p>
     </div>
 
     <div class="product-card reveal" style="transition-delay:0.08s">
       <div class="product-image">
         <div class="product-image-inner">
-          <div class="product-placeholder p1"></div>
+          <div class="product-placeholder p1" id="workCard2Img"></div>
         </div>
-        <span class="product-tag">Necklaces</span>
+        <span class="product-tag" id="workCard2Tag">Necklaces</span>
       </div>
-      <p class="product-name">Sea Glass Charm Necklace</p>
-      <p class="product-material">Newport sea glass · 14k gold-fill chain</p>
+      <p class="product-name" id="workCard2Name">Sea Glass Charm Necklace</p>
+      <p class="product-material" id="workCard2Material">Newport sea glass · 14k gold-fill chain</p>
     </div>
 
     <div class="product-card reveal" style="transition-delay:0.16s">
       <div class="product-image">
         <div class="product-image-inner">
-          <div class="product-placeholder p2"></div>
+          <div class="product-placeholder p2" id="workCard3Img"></div>
         </div>
-        <span class="product-tag">Earrings</span>
+        <span class="product-tag" id="workCard3Tag">Earrings</span>
       </div>
-      <p class="product-name">Shell Drop Earrings</p>
-      <p class="product-material">Collected shells · gold-fill ear wires</p>
+      <p class="product-name" id="workCard3Name">Shell Drop Earrings</p>
+      <p class="product-material" id="workCard3Material">Collected shells · gold-fill ear wires</p>
     </div>
 
     <div class="product-card reveal" style="transition-delay:0.24s">
       <div class="product-image">
         <div class="product-image-inner">
-          <div class="product-placeholder p4"></div>
+          <div class="product-placeholder p4" id="workCard4Img"></div>
         </div>
-        <span class="product-tag">Wood Burnings</span>
+        <span class="product-tag" id="workCard4Tag">Wood Burnings</span>
       </div>
-      <p class="product-name">Driftwood Wall Art</p>
-      <p class="product-material">Found driftwood · pyrography</p>
+      <p class="product-name" id="workCard4Name">Driftwood Wall Art</p>
+      <p class="product-material" id="workCard4Material">Found driftwood · pyrography</p>
     </div>
   </div>
 
   <div class="shop-cta reveal">
     <div>
-      <p class="shop-cta-text">Every piece here has already found its home.</p>
-      <p class="shop-cta-sub">New work is always in progress — see what's available now.</p>
+      <p class="shop-cta-text" id="workCtaText">Every piece here has already found its home.</p>
+      <p class="shop-cta-sub" id="workCtaSub">New work is always in progress — see what's available now.</p>
     </div>
     <a href="/shop.html" class="btn-shop-cta">Browse the Shop →</a>
   </div>
@@ -1367,6 +1367,20 @@
       // Custom orders section
       if (kv.custom_heading) document.getElementById('customHeading').innerHTML = kv.custom_heading;
       if (kv.custom_sub)     document.getElementById('customSub').textContent    = kv.custom_sub;
+
+      // The Work section
+      if (kv.work_subtitle) document.getElementById('workSubtitle').textContent = kv.work_subtitle;
+      if (kv.work_cta_text) document.getElementById('workCtaText').textContent  = kv.work_cta_text;
+      if (kv.work_cta_sub)  document.getElementById('workCtaSub').textContent   = kv.work_cta_sub;
+      ['1','2','3','4'].forEach(n => {
+        if (kv[`work_c${n}_tag`])      document.getElementById(`workCard${n}Tag`).textContent      = kv[`work_c${n}_tag`];
+        if (kv[`work_c${n}_name`])     document.getElementById(`workCard${n}Name`).textContent     = kv[`work_c${n}_name`];
+        if (kv[`work_c${n}_material`]) document.getElementById(`workCard${n}Material`).textContent = kv[`work_c${n}_material`];
+        if (kv[`work_c${n}_img`]) {
+          const el = document.getElementById(`workCard${n}Img`);
+          if (el) { el.style.backgroundImage = `url('${kv[`work_c${n}_img`]}')`; el.style.backgroundSize = 'cover'; el.style.backgroundPosition = 'center'; }
+        }
+      });
     } catch (_) {
       // network error — hardcoded fallbacks remain
     }

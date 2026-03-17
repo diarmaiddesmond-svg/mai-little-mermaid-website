@@ -761,6 +761,115 @@
         </div>
       </div>
 
+      <!-- THE WORK SECTION -->
+      <div class="content-section">
+        <div class="content-section-title">The Work Section <span style="font-family:'Jost',sans-serif;font-size:0.65rem;font-style:normal;font-weight:300;color:var(--driftwood);letter-spacing:0.06em;text-transform:none;margin-left:0.5rem">— portfolio grid on homepage</span></div>
+        <div class="content-grid">
+          <div class="field full">
+            <label>Subtitle (shown right of the heading)</label>
+            <input type="text" id="cWorkSubtitle" placeholder="Past pieces — a glimpse of what Maile makes">
+          </div>
+          <div class="field">
+            <label>CTA text</label>
+            <input type="text" id="cWorkCtaText" placeholder="Every piece here has already found its home.">
+          </div>
+          <div class="field">
+            <label>CTA sub-text</label>
+            <input type="text" id="cWorkCtaSub" placeholder="New work is always in progress — see what's available now.">
+          </div>
+        </div>
+
+        <!-- 4 card slots -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:1.2rem">
+
+          <!-- Card 1 -->
+          <div>
+            <p style="font-size:0.63rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--ocean);margin-bottom:0.6rem;font-weight:500">Card 1</p>
+            <div class="hero-slot">
+              <label>Photo</label>
+              <div class="upload-area mini" id="workArea1"
+                   onclick="document.getElementById('workFile1').click()"
+                   ondragover="event.preventDefault();this.classList.add('drag-over')"
+                   ondragleave="this.classList.remove('drag-over')"
+                   ondrop="event.preventDefault();this.classList.remove('drag-over');handleWorkSelect(1,event.dataTransfer.files[0])">
+                <div class="upload-placeholder" id="workPlaceholder1"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
+                <img class="hero-preview" id="workPreview1" alt="">
+                <button class="upload-clear" id="workClear1" onclick="clearWorkImage(event,1)" title="Remove">✕</button>
+              </div>
+              <input type="file" id="workFile1" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleWorkSelect(1,this.files[0]);this.value=''">
+            </div>
+            <div class="field" style="margin-top:0.5rem"><label>Category tag</label><input type="text" id="cWorkC1Tag" placeholder="Bracelets"></div>
+            <div class="field"><label>Name</label><input type="text" id="cWorkC1Name" placeholder="Beaded Stone Bracelet"></div>
+            <div class="field"><label>Material line</label><input type="text" id="cWorkC1Material" placeholder="River stones · sterling silver"></div>
+          </div>
+
+          <!-- Card 2 -->
+          <div>
+            <p style="font-size:0.63rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--ocean);margin-bottom:0.6rem;font-weight:500">Card 2</p>
+            <div class="hero-slot">
+              <label>Photo</label>
+              <div class="upload-area mini" id="workArea2"
+                   onclick="document.getElementById('workFile2').click()"
+                   ondragover="event.preventDefault();this.classList.add('drag-over')"
+                   ondragleave="this.classList.remove('drag-over')"
+                   ondrop="event.preventDefault();this.classList.remove('drag-over');handleWorkSelect(2,event.dataTransfer.files[0])">
+                <div class="upload-placeholder" id="workPlaceholder2"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
+                <img class="hero-preview" id="workPreview2" alt="">
+                <button class="upload-clear" id="workClear2" onclick="clearWorkImage(event,2)" title="Remove">✕</button>
+              </div>
+              <input type="file" id="workFile2" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleWorkSelect(2,this.files[0]);this.value=''">
+            </div>
+            <div class="field" style="margin-top:0.5rem"><label>Category tag</label><input type="text" id="cWorkC2Tag" placeholder="Necklaces"></div>
+            <div class="field"><label>Name</label><input type="text" id="cWorkC2Name" placeholder="Sea Glass Charm Necklace"></div>
+            <div class="field"><label>Material line</label><input type="text" id="cWorkC2Material" placeholder="Newport sea glass · gold-fill"></div>
+          </div>
+
+          <!-- Card 3 -->
+          <div>
+            <p style="font-size:0.63rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--ocean);margin-bottom:0.6rem;font-weight:500">Card 3</p>
+            <div class="hero-slot">
+              <label>Photo</label>
+              <div class="upload-area mini" id="workArea3"
+                   onclick="document.getElementById('workFile3').click()"
+                   ondragover="event.preventDefault();this.classList.add('drag-over')"
+                   ondragleave="this.classList.remove('drag-over')"
+                   ondrop="event.preventDefault();this.classList.remove('drag-over');handleWorkSelect(3,event.dataTransfer.files[0])">
+                <div class="upload-placeholder" id="workPlaceholder3"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
+                <img class="hero-preview" id="workPreview3" alt="">
+                <button class="upload-clear" id="workClear3" onclick="clearWorkImage(event,3)" title="Remove">✕</button>
+              </div>
+              <input type="file" id="workFile3" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleWorkSelect(3,this.files[0]);this.value=''">
+            </div>
+            <div class="field" style="margin-top:0.5rem"><label>Category tag</label><input type="text" id="cWorkC3Tag" placeholder="Earrings"></div>
+            <div class="field"><label>Name</label><input type="text" id="cWorkC3Name" placeholder="Shell Drop Earrings"></div>
+            <div class="field"><label>Material line</label><input type="text" id="cWorkC3Material" placeholder="Collected shells · gold-fill"></div>
+          </div>
+
+          <!-- Card 4 -->
+          <div>
+            <p style="font-size:0.63rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--ocean);margin-bottom:0.6rem;font-weight:500">Card 4</p>
+            <div class="hero-slot">
+              <label>Photo</label>
+              <div class="upload-area mini" id="workArea4"
+                   onclick="document.getElementById('workFile4').click()"
+                   ondragover="event.preventDefault();this.classList.add('drag-over')"
+                   ondragleave="this.classList.remove('drag-over')"
+                   ondrop="event.preventDefault();this.classList.remove('drag-over');handleWorkSelect(4,event.dataTransfer.files[0])">
+                <div class="upload-placeholder" id="workPlaceholder4"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
+                <img class="hero-preview" id="workPreview4" alt="">
+                <button class="upload-clear" id="workClear4" onclick="clearWorkImage(event,4)" title="Remove">✕</button>
+              </div>
+              <input type="file" id="workFile4" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleWorkSelect(4,this.files[0]);this.value=''">
+            </div>
+            <div class="field" style="margin-top:0.5rem"><label>Category tag</label><input type="text" id="cWorkC4Tag" placeholder="Wood Burnings"></div>
+            <div class="field"><label>Name</label><input type="text" id="cWorkC4Name" placeholder="Driftwood Wall Art"></div>
+            <div class="field"><label>Material line</label><input type="text" id="cWorkC4Material" placeholder="Found driftwood · pyrography"></div>
+          </div>
+
+        </div>
+        <div class="upload-status" id="workUploadStatus" style="margin-top:0.5rem"></div>
+      </div>
+
       <!-- INSTAGRAM SECTION -->
       <div class="content-section">
         <div class="content-section-title">Instagram Strip</div>
@@ -1746,6 +1855,44 @@ function clearAboutImage(e) {
   document.getElementById('aboutUploadStatus').textContent = 'Photo removed';
 }
 
+// ── WORK CARD PHOTOS ─────────────────────────────────────────────────────
+const pendingWorkBlobs = {1:null, 2:null, 3:null, 4:null};
+const workSlotUrls     = {1:null, 2:null, 3:null, 4:null};
+
+async function handleWorkSelect(slot, file) {
+  if (!file) return;
+  document.getElementById('workUploadStatus').textContent = `Resizing photo ${slot}…`;
+  let blob;
+  try { blob = await resizeImage(file); }
+  catch (err) { document.getElementById('workUploadStatus').textContent = 'Error: ' + err.message; return; }
+  pendingWorkBlobs[slot] = blob;
+  const prev = document.getElementById(`workPreview${slot}`);
+  prev.src = URL.createObjectURL(blob); prev.style.display = 'block';
+  document.getElementById(`workPlaceholder${slot}`).style.display = 'none';
+  document.getElementById(`workClear${slot}`).style.display = 'flex';
+  document.getElementById('workUploadStatus').textContent = 'Ready — will upload on Save';
+}
+
+function showWorkPreview(slot, url) {
+  if (!url) return;
+  workSlotUrls[slot] = url;
+  const prev = document.getElementById(`workPreview${slot}`);
+  prev.src = url; prev.style.display = 'block';
+  document.getElementById(`workPlaceholder${slot}`).style.display = 'none';
+  document.getElementById(`workClear${slot}`).style.display = 'flex';
+}
+
+function clearWorkImage(e, slot) {
+  e.stopPropagation();
+  pendingWorkBlobs[slot] = null; workSlotUrls[slot] = null;
+  document.getElementById(`workPreview${slot}`).src = '';
+  document.getElementById(`workPreview${slot}`).style.display = 'none';
+  document.getElementById(`workPlaceholder${slot}`).style.display = 'block';
+  document.getElementById(`workClear${slot}`).style.display = 'none';
+  document.getElementById(`workArea${slot}`).dataset.cleared = 'true';
+  document.getElementById('workUploadStatus').textContent = '';
+}
+
 // ── CONTENT ───────────────────────────────────────────────────────────────
 // Map of Supabase key → input element id
 const CONTENT_FIELDS = {
@@ -1771,11 +1918,26 @@ const CONTENT_FIELDS = {
   news_3_date:  'cNews3Date',
   news_3_title: 'cNews3Title',
   news_3_body:  'cNews3Body',
-  ig_title:       'cIgTitle',
-  ig_handle:      'cIgHandle',
-  ig_handle_url:  'cIgUrl',
-  custom_heading: 'cCustomHeading',
-  custom_sub:     'cCustomSub',
+  ig_title:         'cIgTitle',
+  ig_handle:        'cIgHandle',
+  ig_handle_url:    'cIgUrl',
+  custom_heading:   'cCustomHeading',
+  custom_sub:       'cCustomSub',
+  work_subtitle:    'cWorkSubtitle',
+  work_cta_text:    'cWorkCtaText',
+  work_cta_sub:     'cWorkCtaSub',
+  work_c1_tag:      'cWorkC1Tag',
+  work_c1_name:     'cWorkC1Name',
+  work_c1_material: 'cWorkC1Material',
+  work_c2_tag:      'cWorkC2Tag',
+  work_c2_name:     'cWorkC2Name',
+  work_c2_material: 'cWorkC2Material',
+  work_c3_tag:      'cWorkC3Tag',
+  work_c3_name:     'cWorkC3Name',
+  work_c3_material: 'cWorkC3Material',
+  work_c4_tag:      'cWorkC4Tag',
+  work_c4_name:     'cWorkC4Name',
+  work_c4_material: 'cWorkC4Material',
 };
 
 async function loadContent() {
@@ -1798,6 +1960,10 @@ async function loadContent() {
       p.src = row.value; p.style.display = 'block';
       document.getElementById('aboutPlaceholder').style.display = 'none';
       document.getElementById('aboutClear').style.display = 'flex';
+    }
+    // Work card photos
+    for (let s = 1; s <= 4; s++) {
+      if (row.key === `work_c${s}_img` && row.value) showWorkPreview(s, row.value);
     }
   });
 }
@@ -1866,6 +2032,33 @@ async function saveContent() {
       delete area.dataset.cleared;
     }
   });
+
+  // Upload work card photos
+  for (let s = 1; s <= 4; s++) {
+    const key = `work_c${s}_img`;
+    if (pendingWorkBlobs[s]) {
+      btn.textContent = `Uploading work photo ${s}…`;
+      document.getElementById('workUploadStatus').textContent = `Uploading photo ${s}…`;
+      const filename = `work${s}-${Date.now()}.jpg`;
+      const { error: wErr } = await sb.storage
+        .from('product-images')
+        .upload(filename, pendingWorkBlobs[s], { contentType: 'image/jpeg', upsert: false });
+      if (wErr) {
+        showToast('Upload failed: ' + wErr.message);
+        btn.disabled = false; btn.textContent = 'Save Content Changes'; return;
+      }
+      const url = sb.storage.from('product-images').getPublicUrl(filename).data.publicUrl;
+      rows.push({ key, value: url, updated_at: new Date().toISOString() });
+      pendingWorkBlobs[s] = null;
+      workSlotUrls[s] = url;
+    } else if (document.getElementById(`workArea${s}`)?.dataset.cleared === 'true') {
+      rows.push({ key, value: '', updated_at: new Date().toISOString() });
+      delete document.getElementById(`workArea${s}`).dataset.cleared;
+    } else if (workSlotUrls[s]) {
+      rows.push({ key, value: workSlotUrls[s], updated_at: new Date().toISOString() });
+    }
+  }
+  document.getElementById('workUploadStatus').textContent = '';
 
   const { error } = await sb.from('site_content').upsert(rows, { onConflict: 'key' });
   btn.disabled = false; btn.textContent = 'Save Content Changes';
