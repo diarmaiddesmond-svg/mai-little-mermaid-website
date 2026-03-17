@@ -1888,9 +1888,12 @@ async function loadMTOContent() {
       `${SUPABASE_URL}/rest/v1/site_content?key=like.mto_%&select=key,value`,
       { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
     );
-    if (!res.ok) return;
+    if (!res.ok) {
+      console.error('[MTO] site_content fetch failed:', res.status, await res.text());
+      return;
+    }
     const rows = await res.json();
-    if (!rows.length) return;
+    if (!rows.length) { console.warn('[MTO] No mto_* rows found in site_content — use admin to save content first'); return; }
     const kv = {};
     rows.forEach(r => { kv[r.key] = r.value; });
 
@@ -1940,7 +1943,7 @@ async function loadMTOContent() {
         }).join('');
       }
     }
-  } catch (e) { /* silently skip */ }
+  } catch (e) { console.error('[MTO] loadMTOContent error:', e); }
 }
 
 // ── FULL CUSTOM ──

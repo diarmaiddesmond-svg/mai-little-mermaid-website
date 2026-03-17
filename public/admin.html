@@ -2216,9 +2216,34 @@ async function saveMTOContent() {
   }));
 
   const { error } = await sb.from('site_content').upsert(rows, { onConflict: 'key' });
+  if (error) {
+    btn.disabled = false; btn.textContent = 'Save Made to Order';
+    showToast('Error saving: ' + error.message);
+    return;
+  }
+
+  // Reload from DB to confirm data persisted
+  btn.textContent = 'Verifying…';
+  const { data: check, error: checkErr } = await sb
+    .from('site_content')
+    .select('key,value')
+    .in('key', MTO_KEYS);
+
   btn.disabled = false; btn.textContent = 'Save Made to Order';
-  if (error) { showToast('Error saving: ' + error.message); return; }
-  showToast('✓ Made to Order saved — changes live on the shop page');
+
+  if (checkErr || !check) {
+    showToast('Saved, but could not verify — check your Supabase connection');
+    return;
+  }
+
+  // Repopulate fields with what DB returned
+  check.forEach(row => {
+    const el = document.getElementById(CONTENT_FIELDS[row.key]);
+    if (el && row.value) el.value = row.value;
+  });
+
+  const savedCount = check.filter(r => r.value).length;
+  showToast(`✓ Saved & verified — ${savedCount} fields live on the shop page`);
   renderMTOSwatchPreview();
 }
 
