@@ -993,18 +993,26 @@
       <!-- Glass colours -->
       <div class="content-section">
         <div class="content-section-title">Glass Colours</div>
-        <p style="font-size:0.75rem;color:var(--driftwood);letter-spacing:0.04em;margin-bottom:1rem;line-height:1.5">
-          Each line defines one swatch on the shop page. Format: <code style="font-size:0.82em;background:var(--sand);padding:0.1em 0.4em;font-family:monospace">Name | #hex or CSS value | Short label</code><br>
-          The dot colour is the middle column — any valid CSS colour works (hex, gradient, etc.).
+        <p style="font-size:0.75rem;color:var(--driftwood);letter-spacing:0.04em;margin-bottom:1.2rem">
+          Each row is one swatch on the shop page. Remove any colour Maile doesn't currently have in stock.
         </p>
-        <!-- Live swatch preview -->
-        <div id="mtoSwatchPreview" style="display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1.2rem;min-height:60px;padding:1rem;background:var(--sand);border:1px solid var(--sand-dark)">
-          <span style="font-size:0.7rem;color:var(--driftwood);align-self:center" id="mtoSwatchEmpty">No colours yet — add some below</span>
+
+        <!-- Column headers -->
+        <div style="display:grid;grid-template-columns:36px 1fr 1fr 1fr 32px;gap:0.5rem;align-items:center;margin-bottom:0.4rem;padding:0 0.2rem">
+          <div></div>
+          <div style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--driftwood)">Name</div>
+          <div style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--driftwood)">Colour (hex / CSS)</div>
+          <div style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--driftwood)">Short label</div>
+          <div></div>
         </div>
-        <div class="field">
-          <label>Colour list <span style="font-weight:300;text-transform:none;letter-spacing:0">— one per line</span></label>
-          <textarea id="cMtoGlassColours" style="min-height:160px;font-family:monospace;font-size:0.82rem"></textarea>
-        </div>
+
+        <!-- Rows container -->
+        <div id="glassColourRows"></div>
+
+        <button onclick="addGlassColourRow()" style="margin-top:0.8rem;padding:0.5rem 1.2rem;background:none;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--driftwood);cursor:pointer">+ Add Colour</button>
+
+        <!-- Hidden textarea keeps existing save logic working -->
+        <textarea id="cMtoGlassColours" style="display:none"></textarea>
       </div>
 
       <button class="btn-save-content" id="saveMtoBtn" onclick="saveMTOContent()">Save Made to Order</button>
@@ -2111,7 +2119,9 @@ async function loadContent() {
   // Pre-fill glass colours with defaults if nothing was saved yet
   const glassEl = document.getElementById('cMtoGlassColours');
   if (glassEl && !glassEl.value.trim()) glassEl.value = DEFAULT_GLASS_COLOURS;
-  renderMTOSwatchPreview();
+  // Render colour rows from textarea value
+  const lines = (glassEl?.value || '').split('\n').map(l => l.trim()).filter(Boolean);
+  renderColourRows(lines);
 }
 
 async function saveContent() {
@@ -2267,6 +2277,78 @@ async function saveMTOContent() {
   renderMTOSwatchPreview();
 }
 
+// ── GLASS COLOUR ROWS ────────────────────────────────────────────────────
+function renderColourRows(lines) {
+  const container = document.getElementById('glassColourRows');
+  if (!container) return;
+  container.innerHTML = '';
+  lines.forEach((line, i) => {
+    const parts = line.split('|').map(p => p.trim());
+    addGlassColourRow(parts[0] || '', parts[1] || '', parts[2] || '');
+  });
+  syncColourTextarea();
+}
+
+function addGlassColourRow(name = '', css = '', label = '') {
+  const container = document.getElementById('glassColourRows');
+  const row = document.createElement('div');
+  row.className = 'colour-row';
+  row.style.cssText = 'display:grid;grid-template-columns:36px 1fr 1fr 1fr 32px;gap:0.5rem;align-items:center;margin-bottom:0.4rem';
+
+  const inp = (val, ph) => {
+    const el = document.createElement('input');
+    el.type = 'text'; el.value = val; el.placeholder = ph;
+    el.style.cssText = 'padding:0.55rem 0.6rem;border:1px solid var(--sand-dark);font-family:\'Jost\',sans-serif;font-size:0.83rem;background:var(--cream);outline:none;width:100%;box-sizing:border-box';
+    el.addEventListener('input', () => { syncColourTextarea(); updateRowDot(row); });
+    return el;
+  };
+
+  const dot = document.createElement('div');
+  dot.style.cssText = `width:32px;height:32px;border-radius:50%;background:${css || '#ccc'};border:1px solid var(--sand-dark);flex-shrink:0`;
+
+  const nameEl  = inp(name,  'e.g. Seafoam');
+  const cssEl   = inp(css,   '#hex or CSS');
+  const labelEl = inp(label, 'Short label');
+
+  // Update dot live when CSS value changes
+  cssEl.addEventListener('input', () => { dot.style.background = cssEl.value || '#ccc'; });
+
+  const removeBtn = document.createElement('button');
+  removeBtn.textContent = '×';
+  removeBtn.title = 'Remove this colour';
+  removeBtn.style.cssText = 'width:28px;height:28px;border:1px solid var(--sand-dark);background:none;font-size:1rem;cursor:pointer;color:var(--driftwood);display:flex;align-items:center;justify-content:center;flex-shrink:0';
+  removeBtn.onclick = () => { row.remove(); syncColourTextarea(); renderMTOSwatchPreview(); };
+
+  row.appendChild(dot);
+  row.appendChild(nameEl);
+  row.appendChild(cssEl);
+  row.appendChild(labelEl);
+  row.appendChild(removeBtn);
+  container.appendChild(row);
+}
+
+function updateRowDot(row) {
+  const inputs = row.querySelectorAll('input');
+  const css = inputs[1]?.value || '#ccc';
+  row.querySelector('div').style.background = css;
+}
+
+function syncColourTextarea() {
+  const container = document.getElementById('glassColourRows');
+  const ta = document.getElementById('cMtoGlassColours');
+  if (!container || !ta) return;
+  const lines = [];
+  container.querySelectorAll('.colour-row').forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    const name = inputs[0]?.value.trim();
+    const css  = inputs[1]?.value.trim();
+    const lbl  = inputs[2]?.value.trim();
+    if (name || css) lines.push(`${name} | ${css} | ${lbl || name}`);
+  });
+  ta.value = lines.join('\n');
+  renderMTOSwatchPreview();
+}
+
 function renderMTOSwatchPreview() {
   const preview = document.getElementById('mtoSwatchPreview');
   if (!preview) return;
@@ -2293,9 +2375,6 @@ function renderMTOSwatchPreview() {
 document.getElementById('loginPassword').addEventListener('keydown', e => {
   if (e.key === 'Enter') signIn();
 });
-
-// Live swatch preview while typing glass colours
-document.getElementById('cMtoGlassColours').addEventListener('input', renderMTOSwatchPreview);
 
 checkSession();
 </script>
