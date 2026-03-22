@@ -1397,7 +1397,7 @@
     }
   })();
 
-  // Contact form
+  // Contact form — writes directly to Supabase site_contacts table
   async function submitContact() {
     const email = document.getElementById('contactEmail').value.trim();
     if (!email || !email.includes('@')) {
@@ -1412,14 +1412,19 @@
     document.getElementById('contactError').style.display = 'none';
 
     try {
-      const res = await fetch('/api/submit-enquiry', {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/site_contacts`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal',
+        },
         body: JSON.stringify({
-          name:      document.getElementById('contactName').value.trim() || null,
+          name:       document.getElementById('contactName').value.trim() || null,
           email,
-          pieceType: document.getElementById('contactPiece').value || null,
-          message:   document.getElementById('contactMessage').value.trim() || null,
+          piece_type: document.getElementById('contactPiece').value || null,
+          message:    document.getElementById('contactMessage').value.trim() || null,
         }),
       });
       if (!res.ok) throw new Error('Server error');
