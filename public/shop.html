@@ -1560,12 +1560,12 @@
             <label class="form-label">Preferred Metal</label>
             <div class="metal-check-row" style="margin-top:0.4rem">
               <label class="metal-check">
-                <input type="checkbox" value="Sterling Silver" onchange="this.closest('.metal-check').classList.toggle('checked', this.checked)">
+                <input type="radio" name="cfMetal" value="Sterling Silver" onchange="document.querySelectorAll('.metal-check').forEach(l=>l.classList.remove('checked'));this.closest('.metal-check').classList.add('checked')">
                 <span class="metal-check-dot"></span>
                 Sterling Silver
               </label>
               <label class="metal-check">
-                <input type="checkbox" value="Gold Fill" onchange="this.closest('.metal-check').classList.toggle('checked', this.checked)">
+                <input type="radio" name="cfMetal" value="Gold Fill" onchange="document.querySelectorAll('.metal-check').forEach(l=>l.classList.remove('checked'));this.closest('.metal-check').classList.add('checked')">
                 <span class="metal-check-dot"></span>
                 Gold Fill
               </label>
@@ -2006,9 +2006,8 @@ async function submitCustomForm() {
     return;
   }
 
-  const checkedMetals = Array.from(
-    document.querySelectorAll('.metal-check.checked input[type="checkbox"]')
-  ).map(cb => cb.value).join(', ');
+  const metalRadio = document.querySelector('input[name="cfMetal"]:checked');
+  const checkedMetals = metalRadio ? metalRadio.value : null;
 
   const btn = document.querySelector('.btn-submit.full');
   btn.disabled = true;
