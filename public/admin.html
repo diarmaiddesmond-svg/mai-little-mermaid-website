@@ -905,125 +905,6 @@
         </div>
       </div>
 
-      <!-- CUSTOM GALLERY SECTION -->
-      <div class="content-section">
-        <div class="content-section-title">Custom Section <span style="font-family:'Jost',sans-serif;font-size:0.65rem;font-style:normal;font-weight:300;color:var(--driftwood);letter-spacing:0.06em;text-transform:none;margin-left:0.5rem">— fully editable section on the site</span></div>
-
-        <div class="content-grid">
-          <div class="field full">
-            <label>Section heading</label>
-            <input type="text" id="cGalleryTitle" placeholder="e.g. Latest from the studio">
-          </div>
-          <div class="field full">
-            <label>Body text</label>
-            <textarea id="cGalleryBody" style="min-height:80px" placeholder="A short paragraph Maile wants to say in this section…"></textarea>
-          </div>
-        </div>
-
-        <!-- 6-photo grid (2 rows × 3 cols) -->
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.2rem">
-
-          <!-- Photo slots 1–6 -->
-          <div>
-            <p style="font-size:0.63rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--ocean);margin-bottom:0.6rem;font-weight:500">Photo 1</p>
-            <div class="hero-slot">
-              <div class="upload-area mini" id="galleryArea1"
-                   onclick="document.getElementById('galleryFile1').click()"
-                   ondragover="event.preventDefault();this.classList.add('drag-over')"
-                   ondragleave="this.classList.remove('drag-over')"
-                   ondrop="event.preventDefault();this.classList.remove('drag-over');handleGallerySelect(1,event.dataTransfer.files[0])">
-                <div class="upload-placeholder" id="galleryPlaceholder1"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
-                <img class="hero-preview" id="galleryPreview1" alt="">
-                <button class="upload-clear" id="galleryClear1" onclick="clearGalleryImage(event,1)" title="Remove">✕</button>
-              </div>
-              <input type="file" id="galleryFile1" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleGallerySelect(1,this.files[0]);this.value=''">
-            </div>
-          </div>
-
-          <div>
-            <p style="font-size:0.63rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--ocean);margin-bottom:0.6rem;font-weight:500">Photo 2</p>
-            <div class="hero-slot">
-              <div class="upload-area mini" id="galleryArea2"
-                   onclick="document.getElementById('galleryFile2').click()"
-                   ondragover="event.preventDefault();this.classList.add('drag-over')"
-                   ondragleave="this.classList.remove('drag-over')"
-                   ondrop="event.preventDefault();this.classList.remove('drag-over');handleGallerySelect(2,event.dataTransfer.files[0])">
-                <div class="upload-placeholder" id="galleryPlaceholder2"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
-                <img class="hero-preview" id="galleryPreview2" alt="">
-                <button class="upload-clear" id="galleryClear2" onclick="clearGalleryImage(event,2)" title="Remove">✕</button>
-              </div>
-              <input type="file" id="galleryFile2" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleGallerySelect(2,this.files[0]);this.value=''">
-            </div>
-          </div>
-
-          <div>
-            <p style="font-size:0.63rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--ocean);margin-bottom:0.6rem;font-weight:500">Photo 3</p>
-            <div class="hero-slot">
-              <div class="upload-area mini" id="galleryArea3"
-                   onclick="document.getElementById('galleryFile3').click()"
-                   ondragover="event.preventDefault();this.classList.add('drag-over')"
-                   ondragleave="this.classList.remove('drag-over')"
-                   ondrop="event.preventDefault();this.classList.remove('drag-over');handleGallerySelect(3,event.dataTransfer.files[0])">
-                <div class="upload-placeholder" id="galleryPlaceholder3"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
-                <img class="hero-preview" id="galleryPreview3" alt="">
-                <button class="upload-clear" id="galleryClear3" onclick="clearGalleryImage(event,3)" title="Remove">✕</button>
-              </div>
-              <input type="file" id="galleryFile3" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleGallerySelect(3,this.files[0]);this.value=''">
-            </div>
-          </div>
-
-          <div>
-            <p style="font-size:0.63rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--ocean);margin-bottom:0.6rem;font-weight:500">Photo 4</p>
-            <div class="hero-slot">
-              <div class="upload-area mini" id="galleryArea4"
-                   onclick="document.getElementById('galleryFile4').click()"
-                   ondragover="event.preventDefault();this.classList.add('drag-over')"
-                   ondragleave="this.classList.remove('drag-over')"
-                   ondrop="event.preventDefault();this.classList.remove('drag-over');handleGallerySelect(4,event.dataTransfer.files[0])">
-                <div class="upload-placeholder" id="galleryPlaceholder4"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
-                <img class="hero-preview" id="galleryPreview4" alt="">
-                <button class="upload-clear" id="galleryClear4" onclick="clearGalleryImage(event,4)" title="Remove">✕</button>
-              </div>
-              <input type="file" id="galleryFile4" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleGallerySelect(4,this.files[0]);this.value=''">
-            </div>
-          </div>
-
-          <div>
-            <p style="font-size:0.63rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--ocean);margin-bottom:0.6rem;font-weight:500">Photo 5</p>
-            <div class="hero-slot">
-              <div class="upload-area mini" id="galleryArea5"
-                   onclick="document.getElementById('galleryFile5').click()"
-                   ondragover="event.preventDefault();this.classList.add('drag-over')"
-                   ondragleave="this.classList.remove('drag-over')"
-                   ondrop="event.preventDefault();this.classList.remove('drag-over');handleGallerySelect(5,event.dataTransfer.files[0])">
-                <div class="upload-placeholder" id="galleryPlaceholder5"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
-                <img class="hero-preview" id="galleryPreview5" alt="">
-                <button class="upload-clear" id="galleryClear5" onclick="clearGalleryImage(event,5)" title="Remove">✕</button>
-              </div>
-              <input type="file" id="galleryFile5" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleGallerySelect(5,this.files[0]);this.value=''">
-            </div>
-          </div>
-
-          <div>
-            <p style="font-size:0.63rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--ocean);margin-bottom:0.6rem;font-weight:500">Photo 6</p>
-            <div class="hero-slot">
-              <div class="upload-area mini" id="galleryArea6"
-                   onclick="document.getElementById('galleryFile6').click()"
-                   ondragover="event.preventDefault();this.classList.add('drag-over')"
-                   ondragleave="this.classList.remove('drag-over')"
-                   ondrop="event.preventDefault();this.classList.remove('drag-over');handleGallerySelect(6,event.dataTransfer.files[0])">
-                <div class="upload-placeholder" id="galleryPlaceholder6"><div class="upload-icon">+</div><div class="upload-hint">Click or drop</div></div>
-                <img class="hero-preview" id="galleryPreview6" alt="">
-                <button class="upload-clear" id="galleryClear6" onclick="clearGalleryImage(event,6)" title="Remove">✕</button>
-              </div>
-              <input type="file" id="galleryFile6" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleGallerySelect(6,this.files[0]);this.value=''">
-            </div>
-          </div>
-
-        </div>
-        <div class="upload-status" id="galleryUploadStatus" style="margin-top:0.5rem"></div>
-      </div>
-
       <button class="btn-save-content" id="saveContentBtn" onclick="saveContent()">Save Content Changes</button>
 
     </div><!-- /tabContent -->
@@ -1774,6 +1655,7 @@ function renderEnquiryCard(e) {
       ${e.metals    ? `<div><span class="enquiry-field-label">Preferred metal</span><span class="enquiry-field-value">${escHtml(e.metals)}</span></div>` : ''}
       ${e.materials ? `<div class="eq-full"><span class="enquiry-field-label">Materials sending in</span><span class="enquiry-field-value">${escHtml(e.materials)}</span></div>` : ''}
       ${e.message   ? `<div class="eq-full"><span class="enquiry-field-label">Message</span><span class="enquiry-field-value">${escHtml(e.message)}</span></div>` : ''}
+      ${e.photo_url ? `<div class="eq-full"><span class="enquiry-field-label">Photo</span><br><a href="${escHtml(e.photo_url)}" target="_blank" rel="noopener"><img src="${escHtml(e.photo_url)}" alt="Customer photo" style="max-width:220px;max-height:160px;margin-top:0.4rem;border-radius:2px;display:block;border:1px solid var(--sand-dark)"></a></div>` : ''}
     </div>
 
     <div class="enquiry-footer">
@@ -2089,8 +1971,6 @@ function clearAboutImage(e) {
 const pendingWorkBlobs = {1:null, 2:null, 3:null, 4:null};
 const workSlotUrls     = {1:null, 2:null, 3:null, 4:null};
 
-const pendingGalleryBlobs = {1:null,2:null,3:null,4:null,5:null,6:null};
-const gallerySlotUrls     = {1:null,2:null,3:null,4:null,5:null,6:null};
 
 async function handleWorkSelect(slot, file) {
   if (!file) return;
@@ -2126,41 +2006,6 @@ function clearWorkImage(e, slot) {
   document.getElementById('workUploadStatus').textContent = '';
 }
 
-// ── CUSTOM GALLERY ────────────────────────────────────────────────────────
-async function handleGallerySelect(slot, file) {
-  if (!file) return;
-  document.getElementById('galleryUploadStatus').textContent = `Resizing photo ${slot}…`;
-  let blob;
-  try { blob = await resizeImage(file); }
-  catch (err) { document.getElementById('galleryUploadStatus').textContent = 'Error: ' + err.message; return; }
-  pendingGalleryBlobs[slot] = blob;
-  const prev = document.getElementById(`galleryPreview${slot}`);
-  prev.src = URL.createObjectURL(blob); prev.style.display = 'block';
-  document.getElementById(`galleryPlaceholder${slot}`).style.display = 'none';
-  document.getElementById(`galleryClear${slot}`).style.display = 'flex';
-  document.getElementById('galleryUploadStatus').textContent = 'Ready — will upload on Save';
-}
-
-function showGalleryPreview(slot, url) {
-  if (!url) return;
-  gallerySlotUrls[slot] = url;
-  const prev = document.getElementById(`galleryPreview${slot}`);
-  prev.src = url; prev.style.display = 'block';
-  document.getElementById(`galleryPlaceholder${slot}`).style.display = 'none';
-  document.getElementById(`galleryClear${slot}`).style.display = 'flex';
-}
-
-function clearGalleryImage(e, slot) {
-  e.stopPropagation();
-  pendingGalleryBlobs[slot] = null; gallerySlotUrls[slot] = null;
-  document.getElementById(`galleryPreview${slot}`).src = '';
-  document.getElementById(`galleryPreview${slot}`).style.display = 'none';
-  document.getElementById(`galleryPlaceholder${slot}`).style.display = 'block';
-  document.getElementById(`galleryClear${slot}`).style.display = 'none';
-  document.getElementById(`galleryArea${slot}`).dataset.cleared = 'true';
-  document.getElementById('galleryUploadStatus').textContent = '';
-}
-
 // ── CONTENT ───────────────────────────────────────────────────────────────
 // Map of Supabase key → input element id
 const CONTENT_FIELDS = {
@@ -2191,8 +2036,6 @@ const CONTENT_FIELDS = {
   ig_handle_url:    'cIgUrl',
   custom_heading:   'cCustomHeading',
   custom_sub:       'cCustomSub',
-  gallery_title:    'cGalleryTitle',
-  gallery_body:     'cGalleryBody',
   work_subtitle:    'cWorkSubtitle',
   work_cta_text:    'cWorkCtaText',
   work_cta_sub:     'cWorkCtaSub',
@@ -2273,10 +2116,6 @@ async function loadContent() {
     // Work card photos
     for (let s = 1; s <= 4; s++) {
       if (row.key === `work_c${s}_img` && row.value) showWorkPreview(s, row.value);
-    }
-    // Custom gallery photos
-    for (let s = 1; s <= 6; s++) {
-      if (row.key === `gallery_img_${s}` && row.value) showGalleryPreview(s, row.value);
     }
   });
   // Pre-fill glass colours with defaults if nothing was saved yet
@@ -2378,33 +2217,6 @@ async function saveContent() {
     }
   }
   document.getElementById('workUploadStatus').textContent = '';
-
-  // Upload custom gallery photos
-  for (let s = 1; s <= 6; s++) {
-    const key = `gallery_img_${s}`;
-    if (pendingGalleryBlobs[s]) {
-      btn.textContent = `Uploading gallery photo ${s}…`;
-      document.getElementById('galleryUploadStatus').textContent = `Uploading photo ${s}…`;
-      const filename = `gallery${s}-${Date.now()}.jpg`;
-      const { error: gErr } = await sb.storage
-        .from('product-images')
-        .upload(filename, pendingGalleryBlobs[s], { contentType: 'image/jpeg', upsert: false });
-      if (gErr) {
-        showToast('Upload failed: ' + gErr.message);
-        btn.disabled = false; btn.textContent = 'Save Content Changes'; return;
-      }
-      const url = sb.storage.from('product-images').getPublicUrl(filename).data.publicUrl;
-      rows.push({ key, value: url, updated_at: new Date().toISOString() });
-      pendingGalleryBlobs[s] = null;
-      gallerySlotUrls[s] = url;
-    } else if (document.getElementById(`galleryArea${s}`)?.dataset.cleared === 'true') {
-      rows.push({ key, value: '', updated_at: new Date().toISOString() });
-      delete document.getElementById(`galleryArea${s}`).dataset.cleared;
-    } else if (gallerySlotUrls[s]) {
-      rows.push({ key, value: gallerySlotUrls[s], updated_at: new Date().toISOString() });
-    }
-  }
-  document.getElementById('galleryUploadStatus').textContent = '';
 
   const { error } = await sb.from('site_content').upsert(rows, { onConflict: 'key' });
   btn.disabled = false; btn.textContent = 'Save Content Changes';
