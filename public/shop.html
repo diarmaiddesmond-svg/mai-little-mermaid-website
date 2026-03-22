@@ -1559,13 +1559,13 @@
           <div class="form-group">
             <label class="form-label">Preferred Metal</label>
             <div class="metal-check-row" style="margin-top:0.4rem">
-              <label class="metal-check" onclick="toggleMetalCheck(this)">
-                <input type="checkbox" value="Sterling Silver">
+              <label class="metal-check">
+                <input type="checkbox" value="Sterling Silver" onchange="this.closest('.metal-check').classList.toggle('checked', this.checked)">
                 <span class="metal-check-dot"></span>
                 Sterling Silver
               </label>
-              <label class="metal-check" onclick="toggleMetalCheck(this)">
-                <input type="checkbox" value="Gold Fill">
+              <label class="metal-check">
+                <input type="checkbox" value="Gold Fill" onchange="this.closest('.metal-check').classList.toggle('checked', this.checked)">
                 <span class="metal-check-dot"></span>
                 Gold Fill
               </label>
@@ -1954,10 +1954,6 @@ async function loadMTOContent() {
 }
 
 // ── FULL CUSTOM ──
-function toggleMetalCheck(label) {
-  label.classList.toggle('checked');
-}
-
 let pendingPhotoFile = null;
 
 function handleUpload(file) {
