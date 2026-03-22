@@ -448,6 +448,10 @@
     color: rgba(255,255,255,0.4);
   }
 
+  .product-placeholder.has-image::after {
+    display: none;
+  }
+
   .product-tag {
     position: absolute;
     top: 1rem;
@@ -979,6 +983,14 @@
   .studio-card-title { font-family: 'Cormorant Garamond', serif; font-weight: 300; color: #fff; line-height: 1.15; margin-bottom: 0.9rem; }
   .studio-card-body { font-size: 0.88rem; font-weight: 300; line-height: 1.85; color: rgba(255,255,255,0.55); }
 
+  /* Single-card: headline left, card right */
+  .studio-notes.one-card { display: grid; grid-template-columns: 1fr 1.4fr; gap: 5rem; align-items: center; }
+  .studio-notes.one-card .studio-header { margin-bottom: 0; }
+  .studio-notes.one-card .studio-title { font-size: clamp(2.4rem, 4vw, 3.8rem); }
+  .studio-notes.one-card .studio-grid { border-top: none; }
+  .studio-notes.one-card .studio-card { padding: 0; border-right: none; }
+  .studio-notes.one-card .studio-card::before { top: 0; }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 900px) {
     nav { padding: 1rem 1.5rem; }
@@ -990,6 +1002,9 @@
     .hero-badge { left: 1rem; bottom: 1.5rem; }
     .section, .about-strip, .process, .contact { padding: 3rem 1.5rem; }
     .instagram-strip, .studio-notes { padding: 3rem 1.5rem; }
+    .studio-notes.one-card { grid-template-columns: 1fr; gap: 2rem; }
+    .studio-notes.one-card .studio-card { padding: 2rem 0 0; border-top: 1px solid rgba(255,255,255,0.1); }
+    .studio-notes.one-card .studio-card::before { top: 2rem; }
     .studio-grid { grid-template-columns: 1fr; }
     .studio-card, .studio-card:first-child, .studio-card:not(:first-child) { padding: 2rem 0; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
     .studio-card:last-child { border-bottom: none; }
@@ -1362,11 +1377,16 @@
         }
       });
       if (anyNews) {
-        document.getElementById('studioNotes').style.display = '';
+        const section = document.getElementById('studioNotes');
+        section.style.display = '';
         const grid = document.querySelector('.studio-grid');
         if (grid) {
-          if      (activeCards === 1) grid.style.gridTemplateColumns = '1fr';
-          else if (activeCards === 2) grid.style.gridTemplateColumns = '1.4fr 1fr';
+          if (activeCards === 1) {
+            section.classList.add('one-card');
+            grid.style.gridTemplateColumns = '1fr';
+          } else if (activeCards === 2) {
+            grid.style.gridTemplateColumns = '1.4fr 1fr';
+          }
         }
       }
 
@@ -1389,7 +1409,7 @@
         if (kv[`work_c${n}_material`]) document.getElementById(`workCard${n}Material`).textContent = kv[`work_c${n}_material`];
         if (kv[`work_c${n}_img`]) {
           const el = document.getElementById(`workCard${n}Img`);
-          if (el) { el.style.backgroundImage = `url('${kv[`work_c${n}_img`]}')`; el.style.backgroundSize = 'cover'; el.style.backgroundPosition = 'center'; }
+          if (el) { el.style.backgroundImage = `url('${kv[`work_c${n}_img`]}')`; el.style.backgroundSize = 'cover'; el.style.backgroundPosition = 'center'; el.classList.add('has-image'); }
         }
       });
     } catch (_) {
@@ -1397,7 +1417,7 @@
     }
   })();
 
-  // Contact form
+  // Contact form — writes directly to Supabase site_contacts table
   async function submitContact() {
     const email = document.getElementById('contactEmail').value.trim();
     if (!email || !email.includes('@')) {
@@ -1412,14 +1432,19 @@
     document.getElementById('contactError').style.display = 'none';
 
     try {
-      const res = await fetch('/api/submit-enquiry', {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/site_contacts`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal',
+        },
         body: JSON.stringify({
-          name:      document.getElementById('contactName').value.trim() || null,
+          name:       document.getElementById('contactName').value.trim() || null,
           email,
-          pieceType: document.getElementById('contactPiece').value || null,
-          message:   document.getElementById('contactMessage').value.trim() || null,
+          piece_type: document.getElementById('contactPiece').value || null,
+          message:    document.getElementById('contactMessage').value.trim() || null,
         }),
       });
       if (!res.ok) throw new Error('Server error');

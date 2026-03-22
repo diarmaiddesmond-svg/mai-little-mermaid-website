@@ -1559,13 +1559,13 @@
           <div class="form-group">
             <label class="form-label">Preferred Metal</label>
             <div class="metal-check-row" style="margin-top:0.4rem">
-              <label class="metal-check" onclick="toggleMetalCheck(this)">
-                <input type="checkbox" value="Sterling Silver">
+              <label class="metal-check">
+                <input type="radio" name="cfMetal" value="Sterling Silver" onchange="document.querySelectorAll('.metal-check').forEach(l=>l.classList.remove('checked'));this.closest('.metal-check').classList.add('checked')">
                 <span class="metal-check-dot"></span>
                 Sterling Silver
               </label>
-              <label class="metal-check" onclick="toggleMetalCheck(this)">
-                <input type="checkbox" value="Gold Fill">
+              <label class="metal-check">
+                <input type="radio" name="cfMetal" value="Gold Fill" onchange="document.querySelectorAll('.metal-check').forEach(l=>l.classList.remove('checked'));this.closest('.metal-check').classList.add('checked')">
                 <span class="metal-check-dot"></span>
                 Gold Fill
               </label>
@@ -1582,12 +1582,18 @@
             <textarea id="cfMessage" class="form-textarea" placeholder="Any story behind the materials? Occasion? Inspiration? The more you share the better..."></textarea>
           </div>
 
-          <div class="upload-zone full">
-            <input type="file" accept="image/*" multiple onchange="handleUpload(this)">
-            <div class="upload-icon">📷</div>
-            <p class="upload-text">Upload a photo of your materials</p>
-            <p class="upload-sub">JPG, PNG · Up to 10MB</p>
-            <p class="upload-preview" id="uploadPreview"></p>
+          <div class="upload-zone full" id="uploadZone" onclick="document.getElementById('cfPhoto').click()">
+            <input type="file" id="cfPhoto" accept="image/*" style="display:none" onchange="handleUpload(this.files[0])">
+            <div id="uploadDefault">
+              <div class="upload-icon">+</div>
+              <p class="upload-text">Upload a photo of your materials</p>
+              <p class="upload-sub">JPG, PNG · Up to 10MB · optional</p>
+            </div>
+            <div id="uploadThumb" style="display:none">
+              <img id="uploadThumbImg" style="max-height:140px;max-width:100%;border-radius:2px" alt="Your photo">
+              <p class="upload-sub" id="uploadFileName" style="margin-top:0.4rem"></p>
+              <button style="margin-top:0.3rem;background:none;border:none;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--driftwood);cursor:pointer;text-decoration:underline" onclick="clearUpload(event)">Remove</button>
+            </div>
           </div>
 
           <button class="btn-submit full" onclick="submitCustomForm()">Send Request to Maile →</button>
@@ -1885,12 +1891,16 @@ async function loadMTOContent() {
   if (!SUPABASE_URL.startsWith('https://')) return;
   try {
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/site_content?key=like.mto_%&select=key,value`,
+      `${SUPABASE_URL}/rest/v1/site_content?select=key,value`,
       { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
     );
-    if (!res.ok) return;
-    const rows = await res.json();
-    if (!rows.length) return;
+    if (!res.ok) {
+      console.error('[MTO] site_content fetch failed:', res.status, await res.text());
+      return;
+    }
+    const all = await res.json();
+    const rows = all.filter(r => r.key.startsWith('mto_'));
+    if (!rows.length) { console.warn('[MTO] No mto_* rows in site_content — save from admin first'); return; }
     const kv = {};
     rows.forEach(r => { kv[r.key] = r.value; });
 
@@ -1940,20 +1950,53 @@ async function loadMTOContent() {
         }).join('');
       }
     }
-  } catch (e) { /* silently skip */ }
+  } catch (e) { console.error('[MTO] loadMTOContent error:', e); }
 }
 
 // ── FULL CUSTOM ──
-function toggleMetalCheck(label) {
-  label.classList.toggle('checked');
+let pendingPhotoFile = null;
+
+function handleUpload(file) {
+  if (!file) return;
+  pendingPhotoFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('uploadThumbImg').src = e.target.result;
+    document.getElementById('uploadFileName').textContent = file.name;
+    document.getElementById('uploadDefault').style.display = 'none';
+    document.getElementById('uploadThumb').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
 }
 
-function handleUpload(input) {
-  const files = input.files;
-  if (files.length > 0) {
-    const names = Array.from(files).map(f => f.name).join(', ');
-    document.getElementById('uploadPreview').textContent = `✓ ${files.length} file${files.length > 1 ? 's' : ''} selected: ${names}`;
-  }
+function clearUpload(e) {
+  e.stopPropagation();
+  pendingPhotoFile = null;
+  document.getElementById('cfPhoto').value = '';
+  document.getElementById('uploadDefault').style.display = 'block';
+  document.getElementById('uploadThumb').style.display = 'none';
+}
+
+function resizePhotoForUpload(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const MAX = 1400;
+      let w = img.width, h = img.height;
+      if (w > MAX || h > MAX) {
+        if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+        else       { w = Math.round(w * MAX / h); h = MAX; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('resize failed')), 'image/jpeg', 0.85);
+    };
+    img.onerror = () => reject(new Error('Could not read image'));
+    img.src = url;
+  });
 }
 
 async function submitCustomForm() {
@@ -1963,12 +2006,37 @@ async function submitCustomForm() {
     return;
   }
 
-  const checkedMetals = Array.from(
-    document.querySelectorAll('.metal-check.checked input[type="checkbox"]')
-  ).map(cb => cb.value).join(', ');
+  const metalRadio = document.querySelector('input[name="cfMetal"]:checked');
+  const checkedMetals = metalRadio ? metalRadio.value : null;
 
   const btn = document.querySelector('.btn-submit.full');
   btn.disabled = true;
+
+  // Upload photo to Supabase storage if one was selected
+  let photoUrl = null;
+  if (pendingPhotoFile) {
+    btn.textContent = 'Uploading photo…';
+    try {
+      const blob = await resizePhotoForUpload(pendingPhotoFile);
+      const filename = `enquiry-${Date.now()}.jpg`;
+      const uploadRes = await fetch(
+        `${SUPABASE_URL}/storage/v1/object/product-images/${filename}`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'Content-Type': 'image/jpeg',
+            'x-upsert': 'false',
+          },
+          body: blob,
+        }
+      );
+      if (uploadRes.ok) {
+        photoUrl = `${SUPABASE_URL}/storage/v1/object/public/product-images/${filename}`;
+      }
+    } catch { /* non-fatal — submit without photo if upload fails */ }
+  }
+
   btn.textContent = 'Sending…';
 
   try {
@@ -1982,6 +2050,7 @@ async function submitCustomForm() {
         metals:    checkedMetals || null,
         materials: document.getElementById('cfMaterials').value.trim() || null,
         message:   document.getElementById('cfMessage').value.trim() || null,
+        photo_url: photoUrl,
       }),
     });
 
@@ -1994,7 +2063,7 @@ async function submitCustomForm() {
     document.getElementById('submitSuccess').classList.add('visible');
   } catch (err) {
     btn.disabled = false;
-    btn.textContent = 'Send Request to Maile →';
+    btn.textContent = 'Send Request to Maile \u2192';
     alert('Something went wrong: ' + err.message + '. Please try again or DM @mai.little.mermaid on Instagram.');
   }
 }

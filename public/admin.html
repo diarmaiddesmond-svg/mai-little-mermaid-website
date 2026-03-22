@@ -412,6 +412,7 @@
       <button class="tab-btn active" onclick="switchTab('products')">Products</button>
       <button class="tab-btn" onclick="switchTab('orders')">Orders</button>
       <button class="tab-btn" onclick="switchTab('enquiries')">Enquiries</button>
+      <button class="tab-btn" onclick="switchTab('contacts')">Contact</button>
       <button class="tab-btn" onclick="switchTab('promos')">Promo Codes</button>
       <button class="tab-btn" onclick="switchTab('content')">Site Content</button>
       <button class="tab-btn" onclick="switchTab('mto')">Made to Order</button>
@@ -594,6 +595,23 @@
       <div id="enquiriesList"><div class="orders-loading">Loading enquiries…</div></div>
 
     </div><!-- /tabEnquiries -->
+
+    <!-- CONTACT TAB -->
+    <div class="tab-pane" id="tabContacts">
+
+      <div class="orders-toolbar">
+        <div class="orders-filter">
+          <button class="filter-btn active" onclick="filterContacts('all', this)">All</button>
+          <button class="filter-btn" onclick="filterContacts('new', this)">New</button>
+          <button class="filter-btn" onclick="filterContacts('replied', this)">Replied</button>
+        </div>
+        <span class="orders-count" id="contactsCount"></span>
+        <button class="btn-add" style="margin-left:auto" onclick="loadContacts()">↻ Refresh</button>
+      </div>
+
+      <div id="contactsList"><div class="orders-loading">Loading messages…</div></div>
+
+    </div><!-- /tabContacts -->
 
     <!-- PROMO CODES TAB -->
     <div class="tab-pane" id="tabPromos">
@@ -993,12 +1011,26 @@
       <!-- Glass colours -->
       <div class="content-section">
         <div class="content-section-title">Glass Colours</div>
-        <div class="field">
-          <label>One swatch per line — format: <code style="font-size:0.82em;background:var(--sand);padding:0.1em 0.4em;font-family:monospace">Name | #hex | Label</code></label>
-          <textarea id="cMtoGlassColours" style="min-height:180px;font-family:monospace;font-size:0.82rem" placeholder="Seafoam | #a8c5bc | Seafoam&#10;Cobalt Blue | #4a6fa5 | Cobalt&#10;Amber | #c4883a | Amber&#10;Sea Clear | #e8e8e8 | Clear&#10;Forest Green | #6aaa7a | Green&#10;Lavender | #b09cc0 | Lavender&#10;Coral Pink | #d4857a | Coral Pink&#10;Surprise Me | conic-gradient(#a8c5bc,#4a6fa5,#c4883a,#6aaa7a,#b09cc0,#a8c5bc) | Surprise Me"></textarea>
+        <p style="font-size:0.75rem;color:var(--driftwood);letter-spacing:0.04em;margin-bottom:1.2rem">
+          Each row is one swatch on the shop page. Remove any colour Maile doesn't currently have in stock.
+        </p>
+
+        <!-- Column headers -->
+        <div style="display:grid;grid-template-columns:36px 1fr 1fr 1fr 32px;gap:0.5rem;align-items:center;margin-bottom:0.4rem;padding:0 0.2rem">
+          <div></div>
+          <div style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--driftwood)">Name</div>
+          <div style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--driftwood)">Colour (hex / CSS)</div>
+          <div style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--driftwood)">Short label</div>
+          <div></div>
         </div>
-        <div id="mtoSwatchPreview" style="display:flex;flex-wrap:wrap;gap:0.8rem;margin-top:1rem"></div>
-        <p style="font-size:0.7rem;color:var(--driftwood);letter-spacing:0.06em;margin-top:0.5rem">Preview updates on save. The hex or CSS value sets the dot colour.</p>
+
+        <!-- Rows container -->
+        <div id="glassColourRows"></div>
+
+        <button onclick="addGlassColourRow()" style="margin-top:0.8rem;padding:0.5rem 1.2rem;background:none;border:1px solid var(--sand-dark);font-family:'Jost',sans-serif;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--driftwood);cursor:pointer">+ Add Colour</button>
+
+        <!-- Hidden textarea keeps existing save logic working -->
+        <textarea id="cMtoGlassColours" style="display:none"></textarea>
       </div>
 
       <button class="btn-save-content" id="saveMtoBtn" onclick="saveMTOContent()">Save Made to Order</button>
@@ -1369,6 +1401,119 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2800);
 }
 
+// ── CONTACTS ──────────────────────────────────────────────────────────────
+let allContacts = [];
+let currentContactFilter = 'all';
+
+async function loadContacts() {
+  const listEl = document.getElementById('contactsList');
+  listEl.innerHTML = '<div class="orders-loading">Loading messages…</div>';
+
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { listEl.innerHTML = '<div class="orders-loading">Not authenticated.</div>'; return; }
+
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/site_contacts?order=created_at.desc`,
+      { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + session.access_token } }
+    );
+    if (!res.ok) throw new Error('Status ' + res.status);
+    allContacts = await res.json();
+    renderContacts();
+  } catch (e) {
+    listEl.innerHTML = `<div class="orders-empty">Could not load messages: ${e.message}</div>`;
+  }
+}
+
+function filterContacts(filter, btn) {
+  currentContactFilter = filter;
+  document.querySelectorAll('#tabContacts .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderContacts();
+}
+
+function renderContacts() {
+  const filtered = currentContactFilter === 'all'
+    ? allContacts
+    : allContacts.filter(c => (c.status || 'new') === currentContactFilter);
+
+  document.getElementById('contactsCount').textContent =
+    filtered.length === 0 ? 'No messages' :
+    filtered.length === 1 ? '1 message' : `${filtered.length} messages`;
+
+  if (filtered.length === 0) {
+    document.getElementById('contactsList').innerHTML =
+      `<div class="orders-empty">No ${currentContactFilter === 'all' ? '' : currentContactFilter + ' '}messages yet.</div>`;
+    return;
+  }
+
+  document.getElementById('contactsList').innerHTML = filtered.map(c => renderContactCard(c)).join('');
+}
+
+function renderContactCard(c) {
+  const date = new Date(c.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const time = new Date(c.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  const status = c.status || 'new';
+  const statusLabel = { new: 'New', replied: 'Replied' }[status] || 'New';
+  const repliedDisabled = status === 'replied' ? 'disabled' : '';
+
+  return `
+  <div class="enquiry-card" id="contact-${c.id}">
+    <div class="enquiry-header">
+      <span class="order-status-badge eq-status-${status}">${statusLabel}</span>
+      <div>
+        <div class="enquiry-name">${escHtml(c.name || '—')}</div>
+        <div class="enquiry-email">${escHtml(c.email || '')}</div>
+      </div>
+      <span class="enquiry-date">${date} · ${time}</span>
+    </div>
+
+    <div class="enquiry-body">
+      ${c.piece_type ? `<div><span class="enquiry-field-label">Interested in</span><span class="enquiry-field-value">${escHtml(c.piece_type)}</span></div>` : ''}
+      ${c.message    ? `<div class="eq-full"><span class="enquiry-field-label">Message</span><span class="enquiry-field-value">${escHtml(c.message)}</span></div>` : ''}
+    </div>
+
+    <div class="enquiry-footer">
+      <span class="enquiry-id">${c.id}</span>
+      <a href="mailto:${escHtml(c.email)}" class="btn-status" style="text-decoration:none">✉ Reply via email</a>
+      <button class="btn-status" ${repliedDisabled}
+        onclick="setContactStatus('${c.id}', 'replied', this)">
+        ✓ Mark Replied
+      </button>
+    </div>
+  </div>`;
+}
+
+async function setContactStatus(contactId, status, btn) {
+  btn.disabled = true;
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return;
+
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/site_contacts?id=eq.${contactId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': 'Bearer ' + session.access_token,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal',
+        },
+        body: JSON.stringify({ status }),
+      }
+    );
+    if (!res.ok) throw new Error('Failed');
+    const contact = allContacts.find(c => c.id === contactId);
+    if (contact) contact.status = status;
+    renderContacts();
+    showToast('Marked as replied ✓');
+  } catch {
+    btn.disabled = false;
+    showToast('Error updating message');
+  }
+}
+
 // ── TABS ─────────────────────────────────────────────────────────────────
 function switchTab(name) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
@@ -1377,6 +1522,7 @@ function switchTab(name) {
   event.target.classList.add('active');
   if (name === 'orders') loadOrders();
   if (name === 'enquiries') loadEnquiries();
+  if (name === 'contacts') loadContacts();
   if (name === 'promos') loadPromos();
 }
 
@@ -1641,6 +1787,7 @@ function renderEnquiryCard(e) {
       ${e.metals    ? `<div><span class="enquiry-field-label">Preferred metal</span><span class="enquiry-field-value">${escHtml(e.metals)}</span></div>` : ''}
       ${e.materials ? `<div class="eq-full"><span class="enquiry-field-label">Materials sending in</span><span class="enquiry-field-value">${escHtml(e.materials)}</span></div>` : ''}
       ${e.message   ? `<div class="eq-full"><span class="enquiry-field-label">Message</span><span class="enquiry-field-value">${escHtml(e.message)}</span></div>` : ''}
+      ${e.photo_url ? `<div class="eq-full"><span class="enquiry-field-label">Photo</span><br><a href="${escHtml(e.photo_url)}" target="_blank" rel="noopener"><img src="${escHtml(e.photo_url)}" alt="Customer photo" style="max-width:220px;max-height:160px;margin-top:0.4rem;border-radius:2px;display:block;border:1px solid var(--sand-dark)"></a></div>` : ''}
     </div>
 
     <div class="enquiry-footer">
@@ -1956,6 +2103,7 @@ function clearAboutImage(e) {
 const pendingWorkBlobs = {1:null, 2:null, 3:null, 4:null};
 const workSlotUrls     = {1:null, 2:null, 3:null, 4:null};
 
+
 async function handleWorkSelect(slot, file) {
   if (!file) return;
   document.getElementById('workUploadStatus').textContent = `Resizing photo ${slot}…`;
@@ -2065,10 +2213,21 @@ const CONTENT_FIELDS = {
   mto_glass_colours: 'cMtoGlassColours',
 };
 
+// Default glass colours — mirrors shop.html hardcoded swatches
+const DEFAULT_GLASS_COLOURS =
+`Seafoam | #a8c5bc | Seafoam
+Cobalt Blue | #4a6fa5 | Cobalt
+Amber | #c4883a | Amber
+Sea Clear | linear-gradient(135deg,#e8e8e8,#f0f0f0) | Clear
+Forest Green | #6aaa7a | Green
+Lavender | #b09cc0 | Lavender
+Coral Pink | #d4857a | Coral Pink
+Surprise Me | conic-gradient(#a8c5bc,#4a6fa5,#c4883a,#6aaa7a,#b09cc0,#a8c5bc) | Surprise Me`;
+
 async function loadContent() {
   if (!configured) return;
   const { data, error } = await sb.from('site_content').select('key,value');
-  if (error) return; // table might not exist yet — silently skip
+  if (error) { showToast('Could not load content: ' + error.message); return; }
   (data || []).forEach(row => {
     const elId = CONTENT_FIELDS[row.key];
     if (elId) {
@@ -2091,7 +2250,12 @@ async function loadContent() {
       if (row.key === `work_c${s}_img` && row.value) showWorkPreview(s, row.value);
     }
   });
-  renderMTOSwatchPreview();
+  // Pre-fill glass colours with defaults if nothing was saved yet
+  const glassEl = document.getElementById('cMtoGlassColours');
+  if (glassEl && !glassEl.value.trim()) glassEl.value = DEFAULT_GLASS_COLOURS;
+  // Render colour rows from textarea value
+  const lines = (glassEl?.value || '').split('\n').map(l => l.trim()).filter(Boolean);
+  renderColourRows(lines);
 }
 
 async function saveContent() {
@@ -2216,9 +2380,125 @@ async function saveMTOContent() {
   }));
 
   const { error } = await sb.from('site_content').upsert(rows, { onConflict: 'key' });
+  if (error) {
+    btn.disabled = false; btn.textContent = 'Save Made to Order';
+    showToast('Error saving: ' + error.message);
+    return;
+  }
+
+  // Reload from DB to confirm data persisted
+  btn.textContent = 'Verifying…';
+  const { data: check, error: checkErr } = await sb
+    .from('site_content')
+    .select('key,value')
+    .in('key', MTO_KEYS);
+
   btn.disabled = false; btn.textContent = 'Save Made to Order';
-  if (error) { showToast('Error saving: ' + error.message); return; }
-  showToast('✓ Made to Order saved — changes live on the shop page');
+
+  if (checkErr || !check) {
+    showToast('Saved, but could not verify — check your Supabase connection');
+    return;
+  }
+
+  // Repopulate fields with what DB returned
+  check.forEach(row => {
+    const el = document.getElementById(CONTENT_FIELDS[row.key]);
+    if (el && row.value) el.value = row.value;
+  });
+
+  const savedCount = check.filter(r => r.value).length;
+  showToast(`✓ Saved & verified — ${savedCount} fields live on the shop page`);
+  renderMTOSwatchPreview();
+}
+
+// ── GLASS COLOUR ROWS ────────────────────────────────────────────────────
+function renderColourRows(lines) {
+  const container = document.getElementById('glassColourRows');
+  if (!container) return;
+  container.innerHTML = '';
+  lines.forEach(line => {
+    const hidden = line.startsWith('!');
+    const clean  = hidden ? line.slice(1).trim() : line;
+    const parts  = clean.split('|').map(p => p.trim());
+    addGlassColourRow(parts[0] || '', parts[1] || '', parts[2] || '', hidden);
+  });
+  syncColourTextarea();
+}
+
+function addGlassColourRow(name = '', css = '', label = '', hidden = false) {
+  const container = document.getElementById('glassColourRows');
+  const row = document.createElement('div');
+  row.className = 'colour-row';
+  row.dataset.hidden = hidden ? '1' : '0';
+  row.style.cssText = 'display:grid;grid-template-columns:36px 1fr 1fr 1fr 32px;gap:0.5rem;align-items:center;margin-bottom:0.4rem;transition:opacity 0.2s';
+
+  const inp = (val, ph) => {
+    const el = document.createElement('input');
+    el.type = 'text'; el.value = val; el.placeholder = ph;
+    el.style.cssText = 'padding:0.55rem 0.6rem;border:1px solid var(--sand-dark);font-family:\'Jost\',sans-serif;font-size:0.83rem;background:var(--cream);outline:none;width:100%;box-sizing:border-box';
+    el.addEventListener('input', () => { syncColourTextarea(); updateRowDot(row); });
+    return el;
+  };
+
+  const dot = document.createElement('div');
+  dot.style.cssText = `width:32px;height:32px;border-radius:50%;background:${css || '#ccc'};border:1px solid var(--sand-dark);flex-shrink:0`;
+
+  const nameEl  = inp(name,  'e.g. Seafoam');
+  const cssEl   = inp(css,   '#hex or CSS');
+  const labelEl = inp(label, 'Short label');
+
+  cssEl.addEventListener('input', () => { dot.style.background = cssEl.value || '#ccc'; });
+
+  const toggleBtn = document.createElement('button');
+  toggleBtn.style.cssText = 'width:28px;height:28px;border:1px solid var(--sand-dark);background:none;font-size:0.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1';
+
+  function applyHiddenState(isHidden) {
+    row.dataset.hidden = isHidden ? '1' : '0';
+    row.style.opacity = isHidden ? '0.38' : '1';
+    toggleBtn.textContent = isHidden ? '○' : '●';
+    toggleBtn.title = isHidden ? 'Currently hidden — click to restore to shop' : 'Currently on shop — click to hide';
+    toggleBtn.style.color = isHidden ? 'var(--driftwood)' : 'var(--ocean)';
+    [nameEl, cssEl, labelEl].forEach(el => el.style.textDecoration = isHidden ? 'line-through' : 'none');
+  }
+
+  toggleBtn.onclick = () => {
+    const nowHidden = row.dataset.hidden !== '1';
+    applyHiddenState(nowHidden);
+    syncColourTextarea();
+  };
+
+  applyHiddenState(hidden);
+
+  row.appendChild(dot);
+  row.appendChild(nameEl);
+  row.appendChild(cssEl);
+  row.appendChild(labelEl);
+  row.appendChild(toggleBtn);
+  container.appendChild(row);
+}
+
+function updateRowDot(row) {
+  const inputs = row.querySelectorAll('input');
+  const css = inputs[1]?.value || '#ccc';
+  row.querySelector('div').style.background = css;
+}
+
+function syncColourTextarea() {
+  const container = document.getElementById('glassColourRows');
+  const ta = document.getElementById('cMtoGlassColours');
+  if (!container || !ta) return;
+  const lines = [];
+  container.querySelectorAll('.colour-row').forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    const name = inputs[0]?.value.trim();
+    const css  = inputs[1]?.value.trim();
+    const lbl  = inputs[2]?.value.trim();
+    if (name || css) {
+      const prefix = row.dataset.hidden === '1' ? '!' : '';
+      lines.push(`${prefix}${name} | ${css} | ${lbl || name}`);
+    }
+  });
+  ta.value = lines.join('\n');
   renderMTOSwatchPreview();
 }
 
@@ -2227,13 +2507,19 @@ function renderMTOSwatchPreview() {
   if (!preview) return;
   const raw = document.getElementById('cMtoGlassColours')?.value || '';
   const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+  const emptyMsg = document.getElementById('mtoSwatchEmpty');
+  if (!lines.length) {
+    preview.innerHTML = '<span style="font-size:0.7rem;color:var(--driftwood);align-self:center" id="mtoSwatchEmpty">No colours yet — add some below</span>';
+    return;
+  }
+  if (emptyMsg) emptyMsg.style.display = 'none';
   preview.innerHTML = lines.map(line => {
     const parts = line.split('|').map(p => p.trim());
     const label = parts[2] || parts[0] || '';
     const bg    = parts[1] || '#ccc';
-    return `<div style="display:flex;flex-direction:column;align-items:center;gap:0.3rem">
-      <div style="width:36px;height:36px;border-radius:50%;background:${bg};border:1px solid var(--sand-dark)"></div>
-      <span style="font-size:0.65rem;letter-spacing:0.06em;color:var(--driftwood)">${label}</span>
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:0.4rem;cursor:default">
+      <div style="width:44px;height:44px;border-radius:50%;background:${bg};border:2px solid var(--sand-dark);box-shadow:0 1px 4px rgba(0,0,0,0.08)"></div>
+      <span style="font-size:0.63rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink);max-width:54px;text-align:center;line-height:1.2">${label}</span>
     </div>`;
   }).join('');
 }
@@ -2242,9 +2528,6 @@ function renderMTOSwatchPreview() {
 document.getElementById('loginPassword').addEventListener('keydown', e => {
   if (e.key === 'Enter') signIn();
 });
-
-// Live swatch preview while typing glass colours
-document.getElementById('cMtoGlassColours').addEventListener('input', renderMTOSwatchPreview);
 
 checkSession();
 </script>
