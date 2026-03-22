@@ -2282,18 +2282,21 @@ function renderColourRows(lines) {
   const container = document.getElementById('glassColourRows');
   if (!container) return;
   container.innerHTML = '';
-  lines.forEach((line, i) => {
-    const parts = line.split('|').map(p => p.trim());
-    addGlassColourRow(parts[0] || '', parts[1] || '', parts[2] || '');
+  lines.forEach(line => {
+    const hidden = line.startsWith('!');
+    const clean  = hidden ? line.slice(1).trim() : line;
+    const parts  = clean.split('|').map(p => p.trim());
+    addGlassColourRow(parts[0] || '', parts[1] || '', parts[2] || '', hidden);
   });
   syncColourTextarea();
 }
 
-function addGlassColourRow(name = '', css = '', label = '') {
+function addGlassColourRow(name = '', css = '', label = '', hidden = false) {
   const container = document.getElementById('glassColourRows');
   const row = document.createElement('div');
   row.className = 'colour-row';
-  row.style.cssText = 'display:grid;grid-template-columns:36px 1fr 1fr 1fr 32px;gap:0.5rem;align-items:center;margin-bottom:0.4rem';
+  row.dataset.hidden = hidden ? '1' : '0';
+  row.style.cssText = 'display:grid;grid-template-columns:36px 1fr 1fr 1fr 32px;gap:0.5rem;align-items:center;margin-bottom:0.4rem;transition:opacity 0.2s';
 
   const inp = (val, ph) => {
     const el = document.createElement('input');
@@ -2310,20 +2313,33 @@ function addGlassColourRow(name = '', css = '', label = '') {
   const cssEl   = inp(css,   '#hex or CSS');
   const labelEl = inp(label, 'Short label');
 
-  // Update dot live when CSS value changes
   cssEl.addEventListener('input', () => { dot.style.background = cssEl.value || '#ccc'; });
 
-  const removeBtn = document.createElement('button');
-  removeBtn.textContent = '×';
-  removeBtn.title = 'Remove this colour';
-  removeBtn.style.cssText = 'width:28px;height:28px;border:1px solid var(--sand-dark);background:none;font-size:1rem;cursor:pointer;color:var(--driftwood);display:flex;align-items:center;justify-content:center;flex-shrink:0';
-  removeBtn.onclick = () => { row.remove(); syncColourTextarea(); renderMTOSwatchPreview(); };
+  const toggleBtn = document.createElement('button');
+  toggleBtn.style.cssText = 'width:28px;height:28px;border:1px solid var(--sand-dark);background:none;font-size:0.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1';
+
+  function applyHiddenState(isHidden) {
+    row.dataset.hidden = isHidden ? '1' : '0';
+    row.style.opacity = isHidden ? '0.38' : '1';
+    toggleBtn.textContent = isHidden ? '○' : '●';
+    toggleBtn.title = isHidden ? 'Currently hidden — click to restore to shop' : 'Currently on shop — click to hide';
+    toggleBtn.style.color = isHidden ? 'var(--driftwood)' : 'var(--ocean)';
+    [nameEl, cssEl, labelEl].forEach(el => el.style.textDecoration = isHidden ? 'line-through' : 'none');
+  }
+
+  toggleBtn.onclick = () => {
+    const nowHidden = row.dataset.hidden !== '1';
+    applyHiddenState(nowHidden);
+    syncColourTextarea();
+  };
+
+  applyHiddenState(hidden);
 
   row.appendChild(dot);
   row.appendChild(nameEl);
   row.appendChild(cssEl);
   row.appendChild(labelEl);
-  row.appendChild(removeBtn);
+  row.appendChild(toggleBtn);
   container.appendChild(row);
 }
 
@@ -2343,7 +2359,10 @@ function syncColourTextarea() {
     const name = inputs[0]?.value.trim();
     const css  = inputs[1]?.value.trim();
     const lbl  = inputs[2]?.value.trim();
-    if (name || css) lines.push(`${name} | ${css} | ${lbl || name}`);
+    if (name || css) {
+      const prefix = row.dataset.hidden === '1' ? '!' : '';
+      lines.push(`${prefix}${name} | ${css} | ${lbl || name}`);
+    }
   });
   ta.value = lines.join('\n');
   renderMTOSwatchPreview();
