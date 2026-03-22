@@ -993,12 +993,18 @@
       <!-- Glass colours -->
       <div class="content-section">
         <div class="content-section-title">Glass Colours</div>
-        <div class="field">
-          <label>One swatch per line — format: <code style="font-size:0.82em;background:var(--sand);padding:0.1em 0.4em;font-family:monospace">Name | #hex | Label</code></label>
-          <textarea id="cMtoGlassColours" style="min-height:180px;font-family:monospace;font-size:0.82rem" placeholder="Seafoam | #a8c5bc | Seafoam&#10;Cobalt Blue | #4a6fa5 | Cobalt&#10;Amber | #c4883a | Amber&#10;Sea Clear | #e8e8e8 | Clear&#10;Forest Green | #6aaa7a | Green&#10;Lavender | #b09cc0 | Lavender&#10;Coral Pink | #d4857a | Coral Pink&#10;Surprise Me | conic-gradient(#a8c5bc,#4a6fa5,#c4883a,#6aaa7a,#b09cc0,#a8c5bc) | Surprise Me"></textarea>
+        <p style="font-size:0.75rem;color:var(--driftwood);letter-spacing:0.04em;margin-bottom:1rem;line-height:1.5">
+          Each line defines one swatch on the shop page. Format: <code style="font-size:0.82em;background:var(--sand);padding:0.1em 0.4em;font-family:monospace">Name | #hex or CSS value | Short label</code><br>
+          The dot colour is the middle column — any valid CSS colour works (hex, gradient, etc.).
+        </p>
+        <!-- Live swatch preview -->
+        <div id="mtoSwatchPreview" style="display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1.2rem;min-height:60px;padding:1rem;background:var(--sand);border:1px solid var(--sand-dark)">
+          <span style="font-size:0.7rem;color:var(--driftwood);align-self:center" id="mtoSwatchEmpty">No colours yet — add some below</span>
         </div>
-        <div id="mtoSwatchPreview" style="display:flex;flex-wrap:wrap;gap:0.8rem;margin-top:1rem"></div>
-        <p style="font-size:0.7rem;color:var(--driftwood);letter-spacing:0.06em;margin-top:0.5rem">Preview updates on save. The hex or CSS value sets the dot colour.</p>
+        <div class="field">
+          <label>Colour list <span style="font-weight:300;text-transform:none;letter-spacing:0">— one per line</span></label>
+          <textarea id="cMtoGlassColours" style="min-height:160px;font-family:monospace;font-size:0.82rem"></textarea>
+        </div>
       </div>
 
       <button class="btn-save-content" id="saveMtoBtn" onclick="saveMTOContent()">Save Made to Order</button>
@@ -2065,10 +2071,21 @@ const CONTENT_FIELDS = {
   mto_glass_colours: 'cMtoGlassColours',
 };
 
+// Default glass colours — mirrors shop.html hardcoded swatches
+const DEFAULT_GLASS_COLOURS =
+`Seafoam | #a8c5bc | Seafoam
+Cobalt Blue | #4a6fa5 | Cobalt
+Amber | #c4883a | Amber
+Sea Clear | linear-gradient(135deg,#e8e8e8,#f0f0f0) | Clear
+Forest Green | #6aaa7a | Green
+Lavender | #b09cc0 | Lavender
+Coral Pink | #d4857a | Coral Pink
+Surprise Me | conic-gradient(#a8c5bc,#4a6fa5,#c4883a,#6aaa7a,#b09cc0,#a8c5bc) | Surprise Me`;
+
 async function loadContent() {
   if (!configured) return;
   const { data, error } = await sb.from('site_content').select('key,value');
-  if (error) return; // table might not exist yet — silently skip
+  if (error) { showToast('Could not load content: ' + error.message); return; }
   (data || []).forEach(row => {
     const elId = CONTENT_FIELDS[row.key];
     if (elId) {
@@ -2091,6 +2108,9 @@ async function loadContent() {
       if (row.key === `work_c${s}_img` && row.value) showWorkPreview(s, row.value);
     }
   });
+  // Pre-fill glass colours with defaults if nothing was saved yet
+  const glassEl = document.getElementById('cMtoGlassColours');
+  if (glassEl && !glassEl.value.trim()) glassEl.value = DEFAULT_GLASS_COLOURS;
   renderMTOSwatchPreview();
 }
 
@@ -2252,13 +2272,19 @@ function renderMTOSwatchPreview() {
   if (!preview) return;
   const raw = document.getElementById('cMtoGlassColours')?.value || '';
   const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+  const emptyMsg = document.getElementById('mtoSwatchEmpty');
+  if (!lines.length) {
+    preview.innerHTML = '<span style="font-size:0.7rem;color:var(--driftwood);align-self:center" id="mtoSwatchEmpty">No colours yet — add some below</span>';
+    return;
+  }
+  if (emptyMsg) emptyMsg.style.display = 'none';
   preview.innerHTML = lines.map(line => {
     const parts = line.split('|').map(p => p.trim());
     const label = parts[2] || parts[0] || '';
     const bg    = parts[1] || '#ccc';
-    return `<div style="display:flex;flex-direction:column;align-items:center;gap:0.3rem">
-      <div style="width:36px;height:36px;border-radius:50%;background:${bg};border:1px solid var(--sand-dark)"></div>
-      <span style="font-size:0.65rem;letter-spacing:0.06em;color:var(--driftwood)">${label}</span>
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:0.4rem;cursor:default">
+      <div style="width:44px;height:44px;border-radius:50%;background:${bg};border:2px solid var(--sand-dark);box-shadow:0 1px 4px rgba(0,0,0,0.08)"></div>
+      <span style="font-size:0.63rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink);max-width:54px;text-align:center;line-height:1.2">${label}</span>
     </div>`;
   }).join('');
 }
