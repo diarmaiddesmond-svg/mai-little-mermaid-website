@@ -983,6 +983,14 @@
   .studio-card-title { font-family: 'Cormorant Garamond', serif; font-weight: 300; color: #fff; line-height: 1.15; margin-bottom: 0.9rem; }
   .studio-card-body { font-size: 0.88rem; font-weight: 300; line-height: 1.85; color: rgba(255,255,255,0.55); }
 
+  /* Single-card: headline left, card right */
+  .studio-notes.one-card { display: grid; grid-template-columns: 1fr 1.4fr; gap: 5rem; align-items: center; }
+  .studio-notes.one-card .studio-header { margin-bottom: 0; }
+  .studio-notes.one-card .studio-title { font-size: clamp(2.4rem, 4vw, 3.8rem); }
+  .studio-notes.one-card .studio-grid { border-top: none; }
+  .studio-notes.one-card .studio-card { padding: 0; border-right: none; }
+  .studio-notes.one-card .studio-card::before { top: 0; }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 900px) {
     nav { padding: 1rem 1.5rem; }
@@ -994,6 +1002,9 @@
     .hero-badge { left: 1rem; bottom: 1.5rem; }
     .section, .about-strip, .process, .contact { padding: 3rem 1.5rem; }
     .instagram-strip, .studio-notes { padding: 3rem 1.5rem; }
+    .studio-notes.one-card { grid-template-columns: 1fr; gap: 2rem; }
+    .studio-notes.one-card .studio-card { padding: 2rem 0 0; border-top: 1px solid rgba(255,255,255,0.1); }
+    .studio-notes.one-card .studio-card::before { top: 2rem; }
     .studio-grid { grid-template-columns: 1fr; }
     .studio-card, .studio-card:first-child, .studio-card:not(:first-child) { padding: 2rem 0; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
     .studio-card:last-child { border-bottom: none; }
@@ -1366,11 +1377,16 @@
         }
       });
       if (anyNews) {
-        document.getElementById('studioNotes').style.display = '';
+        const section = document.getElementById('studioNotes');
+        section.style.display = '';
         const grid = document.querySelector('.studio-grid');
         if (grid) {
-          if      (activeCards === 1) grid.style.gridTemplateColumns = '1fr';
-          else if (activeCards === 2) grid.style.gridTemplateColumns = '1.4fr 1fr';
+          if (activeCards === 1) {
+            section.classList.add('one-card');
+            grid.style.gridTemplateColumns = '1fr';
+          } else if (activeCards === 2) {
+            grid.style.gridTemplateColumns = '1.4fr 1fr';
+          }
         }
       }
 
