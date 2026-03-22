@@ -448,6 +448,10 @@
     color: rgba(255,255,255,0.4);
   }
 
+  .product-placeholder.has-image::after {
+    display: none;
+  }
+
   .product-tag {
     position: absolute;
     top: 1rem;
@@ -1389,7 +1393,7 @@
         if (kv[`work_c${n}_material`]) document.getElementById(`workCard${n}Material`).textContent = kv[`work_c${n}_material`];
         if (kv[`work_c${n}_img`]) {
           const el = document.getElementById(`workCard${n}Img`);
-          if (el) { el.style.backgroundImage = `url('${kv[`work_c${n}_img`]}')`; el.style.backgroundSize = 'cover'; el.style.backgroundPosition = 'center'; }
+          if (el) { el.style.backgroundImage = `url('${kv[`work_c${n}_img`]}')`; el.style.backgroundSize = 'cover'; el.style.backgroundPosition = 'center'; el.classList.add('has-image'); }
         }
       });
     } catch (_) {
