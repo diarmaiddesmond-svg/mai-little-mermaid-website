@@ -963,28 +963,7 @@
     <h2 class="related-title">You might also <em>love</em></h2>
     <a href="/shop.html" style="font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--driftwood);text-decoration:none;border-bottom:1px solid var(--sand-dark);padding-bottom:2px;">View All →</a>
   </div>
-  <div class="related-grid">
-    <div class="related-card" onclick="window.location='/shop1.html'">
-      <div class="related-img"><div class="related-img-inner r1"></div></div>
-      <p class="related-name">Sea Glass Charm Necklace</p>
-      <p class="related-price">$75</p>
-    </div>
-    <div class="related-card">
-      <div class="related-img"><div class="related-img-inner r2"></div></div>
-      <p class="related-name">Beaded Stone Bracelet</p>
-      <p class="related-price">$62</p>
-    </div>
-    <div class="related-card">
-      <div class="related-img"><div class="related-img-inner r3"></div></div>
-      <p class="related-name">Aqua Glass Studs</p>
-      <p class="related-price">$45</p>
-    </div>
-    <div class="related-card">
-      <div class="related-img"><div class="related-img-inner r4"></div></div>
-      <p class="related-name">Gold Layered Sea Charm</p>
-      <p class="related-price">$110</p>
-    </div>
-  </div>
+  <div class="related-grid" id="relatedGrid"></div>
 </section>
 
 <!-- FOOTER -->
@@ -1068,6 +1047,44 @@
     document.querySelector('nav').style.boxShadow =
       window.scrollY > 50 ? '0 2px 20px rgba(0,0,0,0.08)' : 'none';
   });
+
+  // ── RELATED PRODUCTS (dynamic from Supabase) ──
+  const SUPABASE_URL      = 'https://istjxzspjqftrnztosiy.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlzdGp4enNwanFmdHJuenRvc2l5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMjM2MjIsImV4cCI6MjA4ODc5OTYyMn0.vvKfN168Pgz_-VedCn4fGYJqzBt8KYkFicrmrc6UiHU';
+  const GRADS = {
+    g1:'linear-gradient(145deg,#c9b99a,#8b7355)', g2:'linear-gradient(145deg,#cdd8d6,#9ab5b0)',
+    g3:'linear-gradient(145deg,#ddd0c0,#bfa98e)', g4:'linear-gradient(145deg,#c8d4cc,#8eaaa4)',
+    g5:'linear-gradient(145deg,#e4d8c4,#c2a87c)', g6:'linear-gradient(145deg,#d0dbd8,#94b4ae)',
+    g7:'linear-gradient(145deg,#e8dcc8,#c49a6a)', g8:'linear-gradient(145deg,#cfd9d5,#7aaa9e)',
+  };
+
+  (async function loadRelated() {
+    const grid = document.getElementById('relatedGrid');
+    if (!grid) return;
+    let products = [];
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/products?available=eq.true&limit=8&select=id,name,type,price,image_url,grad`,
+        { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+      );
+      if (res.ok) products = await res.json();
+    } catch {}
+
+    // Shuffle and take 4
+    products = products.sort(() => Math.random() - 0.5).slice(0, 4);
+    if (!products.length) return;
+
+    grid.innerHTML = products.map(p => {
+      const imgStyle = p.image_url
+        ? `background:url('${p.image_url}') center/cover`
+        : (GRADS[p.grad] ? `background:${GRADS[p.grad]}` : 'background:var(--sand)');
+      return `<div class="related-card" onclick="window.location='/shop1.html?id=${p.id}'">
+        <div class="related-img"><div class="related-img-inner" style="${imgStyle}"></div></div>
+        <p class="related-name">${p.name}</p>
+        <p class="related-price">€${p.price}</p>
+      </div>`;
+    }).join('');
+  })();
 </script>
 </body>
 </html>

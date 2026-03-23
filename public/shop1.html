@@ -1146,28 +1146,7 @@
     <h2 class="related-title">You might also <em>love</em></h2>
     <a href="/shop.html" style="font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--driftwood);text-decoration:none;border-bottom:1px solid var(--sand-dark);padding-bottom:2px;">View All →</a>
   </div>
-  <div class="related-grid">
-    <div class="related-card" onclick="window.location='/shop2.html'">
-      <div class="related-img"><div class="related-img-inner r1"></div></div>
-      <p class="related-name">Shell Drop Earrings</p>
-      <p class="related-price">$55</p>
-    </div>
-    <div class="related-card">
-      <div class="related-img"><div class="related-img-inner r2"></div></div>
-      <p class="related-name">Beaded Stone Bracelet</p>
-      <p class="related-price">$72</p>
-    </div>
-    <div class="related-card">
-      <div class="related-img"><div class="related-img-inner r3"></div></div>
-      <p class="related-name">Gold Layered Sea Charm</p>
-      <p class="related-price">$130</p>
-    </div>
-    <div class="related-card">
-      <div class="related-img"><div class="related-img-inner r4"></div></div>
-      <p class="related-name">Aqua Glass Studs</p>
-      <p class="related-price">$47</p>
-    </div>
-  </div>
+  <div class="related-grid" id="relatedGrid"></div>
 </section>
 
 <!-- FOOTER -->
@@ -1330,7 +1309,44 @@
     }
   }
 
-  loadAndRender();
+  loadAndRender().then(() => loadRelated());
+
+  async function loadRelated() {
+    const grid = document.getElementById('relatedGrid');
+    if (!grid) return;
+
+    let related = [];
+
+    if (SUPABASE_URL.startsWith('https://')) {
+      try {
+        const res = await fetch(
+          `${SUPABASE_URL}/rest/v1/products?id=neq.${productId}&available=eq.true&limit=8&select=id,name,type,price,image_url,grad`,
+          { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+        );
+        if (res.ok) related = await res.json();
+      } catch {}
+    }
+
+    // Fallback to hardcoded list excluding current product
+    if (!related.length) {
+      related = FALLBACK_PRODUCTS.filter(p => p.id !== productId);
+    }
+
+    // Shuffle and take 4
+    related = related.sort(() => Math.random() - 0.5).slice(0, 4);
+
+    grid.innerHTML = related.map(p => {
+      const imgStyle = p.image_url
+        ? `background:url('${p.image_url}') center/cover`
+        : (GRADS[p.grad] ? `background:${GRADS[p.grad]}` : 'background:var(--sand)');
+      const price = p.price ? `€${p.price}` : '';
+      return `<div class="related-card" onclick="window.location='/shop1.html?id=${p.id}'">
+        <div class="related-img"><div class="related-img-inner" style="${imgStyle}"></div></div>
+        <p class="related-name">${p.name}</p>
+        <p class="related-price">${price}</p>
+      </div>`;
+    }).join('');
+  }
 
   // ── IMAGE SWITCHER ──
   function switchToImg(idx) {
